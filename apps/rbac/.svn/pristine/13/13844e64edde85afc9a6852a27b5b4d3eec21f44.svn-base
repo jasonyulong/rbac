@@ -1,0 +1,52 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <form action="{:url('/v1/auth/position/copy')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <div class="row">
+            <div class="col-md-9">
+
+                <input type="hidden" name="id" value="{$info.id}">
+
+                <div class="form-group">
+                    <label for="pid" class="col-sm-3 control-label">父级名称：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" title="" id="pid" name="pid"  data-msg-required="请选择">
+                            <option value="0">请选择</option>
+                            {volist name="positionArr" id="vo"}
+                            <option value="{$vo.id}"
+                                    {if condition="$info['pid'] eq $vo['id']"}selected="selected"{/if}
+                            >{$vo.title}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="col-sm-3 control-label"><span class="red-color">*</span>岗位名称：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control form-control-sm" id="title" name="title" value="{$info.title}"
+                               data-rule="required;title;"
+                               data-msg-required="请填写用户名"
+                               data-tip="你可以用汉字、字母、数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="col-sm-3 control-label"><span class="red-color">*</span>权重：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control form-control-sm" id="weigh" name="weigh" value="{$info.weigh}"
+                               data-rule="required;weigh;"
+                               data-msg-required="请填写权重"
+                               data-tip="数字">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="td-align dialog-footer">
+            <button class="btn btn-warning" onclick="javascript:parent.layer.closeAll();"> <i class="fa fa-close"></i> 取消</button>
+            <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定提交</button>
+        </div>
+    </form>
+</div>
+{/block}

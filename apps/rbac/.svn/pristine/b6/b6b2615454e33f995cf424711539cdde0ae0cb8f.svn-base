@@ -1,0 +1,41 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="td-align">登录时间</th>
+            <th class="td-align">IP</th>
+            <th class="td-align">登录地址</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2018.05.27 23:45:36</td>
+                <td>127.0.0.1</td>
+                <td>杭州西湖</td>
+            </tr>
+            <tr>
+                <td>2018.05.27 23:45:36</td>
+                <td>127.0.0.1</td>
+                <td>杭州西湖</td>
+            </tr>
+            <tr>
+                <td>2018.05.27 23:45:36</td>
+                <td>127.0.0.1</td>
+                <td>杭州西湖</td>
+            </tr>
+            <tr>
+                <td>2018.05.27 23:45:36</td>
+                <td>127.0.0.1</td>
+                <td>杭州西湖</td>
+            </tr>
+            <tr>
+                <td>2018.05.27 23:45:36</td>
+                <td>127.0.0.1</td>
+                <td>杭州西湖</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{/block}

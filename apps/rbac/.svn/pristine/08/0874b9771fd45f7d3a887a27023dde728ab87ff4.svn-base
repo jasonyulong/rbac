@@ -1,0 +1,123 @@
+<?php
+// +----------------------------------------------------------------------
+// | 权限 设定
+// +----------------------------------------------------------------------
+// | COPYRIGHT (C) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | AUTHOR : lamkakyun
+// | DATE   : 2019-04-11 10:37:14
+// | VERSION：0.0.1
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller\auth;
+
+use think\Request;
+use app\api\service\Job;
+use app\common\library\ConfLib;
+use app\common\library\MenuLib;
+use app\common\controller\AuthController as Controller;
+
+class Access extends Controller
+{
+
+    /**
+     * 重组 岗位数据,给前端插件 (递归)
+     * @author lamkakyun
+     * @date 2019-04-11 17:13:37
+     * @return void
+     */
+    private function _reshapeJobData($data, &$job_id, &$all_parent_job_ids)
+    {
+        $ret_data = [];
+        foreach ($data as $key => $value) {
+            if ($value['rank'] == 1 && !isset($value['children'])) {
+                $tmp = [];
+                $tmp['text'] = str_replace("'", '"', $value['title']) . "({$value['job_users_num']})";
+                $tmp['href'] = url('index', ['id' => $value['id']], '');
+                $tmp['icon'] = "glyphicon glyphicon-home";
+
+                if (in_array($value['id'], $all_parent_job_ids)) $tmp['state']['expanded'] = true;
+                if ($job_id == $value['id']) $tmp['state']['selected'] = true;
+
+                $ret_data[] = $tmp;
+                continue;
+            } else {
+                if (isset($value['children'])) {
+                    $d = $this->_reshapeJobData($value['children'], $job_id, $all_parent_job_ids);
+                    $tmp = [];
+                    $tmp['text'] = str_replace("'", '', $value['title']) . "({$value['job_users_num']})";
+                    $tmp['href'] = url('index', ['id' => $value['id']], '');
+                    if ($value['rank'] == 1) {
+                        $tmp['icon'] = "glyphicon glyphicon-home";
+                        $tmp['state']['expanded'] = false;
+                    }
+
+                    if (in_array($value['id'], $all_parent_job_ids)) $tmp['state']['expanded'] = true;
+                    if ($job_id == $value['id']) $tmp['state']['selected'] = true;
+
+                    $tmp['nodes'] = $d;
+                    $ret_data[] = $tmp;
+                } else {
+                    $tmp = [
+                        'text' => str_replace("'", '"', $value['title']) . "({$value['job_users_num']})",
+                        'href' => url('index', ['id' => $value['id']], ''),
+                    ];
+                    if ($job_id == $value['id']) $tmp['state']['selected'] = true;
+                    $ret_data[] = $tmp;
+                }
+            }
+        }
+
+        return $ret_data;
+    }
+
+
+    private function _buildMenuTreeHtml($tree)
+    {
+        $max_level = 4;
+        $current_level = 1;
+        $html = '';
+        while ($current_level < $max_level)
+        {
+
+            $current_level ++;
+        }
+    }
+
+
+    /**
+     * 岗位权限页面
+     * @author lamkakyun
+     * @date 2019-04-11 10:42:45
+     * @return void
+     */
+    public function index()
+    {
+        $params = input('get.');
+        if(!isset($params['module_id']) || !preg_match('/^\d+$/', $params['module_id'])) $params['module_id'] = 1;
+
+        // tree
+        $all_parent_jobs = Job::getInstance()->getAllParentJob($params['id'] ?? 0);
+        $all_parent_job_ids = array_column($all_parent_jobs, 'id');
+
+        $job_tree = Job::getInstance()->getJobTree();
+        $job_tree = $this->_reshapeJobData($job_tree, $params['id'], $all_parent_job_ids);
+
+        // allow system
+        $allow_systems = ConfLib::instance()->getAllowSystem();
+
+        $menu_tree = MenuLib::instance()->getMenuTree($params['module_id']);
+        // $menu_tree = $this->_buildMenuTreeHtml($menu_tree['data']);
+
+        // echo '<pre>';var_dump($menu_tree);echo '</pre>';
+        // exit;
+
+        $this->assign('adaptive', '');
+        $this->assign('job_tree', json_encode($job_tree));
+        $this->assign('allow_systems', $allow_systems);
+        $this->assign('params', $params);
+        $this->assign('menu_tree', $menu_tree['data']);
+        return parent::fetchAuto();
+    }
+}
+

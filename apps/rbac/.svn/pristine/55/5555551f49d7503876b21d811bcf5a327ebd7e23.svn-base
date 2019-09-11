@@ -1,0 +1,143 @@
+<?php
+// +----------------------------------------------------------------------
+// | 权限设置
+// +----------------------------------------------------------------------
+// | COPYRIGHT (C) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | AUTHOR : lamkakyun
+// | DATE   : 2019-04-15 14:42:59
+// | VERSION：0.0.1
+// +----------------------------------------------------------------------
+
+namespace app\v1\service;
+
+use plugin\Tree;
+use think\Config;
+use app\common\model\Menus;
+use app\common\model\Users;
+use app\common\model\UsersJob;
+use app\common\model\UsersJobAccess;
+
+class Access 
+{
+    /**
+     * 更新岗位 权限
+     * @author lamkakyun
+     * @date 2019-04-15 14:44:12
+     * @return void
+     */
+    public function updateJobAccess($job_id, $params)
+    {
+        // 查看用户 拥有的权限
+        $where = ['job_id' => $job_id];
+        $access_list = UsersJobAccess::field('menu_id, menu_detail_id')->where($where)->select()->toArray();
+
+        $old_access_menu_and_detail = [];
+        foreach ($access_list as $value)
+        {
+            $old_access_menu_and_detail[] = $value['menu_id'] . '___' . $value['menu_detail_id'];
+        }
+
+        $new_access_menu_and_detail = [];
+        if (isset($params['menu']))
+        {
+            foreach ($params['menu'] as $value)
+            {
+                $new_access_menu_and_detail[] = $value . '___0';
+            }
+        }
+        if (isset($params['menu_detail']))
+        {
+            foreach ($params['menu_detail'] as $value)
+            {
+                $new_access_menu_and_detail[] = $value;
+            }
+        }
+
+        // $menu_fields = 'id,type,pid,title,url,icon';
+        // $all_menus = Menus::field($menu_fields)->order('weigh DESC,id ASC')->select()->toArray();
+        // $all_menus = tranform_data($all_menus, 1);
+
+        // echo '<pre>';var_dump($all_menus);echo '</pre>';
+        // exit;
+
+        // 要删除的权限
+        $deleted_access = array_diff($old_access_menu_and_detail, $new_access_menu_and_detail);
+
+        // 要增加的权限
+        $added_access = array_diff($new_access_menu_and_detail, $old_access_menu_and_detail);
+
+        $added_menu_ids = array_unique(array_map(function($v) {return explode('___', $v)[0];}, $added_access));
+        // echo '<pre>';var_dump($added_access, $added_menu_id);echo '</pre>';
+        // exit;
+        // $all_added_menu_id = array_column($added_access, '')
+
+        $added_menus = !empty($added_menu_ids) ? Menus::where(['id' => ['IN', $added_menu_ids]])->select()->toArray() : [];
+        $added_menus = tranform_data($added_menus, 1);
+
+        // echo '<pre>';var_dump($added_menus);echo '</pre>';
+        // exit;
+        
+
+        $where_delete = [];
+        foreach ($deleted_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+
+            $where_delete[] = "(menu_id = {$tmp_menu_id} AND menu_detail_id = {$tmp_node_id})";
+        }
+        $where_delete_str = implode(' OR ', $where_delete);
+
+        $now_time = time();
+        $all_add_data = [];
+        foreach ($added_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+            $type = ($tmp_node_id != '0');
+            
+            $tmp_data = [
+                'job_id' => $job_id,
+                'type' => $type,
+                'stand' => $added_menus[$tmp_menu_id]['type'] ?? 0,
+                'menu_id' => $tmp_menu_id,
+                'menu_detail_id' => $tmp_node_id,
+                'createtime' => $now_time,
+                'updatetime' => $now_time,
+            ];
+
+            $all_add_data[] = $tmp_data;
+        }
+
+        // echo '<pre>';var_dump($added_access, $all_add_data, $new_access_menu_and_detail, $old_access_menu_and_detail);echo '</pre>';
+        // exit;
+
+        UsersJobAccess::startTrans();
+
+        $ret_delete = true;
+        if (!empty($where_delete))
+        {
+            $ret_delete = UsersJobAccess::where($where_delete_str)->delete();
+        }
+
+        $ret_add = true;
+        if (!empty($all_add_data))
+        {
+            $ret_add = $ret_add = UsersJobAccess::insertAll($all_add_data);
+        }
+
+        if ($ret_add !== false && $ret_delete !== false)
+        {
+            UsersJobAccess::commit();
+            return ['code' => 0, 'msg' => '操作成功'];
+        }
+        else
+        {
+            UsersJobAccess::rollback();
+            return ['code' => -1, 'msg' => '操作失败'];
+        }
+    }
+}

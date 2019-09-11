@@ -1,0 +1,42 @@
+<?php
+
+namespace app\common\model;
+
+use think\Model;
+
+class MenusDetail extends Model
+{
+    // 连接句柄
+    //public $connection = 'database';
+
+    // 开启自动写入时间戳字段
+    protected $autoWriteTimestamp = 'int';
+
+    // 定义时间戳字段名
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
+    /**
+     * 根据条件查询菜单详情
+     * 查询以字段为键名的多条数据
+     * @author wcd
+     * @param $where
+     * @param string $field 返回的字段
+     * @param string $keyField 以此字段为键名的数组默认为id
+     * @return array
+     */
+    public function getDetail($where = [], $field = '', $keyField = 'id'):array
+    {
+        if(empty($where)) return [];
+        $field = $field == '' ? '*' : $field;
+        $rr = $this->where($where)->column($field, $keyField);
+        return $rr;
+    }
+    public function editDetail($where, $params)
+    {
+        return $this->where($where)->update($params);
+    }
+    public function getOne($where = [], $field = '')
+    {
+        return $this->where($where)->field($field)->find()->toArray();
+    }
+}

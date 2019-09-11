@@ -1,0 +1,447 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户相关操作服务
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\service;
+
+use app\common\model\Users;
+use app\common\model\UsersDetail;
+use \app\common\model\UsersJob;
+use think\Config;
+
+class User
+{
+    /**
+     * @var int 错误代码
+     */
+    public $returnCode = 0;
+    /**
+     * @var string 错误提示
+     */
+    public $returnMsg = 'success';
+
+    /**
+     * @var 每页显示的数量
+     */
+    public $pageSize = 5;
+
+    /**
+     * 当前页
+     * @var int
+     */
+    public $current_page = 1;
+
+    /**
+     * 需要检测的字段
+     * @var string
+     */
+    public $field = 'a.id,a.company_id,a.job_id,a.status,a.username,a.email,a.mobile,a.org_id,a.job_type,b.pact_type,b.ready_computer,b.room,b.preentrytime,b.proceduretime,b.createuser,b.createtime';
+
+    /**
+     * @name    获取用户的数据
+     * @author  jason
+     * @date  2019-04-01 10:39:27
+     * @param $params
+     * @return array
+     */
+    public function getInfo($params)
+    {
+        $user = new Users();
+
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : $this->pageSize;
+        //当前页
+        $current_page = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : $this->current_page;
+        //分页起始值
+        $select_start = $page_size * ($current_page - 1);
+        //部门
+        if (!empty($params['org_id'])) $where['a.org_id'] = trim($params['org_id']);
+        $pageInfo['org_id'] = $params['org_id'];
+        //状态
+        if (isset($params['status']) && $params['status'] != 100) {
+            $where['a.status'] = $params['status'];
+            $pageInfo['status'] = $params['status'];
+        }
+
+        //协议
+        if (isset($params['pact_type'])) $where['b.pact_type'] = trim($params['pact_type']);
+        $pageInfo['pact_type'] = $params['pact_type'];
+        //是否安排住宿
+        if (isset($params['room'])) $where['b.room'] = trim($params['room']);
+        $pageInfo['room'] = $params['room'];
+        //是否自带电脑
+        if (isset($params['ready_computer'])) $where['b.ready_computer'] = trim($params['ready_computer']);
+        $pageInfo['ready_computer'] = $params['ready_computer'];
+        //按字段类型搜索
+        if (!empty($params['searchKey']) && !empty($params['searchValue'])) {
+            $searchValue = preg_split('/[\s,，]+/', trim($params['searchValue']));
+            switch ($params['searchKey']) {
+                case 1:
+                    $searchValue = array_filter($searchValue, function ($par) {
+                        return !empty($par);
+                    });
+                    if (count($searchValue) == 1) {
+                        $searchValue = implode(',', $searchValue);
+                        $where['username'] = ['like', '%' . $searchValue . '%'];
+                    } else {
+                        $where['username'] = ['IN', $searchValue];
+                    }
+                    $pageInfo['username'] = $params['searchValue'];
+                    break;
+                case 2:
+                    $searchValue = array_filter($searchValue, function ($par) {
+                        return !empty($par);
+                    });
+                    if (count($searchValue) == 1) {
+                        $searchValue = implode(',', $searchValue);
+                        $where['mobile'] = ['like', '%' . $searchValue . '%'];
+                    } else {
+                        $where['mobile'] = ['IN', $searchValue];
+                    }
+                    $pageInfo['mobile'] = $params['searchValue'];
+                    break;
+                case 3:
+                    $searchValue = array_filter($searchValue, function ($par) {
+                        return !empty($par);
+                    });
+                    if (count($searchValue) == 1) {
+                        $searchValue = implode(',', $searchValue);
+                        $where['email'] = ['like', '%' . $searchValue . '%'];
+                    } else {
+                        $where['email'] = ['IN', $searchValue];
+                    }
+                    $pageInfo['email'] = $params['searchValue'];
+                    break;
+            }
+        }
+
+        $where = $where ?? [];
+
+        $userInfo = $user->limit($select_start, $page_size)
+            ->alias('a')
+            ->field($this->field)
+            ->join('users_detail b', 'a.id = b.user_id', 'INNER')
+            ->where($where)
+            ->paginate($page_size, false, $pageInfo);
+        if (isset($params['debug']) && $params['debug'] == 'sql') {
+            echo $user->getLastSql();
+            die;
+        }
+        $page = $userInfo->render();
+        $return_data = [
+            'user' => $userInfo,
+            'page' => $page,
+        ];
+        return $return_data;
+    }
+
+    /**
+     * 根据用户状态返回数量
+     * @param array $statusArr
+     * @return array
+     */
+    public function getStatusTotals($statusNum)
+    {
+        $user = new Users();
+        $info = $user->group('status')->column('count(id)', 'status');
+        $count = array_sum($info);
+        $statusArr = [];
+        foreach ($info as $ke => $va) {
+            $statusArr[$statusNum[$ke]] = $va;
+        }
+        $all_status['index'] = $count;
+        $arr = array_merge($statusArr, $all_status);
+        return $arr;
+    }
+
+    /**
+     * 编辑用户信息
+     * @param $user_id 用户ID
+     * @param array $saveData 保存的数据
+     * @return array
+     */
+    public function editUser($user_id, $saveData = [], $addType)
+    {
+        $userModel = new Users();
+        $userDetail = new UsersDetail();
+        //创建时间
+        $createtime = time();
+        //用户主表字段
+        $addUser['username'] = trim($saveData['username']);   //用户名
+        $addUser['mobile'] = trim($saveData['mobile']);   //电话
+        $addUser['email'] = trim($saveData['email']); //邮箱
+        $addUser['org_id'] = trim($saveData['org_id']);   //部门 ID
+        $addUser['job_type'] = trim($saveData['job_type']);   //角色ID
+        $addUser['company_id'] = trim($saveData['company_id']);   //公司ID
+        if ($addType == 'add') $addUser['createtime'] = $createtime;
+        if ($addType == 'edit') $addUser['updatetime'] = $createtime;
+        //用户详情表字段
+        $addDetail['pact_type'] = trim($saveData['pact_type']);    //协议类型
+        $addDetail['ready_computer'] = trim($saveData['ready_computer']);    //是否提前准备电脑
+        $addDetail['room'] = trim($saveData['room']);    //住宿安排
+        $addDetail['preentrytime'] = strtotime(trim($saveData['preentrytime']));    //预计入职时间
+        $addDetail['proceduretime'] = strtotime(trim($saveData['proceduretime']));    //办理手续时间
+        if ($addType == 'add') $addDetail['createtime'] = $createtime;
+        if ($addType == 'edit') $addDetail['updatetime'] = $createtime;
+
+        //如果是添加用户
+        if ($addType == 'add') {
+
+
+            //先判断用户名是否存在
+            if (empty(trim($saveData['username']))) {
+                $this->setError(0, '请填写用户!');
+                return [];
+            }
+            //判断用户名是否被重复使用
+            $userInfo = $userModel->where(['username' => trim($saveData['username'])])->field('id,username')->find();
+            if (!empty($userInfo)) {
+                $this->setError(0, sprintf('%s用户名已经重复!', $userInfo['username']));
+                return [];
+            }
+            //开启事务
+            $userModel->startTrans();
+            $id = $userModel->insertGetId($addUser);
+            //用户主表ID
+            $addDetail['user_id'] = $id;
+            if (!$id) {
+                $userModel->rollback();
+                $this->setError(0, Config::get('app_debug') ? $userDetail->getError() : '更新用户信息错误');
+                return [];
+            }
+            $res = $userDetail->insert($addDetail);
+            if (!$res) {
+                $userModel->rollback();
+                $this->setError(0, Config::get('app_debug') ? $userDetail->getError() : '更新用户信息错误');
+                return [];
+            }
+            $userModel->commit();
+            $this->setError(1, '添加用户信息成功!');
+            return [];
+        }
+
+        //如果是编辑用户
+        if (empty($user_id)) {
+            $this->setError(0, '请填写用户!');
+            return [];
+        }
+        //查询用户表
+        $wh['a.id'] = $user_id;
+        $info = $userModel
+            ->alias('a')
+            ->field($this->field)
+            ->join('users_detail b', 'a.id = b.user_id', 'INNER')
+            ->where($wh)->find();
+
+        if (empty($info)) {
+            $this->setError(0, '请填写用户!');
+            return [];
+        }
+
+        //判断用户是否重名
+        if ($info['username'] == trim($saveData['username'])) {
+            $this->setError(0, '用户名已经重复!');
+            return [];
+        }
+
+        $userModel->startTrans();
+        $res = $userModel->where(['id' => $user_id])->update($addUser);
+        if (!$res) {
+            $userModel->rollback();
+            $this->setError(0, Config::get('app_debug') ? $userModel->getError() : '更新用户信息错误');
+            return [];
+        }
+        //更新时间
+        $rest = $userDetail->where(['user_id' => $user_id])->update($addDetail);
+        if (!$rest) {
+            $userModel->rollback();
+            $this->setError(0, Config::get('app_debug') ? $userDetail->getError() : '更新用户信息错误');
+            return [];
+        }
+
+        $userModel->commit();
+        $this->setError(1, '修改用户信息成功!');
+        return [];
+    }
+
+    /**
+     * @name    删除用户
+     * @author  jason
+     * @date  2019-04-02 11:00:01
+     * @param $status
+     * @param $params
+     * @return array
+     */
+    public function del($status, $params)
+    {
+        $userModel = new Users();
+        $userDetailModel = new UsersDetail();
+        $userIdArr = array_filter($params, function ($par) {
+            return !empty($par);
+        });
+        if (empty($userIdArr)) {
+            $this->setError(0, '没有要删除的数据!');
+        }
+        $return_data = [];
+
+        foreach ($userIdArr as $key => $user_id) {
+            $userModel->startTrans();
+            if ($status == 0) {
+                //已发OFFFER的是真删除
+                $wh['a.id'] = $user_id;
+                $info = $userModel->alias('a')->join('users_detail b','a.id=b.user_id','INNER')->where($wh)->field('a.id,a.username')->find();
+
+                if (empty($info)) {
+                    $return_data[$user_id] = ['success' => false,
+                        'msg' => sprintf('用户%s不存在', $info['username'])];
+                    continue;
+                }
+                $re = $userModel->where(['id'=>$user_id])->delete();
+                if(!$re){
+                    $userModel->rollback();
+                    $return_data[$user_id] = ['success' => false,
+                        'msg' =>  Config::get('app_debug') ? $userModel->getError() : '删除用户信息错误'
+                    ];
+                    continue;
+                }
+                $re2 = $userDetailModel->where(['user_id'=>$user_id])->delete();
+                if(!$re2){
+                    $userModel->rollback();
+                    $return_data[$user_id] = ['success' => false,
+                        'msg' =>  Config::get('app_debug') ? $userDetailModel->getError() : '删除用户信息错误'
+                    ];
+                    continue;
+                }
+                $userModel->commit();
+                $return_data[$user_id] = ['success' => true,
+                    'msg' => sprintf('删除用户%s成功', $info['username'])];
+            }else{
+                //除了已发OFFER的，其他的删除就是放入回收站
+                $wh['a.id'] = $user_id;
+                $info = $userModel->alias('a')->join('users_detail b','a.id=b.user_id','INNER')->where($wh)->field('a.id,a.username,a.status')->find();
+                if (empty($info) || $info['status'] == 9) {
+                    $userModel->rollback();
+                    $return_data[$user_id] = ['success' => false,
+                        'msg' => sprintf('用户%s不存在或者是已经在回收站', $info['username'])];
+                    continue;
+                }
+                $result = $userModel->where(['id'=>$user_id])->update(['status'=>9]);
+                if(!$result){
+                    $userModel->rollback();
+                    $return_data[$user_id] = ['success' => false,
+                        'msg' => Config::get('app_debug') ? $userDetailModel->getError() : '删除用户信息错误'];
+                    continue;
+                }
+                $userModel->commit();
+                $return_data[$user_id] = ['success' => true,
+                    'msg' => sprintf('%s已成功转入回收站', $info['username'])];
+            }
+        }
+
+        $this->returnCode = 1;
+        return $return_data;
+    }
+
+    /**
+     * @name    获取用户信息
+     * @author  jason
+     * @date  2019-04-01 09:32:08
+     * @param $user_id
+     * @return array
+     */
+    public function getUser($user_id)
+    {
+        $userModel = new Users();
+        $wh['a.id'] = $user_id;
+        $info = $userModel
+            ->alias('a')
+            ->field($this->field)
+            ->join('users_detail b', 'a.id = b.user_id', 'INNER')
+            ->where($wh)->find();
+        if (empty($info)) {
+            $this->setError(0, '用户不存在!');
+            return [];
+        }
+        return $info;
+    }
+
+    /**
+     * @name    批量改状态
+     * @author  jason
+     * @date  2019-04-01 01:42:38
+     * @param $params
+     * @return array
+     */
+    public function pending($star, $params) :array
+    {
+        $userModel = new Users();
+        $userStatus = Config::get('users.status');
+        $statusNum = Config::get('users.statusNum');
+        $return_data = [];
+        //过滤掉为空的数据
+        $data = array_filter($params['id'], function ($par) {
+            return !empty($par);
+        });
+        if (!isset($star)) {
+            return $return_data[100] = ['success' => false,
+                'msg' => '转入的状态有误'];
+        }
+        $status = trim($star);
+        //对应的状态
+        $statusMsg = $userStatus[$statusNum[$status]];
+
+        foreach ($data as $k => $userId) {
+            $where['a.id'] = $userId;
+            $info = $userModel->where($where)->alias('a')->field($this->field)->join('users_detail b', 'a.id=b.user_id', 'INNER')->find();
+            if (empty($info['username']) || empty($info['email']) || empty($info['mobile']) || empty($info['org_id']) || empty($info['job_type']) || empty($info['preentrytime']) || empty($info['proceduretime'])) {
+                $return_data[$userId] = ['success' => false,
+                    'msg' => sprintf('用户%s的信息填充完毕方可转入%s', $info['username'], $statusMsg)];
+                continue;
+            }
+
+            $res = $userModel->where(['id' => $userId])->update(['status' => $status]);
+            if ($res) {
+                $return_data[$userId] = [
+                    'success' => true,
+                    'msg' => sprintf('将用户%s成功转入%s', $info['username'], $statusMsg)];
+            } else {
+                $return_data[$userId] = ['success' => false,
+                    'msg' => sprintf('将用户%s转入%s失败%s', $info['username'], $statusMsg)];
+            }
+        }
+        $this->returnCode = 1;
+        return $return_data;
+
+    }
+
+
+    /**
+     * @name    获取部门信息
+     * @author  jason
+     * @date  2019-03-31 04:47:19
+     * @return array
+     */
+    public function getOrg() :array
+    {
+        $orgInfo = [1 => '业务部一部', 2 => 'ebay业务一部', 3 => '财务部', 4 => '采购部'];
+        return $orgInfo;
+    }
+
+    /**
+     * 设置错误信息
+     * @param $code 错误代码
+     * @param $msg 错误提示
+     * @return bool
+     */
+    private function setError($code, $msg)
+    {
+        $this->returnCode = $code;
+        $this->returnMsg = $msg;
+        return true;
+    }
+}

@@ -1,0 +1,11 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="content">
+    {include file="menus/index/navtabs" /}
+    <div class="panel-body">
+        <div class="table-responsive">
+            {include file="menus/index/_indextable" /}
+        </div>
+    </div>
+</div>
+{/block}

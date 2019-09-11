@@ -1,0 +1,162 @@
+<?php
+// +----------------------------------------------------------------------
+// | 权限驱动
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\library\auth;
+
+use think\Config;
+
+class Drive
+{
+    // 静态对象
+    public static $instance = null;
+
+    // 默认配置
+    public $config = [];
+
+    // 用户对象
+    public $users = null;
+
+    // 用户ID
+    public $id = 0;
+
+    // 用户姓名
+    public $username = null;
+
+    // 用户详细资料
+    public $userinfo = [];
+
+    //Token默认有效时长
+    public $keeptime = 2592000;
+
+    //当前请求uri
+    public $requestUri = '';
+
+    // 当前token
+    public $token = null;
+
+    // 当前是否登录状态
+    public $_logined = false;
+
+    // 组织架构ID
+    public $orgId = 0;
+
+    // 岗位ID
+    public $jobId = 0;
+
+    // 岗位属性
+    public $jobType = 10;
+
+    // 标签ID
+    public $rulesId = [];
+
+    /**
+     * 构造函数
+     * @param array $options 参数
+     */
+    public function __construct($options = [])
+    {
+        if ($config = Config::get('user')) {
+            $this->options = array_merge($this->config, $config);
+        }
+        $this->options = array_merge($this->config, $options);
+
+        // 如果参数中有token，则直接赋值
+        $token = $this->options['token'] ?? null;
+        if (!empty($token)) {
+            $this->setToken($token);
+        }
+        // 当前是否登录状态
+        $this->_logined = $this->getUserInfo() ? true : false;
+    }
+
+    /**
+     * 静态入口
+     * @param array $options 参数
+     * @return Auth
+     */
+    public static function instance($options = [])
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static($options);
+        }
+        return self::$instance;
+    }
+
+    /**
+     * 魔术方法
+     * @param $name
+     * @return null
+     */
+    public function __get($name)
+    {
+        return $this->users->$name ?? null;
+    }
+
+    /**
+     * 检测当前控制器和方法是否匹配传递的数组
+     * @param array $arr 需要验证权限的数组
+     * @return boolean
+     */
+    public function match($arr = []) :bool
+    {
+        $request = \think\Request::instance();
+
+        // 需要验证权限的数组
+        $arr = is_array($arr) ? $arr : explode(',', $arr);
+        if (!$arr) {
+            return false;
+        }
+        // 将数组所有值都转小写
+        $arr = array_map('strtolower', $arr);
+        // 是否存在
+        if (in_array(strtolower($request->action()), $arr) || in_array('*', $arr)) {
+            return true;
+        }
+        // 没找到匹配
+        return false;
+    }
+
+    /**
+     * 设置当前请求的URI
+     * @param string $uri
+     */
+    public function setRequestUri($uri)
+    {
+        $this->requestUri = $uri;
+    }
+
+    /**
+     * 判断是否登录
+     * @return boolean
+     */
+    public function isLogin() :bool
+    {
+        if ($this->_logined) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 获取登录用户信息
+     * @return boolean
+     */
+    public function getUserInfo()
+    {
+        return [];
+    }
+
+    /**
+     * 获取登录用户对象
+     */
+    public function getUser()
+    {
+        return $this->users ?? null;
+    }
+}

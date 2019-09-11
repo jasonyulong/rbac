@@ -1,0 +1,55 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Organization.php
+ * @Date: 2019/4/9
+ * @Time: 14:22
+ * @Description
+ */
+
+
+namespace app\v1\service;
+
+
+use app\common\model\OrganizationUser;
+use app\common\model\Users;
+use app\common\model\UsersLabel;
+
+class Organization extends Base
+{
+    /**
+     * @var null 组织架构成员模型
+     */
+    private $organizationUser = null;
+
+    /**
+     * @var null 权限模型
+     */
+    private $userLabel = null;
+
+    /**
+     * @var Users|null 用户模型
+     */
+    private $users = null;
+
+    /**
+     * Position constructor.
+     */
+    public function __construct()
+    {
+        $this->userLabel = new UsersLabel();
+        $this->users = new Users();
+        $this->organizationUser = new OrganizationUser();
+    }
+
+    /**
+     * @desc
+     * @author 杨能文
+     * @date
+     * @access public
+     */
+    public function index()
+    {
+    }
+}

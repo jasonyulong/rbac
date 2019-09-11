@@ -1,0 +1,14 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="content">
+    <div class="row">
+        <div class="col-md-2">
+            {include file="group/organization/index_left" /}
+        </div>
+        <div class="col-md-10">
+            {include file="group/organization/index_form" /}
+            {include file="group/organization/index_table" /}
+        </div>
+    </div>
+</div>
+{/block}

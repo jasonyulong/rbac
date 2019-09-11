@@ -1,0 +1,43 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="box box-default color-palette-box">
+    <div class="box-header with-border">
+        <form id="add-form" class="form-inline" role="form" data-toggle="validator" method="get" action="">
+            <button type="button" class="btn btn-sm btn-refresh"><i class="fa fa-refresh"></i></button>
+            <input type="text" class="form-control input-sm" id="username" name="keywords" value=""
+                   placeholder="请输入管理员姓名"/>
+            <button type="submit" class="btn btn-sm btn-primary btn-embossed "><i class="fa fa-search"></i> {:__('搜索')}
+            </button>
+        </form>
+    </div>
+    <div class="box-body">
+        <table id="table" class="table table-bordered table-hover" width="100%">
+            <head>
+                <tr>
+                    <th class="text-center" width="100">ID</th>
+                    <th width="200" align="center">姓名</th>
+                    <th width="200">标题</th>
+                    <th style="max-width: 70%;">内容</th>
+                    <th>Url</th>
+                    <th width="160">IP</th>
+                    <th width="160">Time</th>
+                </tr>
+            </head>
+            <tbody>
+            {foreach $rows as $val}
+            <tr>
+                <td width="100" class="text-center">{$val.id}</td>
+                <td width="120">{$val.username}</td>
+                <td width="200">{$val.title}</td>
+                <td style="word-break: break-all">{:json_tostring($val.content)}</td>
+                <td>{:substr($val.url, 0, 60)}</td>
+                <td width="120">{$val.ip}</td>
+                <td width="200">{$val.createtime}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {$page}
+    </div>
+</div>
+{/block}

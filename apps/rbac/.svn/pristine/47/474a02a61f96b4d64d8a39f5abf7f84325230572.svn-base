@@ -1,0 +1,41 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户相关接口
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\api\controller\v1;
+
+use think\Config;
+use think\Cookie;
+use app\common\controller\ApiController;
+
+/**
+ * 用户相关接口
+ * Class Index
+ * @package app\api\controller
+ */
+class Users extends ApiController
+{
+    protected $noNeedLogin = ['*'];
+    protected $noNeedRight = ['*'];
+
+    /**
+     * 登录
+     */
+    public function login()
+    {
+        $this->success('Success', ['version' => '1.0', 'name' => 'rbac']);
+    }
+
+    /**
+     * 退出
+     */
+    public function logout()
+    {
+        $this->success('Success', ['version' => '1.0', 'name' => 'rbac']);
+    }
+}

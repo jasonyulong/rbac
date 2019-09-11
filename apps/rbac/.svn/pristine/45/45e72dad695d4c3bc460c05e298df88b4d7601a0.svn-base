@@ -1,0 +1,34 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="tag-content">
+    <form action="{:url('/v1/auth/tag/edit')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <div class="row">
+            <div class="col-md-9">
+                <input type="hidden" name="id" value="{$info.id}">
+                <div class="form-group">
+                    <label for="name" class="col-sm-3 control-label"><span class="red-color">*</span>标签名称：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" value="{$info.name}"
+                               data-rule="required;name;"
+                               data-msg-required="请填写标签名称"
+                               data-tip="你可以用汉字、字母、数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="col-sm-3 control-label"><span class="red-color">*</span>标签描述：</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control form-control-sm" id="desc" name="desc" value="{$info.desc}" rows="8"
+                                  data-msg-required="请填写标签描述">{$info.desc}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="td-align dialog-footer">
+            <button class="btn btn-warning" onclick="javascript:parent.layer.closeAll();"> <i class="fa fa-close"></i> 取消</button>
+            <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定提交</button>
+        </div>
+    </form>
+</div>
+{/block}

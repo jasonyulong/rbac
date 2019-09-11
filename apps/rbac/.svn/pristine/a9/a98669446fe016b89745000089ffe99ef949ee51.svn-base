@@ -1,0 +1,76 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <form action="{:url('/v1/users/index/editrule',array('type'=>'job'))}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="job_id" class="col-sm-5 control-label"><span class="red-color">*</span>岗位：</label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="userId" value="{$ids}"/>
+                        <select class="selectpicker show-tick" title="请选择(可多选)" id="job_id" name="job_id"
+                                data-actions-box="true" data-live-search="true" data-rule="required;org_id;"data-msg-required="请选择岗位">
+                            {foreach($orgInfo as $k=>$v)}
+                            <option  value="{$k}">{$v}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="users_label" class="col-sm-5 control-label">权限标签：</label>
+                    <div class="col-sm-7">
+                        <select class="selectpicker show-tick" title="请选择(可多选)" id="users_label" name="users_label"
+                                data-actions-box="true" data-live-search="true">
+                            {foreach($usersLabel as $kk=>$vv)}
+                            <option value="{$kk}">{$vv}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="status" class="col-sm-5 control-label"><span class="red-color">*</span>状态：</label>
+                    <div class="col-sm-7">
+                        <select class="selectpicker show-tick" title="请选择(可多选)" id="status" name="status">
+                            {foreach($statusNum as $ke=>$va)}
+                            <option value="{$ke}">{$userStatus[$va]}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="all" class="col-sm-5 control-label"><span class="red-color">*</span>允许登录的系统：</label>
+                    <div class="col-sm-7">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="all"> 全部
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label"></label>
+                    <div class="col-sm-7">
+                        <div class="checkbox">
+                            {foreach($allowSystem as $k2=>$v2)}
+                            <label><input type="checkbox" data-id="{$k2}">{$v2}</label>
+                            {/foreach}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button class="btn btn-info addobj" data-url="{:url('/v1/users/index/addobj')}">新增岗位</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="td-align">
+            <button class="btn btn-warning" id="cancel">取消</button>
+            <button class="btn btn-info" type="submit">确定</button>
+        </div>
+
+    </form>
+</div>
+{/block}

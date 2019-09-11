@@ -1,0 +1,21 @@
+---------------------------------------------------------------
+[ 2019-04-04T16:01:02+08:00 ] 192.168.11.144 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]array_merge(): Argument #2 is not an array[/opt/web/zs/apps/rbac/application/v1/service/User.php:326]
+---------------------------------------------------------------
+[ 2019-04-04T16:02:41+08:00 ] 192.168.11.144 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]array_merge(): Argument #2 is not an array[/opt/web/zs/apps/rbac/application/v1/service/User.php:326]
+---------------------------------------------------------------
+[ 2019-04-04T17:41:31+08:00 ] 192.168.11.144 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组索引: saveType[/opt/web/zs/apps/rbac/application/v1/service/User.php:305]
+---------------------------------------------------------------
+[ 2019-04-04T17:41:39+08:00 ] 192.168.11.144 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组索引: saveType[/opt/web/zs/apps/rbac/application/v1/service/User.php:305]
+---------------------------------------------------------------
+[ 2019-04-04T18:09:17+08:00 ] 192.168.11.144 GET local.rule.com/v1/users/index/work.html
+[ error ] [2]trim() expects parameter 1 to be string, array given[/opt/web/zs/apps/rbac/application/v1/service/User.php:194]
+---------------------------------------------------------------
+[ 2019-04-04T18:16:20+08:00 ] 192.168.11.144 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义数组索引: 3,4,1,2[/opt/web/zs/apps/rbac/application/v1/service/User.php:207]
+---------------------------------------------------------------
+[ 2019-04-04T23:14:59+08:00 ] 192.168.11.144 GET local.rule.com/v1/users/index/editrule.html?saveType=all&dialog=1
+[ error ] [8]未定义数组索引: ids[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:334]

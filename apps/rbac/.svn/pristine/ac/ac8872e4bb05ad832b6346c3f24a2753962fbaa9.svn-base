@@ -1,0 +1,70 @@
+{extend name="$config.layout" /}
+
+{block name='css'}
+<link rel="stylesheet" href="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.css">
+<style>
+.badge {
+    background-color: inherit;
+}
+.level1-rule
+{
+    padding: 15px 10px;
+}
+.level2-rule
+{
+    padding: 5px 10px;
+}
+.level3-rule
+{
+    padding: 5px 50px !important;
+}
+.level4-rule
+{
+    padding: 0 100px;
+}
+.level4-rule label
+{
+    padding: 0 20px;
+}
+</style>
+{/block}
+
+{block name='content'}
+<div class="content">
+    <div class="row">
+        <div class="col-md-2">
+            {include file="auth/access/left" /}
+        </div>
+        <div class="col-md-10">
+            <!-- include file="group/access/form"  -->
+            {include file="auth/access/navtabs" /}
+            {include file="auth/access/table" /}
+        </div>
+    </div>
+</div>
+{/block}
+
+
+{block name='js'}
+<script src="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.js" ></script>
+<script>
+$(function() {
+    var data = '{$job_tree}';
+    data = JSON.parse(data);
+    // console.log(data);
+        
+    $('#tree').treeview({
+        // levels: 4,
+        color: "#555",
+        selectedColor: "#000000",
+        selectedBackColor: '#F5F5F5',
+        expandIcon: 'glyphicon glyphicon-chevron-right',
+        collapseIcon: 'glyphicon glyphicon-chevron-down',
+        nodeIcon: 'glyphicon glyphicon-user',
+        enableLinks: true,
+        showTags: true,
+        data: data
+    });
+});
+</script>
+{/block}

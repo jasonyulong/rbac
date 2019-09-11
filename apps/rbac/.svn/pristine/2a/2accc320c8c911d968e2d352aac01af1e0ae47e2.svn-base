@@ -1,0 +1,42 @@
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="" type="checkbox"/>
+        </th>
+        <th class="td-align">姓名</th>
+        <th class="td-align">邮箱/手机号</th>
+        <th class="td-align">部门/角色</th>
+        <th class="td-align">创建时间</th>
+        <th class="td-align">滞留时间</th>
+        <th class="td-align">状态</th>
+        <th class="td-align">备注</th>
+        <th class="td-align">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="td-align td-padding">
+            <input class="" type="checkbox"/>
+        </td>
+        <td class="td-align td-padding">刘洋</td>
+        <td class="td-align td-padding">209289289@qq.com<br>13510129455</td>
+        <td class="td-align td-padding">开发部<br>开发</td>
+        <td class="td-align td-padding">2019-03-27 10:00</td>
+        <td class="td-align td-paddingtd-padding">
+            创建时间:2019-03-27 10:00<br>
+            入职时间:
+        </td>
+        <td class="td-align td-padding">离职</td>
+        <td class="td-align td-padding">1哈哈哈</td>
+        <td class="td-align td-padding">
+            <button class="btn edit" data-url="{:url('/v1/users/index/edit',array('id'=>1))}"><i class="fa fa-edit"></i>
+            </button>
+            &nbsp;&nbsp;&nbsp;
+            <button class="btn deluser" data-url="{:url('/v1/users/index/del',array('id'=>1))}"><i
+                    class="fa fa-remove"></i></button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="pages">{$pages ?? ''}</div>

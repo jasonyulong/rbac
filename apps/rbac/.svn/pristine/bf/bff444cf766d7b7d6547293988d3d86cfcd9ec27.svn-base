@@ -1,0 +1,178 @@
+<?php
+ // +----------------------------------------------------------------------
+// | 用户相关API请求入口
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\api\controller\v1;
+
+use think\Config;
+use think\Cookie;
+use app\common\controller\ApiController;
+use app\api\service\User;
+
+
+/**
+ * 用户相关API请求入口
+ * Class Index
+ * @package app\api\controller
+ */
+class Users extends ApiController
+{
+    /**
+     * @desc 不需要检查是否登录的ACTION 全部用 * 代替
+     * @var  array
+     */
+    protected $noNeedLogin = ['login', ' '];
+
+    /**
+     * @desc  不需要校验权限的ACTION 全部用 * 代替
+     * @var   array
+     */
+    protected $noNeedRight = ['*'];
+
+    /**
+     * @desc   登录
+     * @author mina
+     * @param  post
+     * @return json
+     */
+    public function login()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = User::getInstance()->login($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        } 
+    }
+
+    /**
+     * @desc   退出
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function loginout()
+    {
+        if (!$this->request->isGet())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $result = User::getInstance()->loginout();
+        if($result['status'] == 1)
+        {
+            $this->success($result['message'], $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        } 
+    }
+
+    /**
+     * @desc   检查token是否过期
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function cktoken()
+    {
+        if (!$this->request->isGet())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $token = $this->request->header('token');
+        $result = User::getInstance()->cktoken($token);
+        if($result['status'] == 1)
+        {
+            $this->success($result['message'], $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        } 
+    }
+
+    /**
+     * @desc   15天授权
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function authorize()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = User::getInstance()->authorize($param);
+        if($result['status'] == 1)
+        {
+            $this->success($result['message'], $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        } 
+    }
+
+    /**
+     * @desc   授权列表
+     * @author mina
+     * @param  
+     * @return
+     */
+    public function authorlist()
+    {
+        if (!$this->request->isGet())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $result = User::getInstance()->authorList();
+        if($result['status'] == 1)
+        {
+            $this->success($result['message'], $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+
+    /**
+     * @desc   获取当前用户的权限
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function power()
+    {
+        if (!$this->request->isGet())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->get();
+        $result = \app\api\Service\Job::getInstance()->jobPower($param, 0);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+}

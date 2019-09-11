@@ -1,0 +1,20 @@
+<div class="panel-body">
+    <div class="form-group">
+        <div class="btn-group">
+            <button type="button" class="btn btn-success dropdown-toggle"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="badge box_total">0</span>批量操作 <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="editrule" href="javascript:void(0)"
+                       data-id="0" data-url="{:url('/v1/users/index/editrule',array('saveType'=>'job_id'))}">批量修改岗位</a></li>
+                <li><a class="editrule" href="javascript:void(0)" class="bathdel"
+                       data-id="0" data-url="{:url('/v1/users/index/editrule',array('saveType'=>'rules_id'))}">批量修改权限标签</a></li>
+                <li><a class="editrule" href="javascript:void(0)" class="bathdel"
+                       data-id="0" data-url="{:url('/v1/users/index/editrule',array('saveType'=>'allow'))}">允许登录系统</a></li>
+                <li><a class="savePending" href="javascript:void(0)" class="bathdel"
+                       data-id="0" data-url="{:url('/v1/users/index/pending',array('statusValue'=>3))}">批量转离职</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

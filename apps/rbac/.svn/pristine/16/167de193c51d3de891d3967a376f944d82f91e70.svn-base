@@ -1,0 +1,52 @@
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="data-check_box_total" type="checkbox"/>
+        </th>
+        <th class="td-align">ID</th>
+        <th class="td-align">姓名</th>
+        <th class="td-align">邮箱/手机号</th>
+        <th class="td-align">部门/角色</th>
+        <th class="td-align">协议类型</th>
+        <th class="td-align">是否提前准备电脑</th>
+        <th class="td-align">住宿安排</th>
+        <th class="td-align">创建人</th>
+        <th class="td-align">时间信息</th>
+        <th class="td-align">备注</th>
+        <th class="td-align">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach $userInfo as $key=>$val}
+    <tr>
+        <td class="td-align td-padding">
+            <input class="data-check_box" name="box_checked" data-id="{$val['id']}" type="checkbox"/>
+        </td>
+        <td class="td-align td-padding">{$val['id'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['username'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['email'] ?? ''}<br>{$val['mobile'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['org_id'] ?? ''}<br><span class="text-primary">{$userJobInfo[$val['job_type']] ?? ''}</span></td>
+        <td class="td-align td-padding">{$pact_type[$val['pact_type']] ?? ''}</td>
+        <td class="td-align td-padding">{$ready_computer[$val['ready_computer']] ?? ''}</td>
+        <td class="td-align td-padding">{$room[$val['room']] ?? ''}</td>
+        <td class="td-align td-padding">{$val['createuser'] ?? ''}</td>
+        <td class="td-align td-paddingtd-padding small">
+            <div class="div-wid">
+                <div>手续时间：{$val['proceduretime']}</div>
+                <div>入职时间:{$val['authtime'] ?? ''}</div>
+            </div>
+        </td>
+        <td class="td-align td-padding td-width-10">
+            <div class="notes" id="{$val['id']}" data-url="{:url('/v1/users/index/saveNote')}">{$val['remarks']}</div>
+        </td>
+        <td class="td-align td-padding">
+            {:build_toolbar('button',
+            ['class' => 'btn btn-sm btn-primary editusername','data-url' => url('/v1/users/index/edit',array('id'=>$val['id']))],
+            '<i class="glyphicon glyphicon-pencil"></i> 编辑')}
+        </td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table>
+<div class="pages">{$pages ?? ''}</div>

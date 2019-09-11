@@ -1,0 +1,194 @@
+<?php
+
+/**
+ * 菜单控制器
+ * User: wcd
+ * Date: 2019/3/29
+ * Time: 16:21
+ */
+namespace app\v1\controller\menus;
+use app\common\controller\PublicController as Controller;
+use plugin\Tree;
+use think\Config;
+use \app\v1\service\Menu;
+use \app\v1\service\MenuDetail;
+use \app\common\model\Menus;
+use \app\common\model\MenusDetail;
+class Index extends Controller
+{
+    private $_menuService = null;
+    private $_menuDedailService = null;
+    /**
+     * 所有系统(系统id => 名称）
+     * @var array
+     */
+    private $_allowSystem = [];
+    /**
+     * 所有系统的模板文件（方法名 => 系统名）
+     * @var array
+     */
+    private $allowSystemViews = [];
+    /**
+     * 初始化
+     */
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->_allowSystem = Config::get('site.allowSystem');
+        $this->allowSystemViews = Config::get('menus.allowSystemViews');
+        $this->_menuService = new Menu();
+        $this->_menuDedailService = new MenuDetail();
+    }
+    /**
+     * 公共显示页面方法
+     * @param $params
+     * @return string
+     */
+    private function index($params)
+    {
+        if(isset($params['searchKey'])){
+            $params['searchKey'] = trim($params['searchKey']);
+        }
+        if(isset($params['status']) && $params['status'] !== ''){
+            $params['status'] = (int) $params['status'];
+        }
+        $menusTotals = $this->_menuService->getAllsystemMenus($this->_allowSystem);
+        $result = $this->_menuService->index($params);
+        $this->assign('allowSystemViews', $this->allowSystemViews);
+        $this->assign('search', $params);
+        $this->assign('menusTotals', $menusTotals);
+        return $this->view->fetch('index', $result);
+    }
+    /**
+     * 权限系统菜单列表
+     * @time 2019-4-1 17:11:46
+     * @author wcd
+     * @return mixed
+     */
+    public function systemrbac()
+    {
+        if($this->request->isPost() || $this->request->isGet())
+        {
+            $params = $this->request->param();
+            $params['module_id'] = 1;
+            return $this->index($params);
+        }
+        return $this->error('页面找不到。', 'index/index');
+    }
+
+    /**
+     * ERP系统菜单列表
+     * @author wcd
+     * @return string|void
+     */
+    public function systemerp()
+    {
+        if($this->request->isPost() || $this->request->isGet())
+        {
+            $params = $this->request->param();
+            $params['module_id'] = 2;
+            return $this->index($params);
+        }
+        return $this->error('页面找不到。', 'index/index');
+    }
+
+    /**
+     * 订单系统（OMS）菜单列表
+     * @author wcd
+     * @return string
+     */
+    public function systemoms()
+    {
+        if($this->request->isPost() || $this->request->isGet())
+        {
+            $params = $this->request->param();
+            $params['module_id'] = 3;
+
+            return $this->index($params);
+        }
+        return $this->error('页面找不到。', 'index/index');
+    }
+    /**
+     * 报表系统菜单列表
+     * @author wcd
+     * @return string
+     */
+    public function systemcount()
+    {
+        if($this->request->isPost() || $this->request->isGet())
+        {
+            $params = $this->request->param();
+            $params['module_id'] = 4;
+            return $this->index($params);
+        }
+        return $this->error('页面找不到。', 'index/index');
+
+    }
+
+    /**
+     * 添加菜单
+     * @author wcd
+     * @return mixed
+     */
+    public function add()
+    {
+        if($this->request->isPost() && $this->request->isAjax())
+        {
+            $postData = $this->request->post();
+
+            $id = $this->_menuService->addMenus($postData);
+            return [];
+
+        }
+        return $this->view->fetch('add');
+    }
+    public function detail()
+    {
+        $menu_id = $this->request->get('id');
+        $detail = $this->_menuDedailService->getDetail(['menu_id' => $menu_id]);
+        $this->assign('menuid', $menu_id);
+        $this->assign('menudetail', $detail);
+        return $this->view->fetch('menudetail');
+    }
+    public function editdetail()
+    {
+        if($this->request->isPost() && $this->request->isAjax())
+        {
+            $postData = $this->request->post();
+            $result = $this->_menuDedailService->saveDetail($postData);
+            if(!$result){
+                return ['status'=>0,'msg'=> '保存失败。'];
+            }
+            return ['status' => 1, 'msg' => '保存成功。'];
+        }
+        $menuid = $this->request->get('menuid');
+        $detailid = (int)$this->request->get('id');
+        if($detailid){
+            $detailInfo = $this->_menuDedailService->getOneDetail(['id' => $detailid]);
+            $this->assign('detailInfo', $detailInfo);
+            $this->assign('detailid', $detailid);
+        }
+        $this->assign('menuid', $menuid);
+        return $this->view->fetch('editdetail');
+    }
+    public function edit()
+    {
+        if($this->request->isAjax() && $this->request->isPost())
+        {
+            return $this->_menuService->saveMenu();
+        }
+        $menuModel = new Menus();
+        //$menuList = $menuModel->selectMore(['id' => ['in', $menuId]]);
+        $a= $menuModel->getParentMenu()->toArray();
+        echo THINK_VERSION;
+        print_r($a);exit;
+        $id = (int)$this->request->get('id');
+        if($id){
+            $menuInfo = $this->_menuService->getOneMenu(['id' => $id]);
+            $this->assign('menuInfo', $menuInfo);
+            $this->assign('menuid', $id);
+        }
+        $this->assign('allowSystem', $this->_allowSystem);
+        return $this->view->fetch('add');
+    }
+}

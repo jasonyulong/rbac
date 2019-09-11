@@ -1,0 +1,89 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<style>
+    .col-xs-8 {margin-top: 50px;}
+    #giveUpBtn {margin-left: 20px;}
+</style>
+<div class="dialog-content">
+    <form class="form-horizontal ajax-form" autocomplete="off">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="title" class="col-sm-3 control-label">标题：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="title" id="title" value="{$detailInfo['title']}" placeholder="标题名称">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="condition" class="col-sm-3 control-label">节点因子：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="condition" id="condition" value="{$detailInfo['condition']}" placeholder="节点因子" {if condition="$detailInfo['type'] neq '1'"}readonly{/if}>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="weight" class="col-sm-3 control-label">权重：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="weight" id="weight" value="{$detailInfo['weigh']}" placeholder="权重">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="send_job" class="col-sm-3 control-label">通知授权：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" id="send_job" name="send_job" data-live-search="true">
+                            <option value="">--岗位--</option>
+                            {notempty name="userJob"}
+                                {foreach name="userJob" item="jobs" key="kk"}
+                                    <option value="{$jobs['id']}">{$jobs['title']}</option>
+                                {/foreach}
+                            {/notempty}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="detaileType" class="col-sm-3 control-label">类型：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" id="detaileType" name="type">
+                            <option value="0" {if condition="$detailInfo['type'] eq '0'"}selected{/if}>页面</option>
+                            <option value="1" {if condition="$detailInfo['type'] eq '1'"}selected{/if}>节点</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="url" class="col-sm-3 control-label">请求地址：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="url" id="url" value="{$detailInfo['url']}" placeholder="请求地址" {if condition="$detailInfo['type'] eq '1'"}readonly{/if}>
+                    </div>
+                </div>
+                <input type="hidden" name="menuid" id="menuid" value="{$menuid}">
+                <input type="hidden" name="detailid" id="detailid" value="{$detailid}">
+                <div class="form-group">
+                    <label for="special" class="col-sm-3 control-label">是否特殊：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" id="special" name="special">
+                            <option value="0" {if condition="$detailInfo['is_special'] eq '0'"}selected{/if}>不特殊</option>
+                            <option value="1" {if condition="$detailInfo['is_special'] eq '1'"}selected{/if}>特殊</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="status0" class="col-sm-3 control-label">状态：</label>
+                    <div class="col-sm-9">
+                        <div class="radio">
+                            &nbsp; &nbsp;&nbsp;
+                             <input type="radio"  id="status0" name="status" value="0" {if condition="$detailInfo['status'] eq '0'"}checked{/if}> 禁用
+                            &nbsp; &nbsp;&nbsp; &nbsp;
+                            <input type="radio"  id="status1" name="status" value="1" {if condition="$detailInfo['status'] neq '0'"}checked{/if}> 正常
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-offset-4 col-xs-8">
+            <button type="button" class="btn btn-primary saveMenuDetail" data-url="{:url('/v1/menus/index/editdetail')}">保存</button>
+            <button type="button" class="btn btn-default" id="giveUpBtn">取消</button>
+        </div>
+    </form>
+</div>
+{/block}

@@ -1,0 +1,28 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="content">
+    {if condition="($curJobType == 6)"}
+    {include file="users/index/_finance_wait_search" /}
+    {else /}
+    {include file="users/index/_indexsearch" /}
+    {/if}
+
+    <div class="panel-body">
+        {include file="users/index/_navtabs" /}
+        {if condition="($curJobType == 9)"}
+        {include file="users/index/_adm_wait_bath" /}
+        {else /}
+        {include file="users/index/_finance_wait_bath" /}
+        {/if}
+        <div class="table-responsive">
+            {if condition="$curJobType eq 9"}
+            {include file="users/index/_adm_wait_table" /}
+            {elseif condition="$curJobType eq 6"/}
+            {include file="users/index/_finance_wait_table" /}
+            {else /}
+            {include file="users/index/_table" /}}
+            {/if}
+        </div>
+    </div>
+</div>
+{/block}

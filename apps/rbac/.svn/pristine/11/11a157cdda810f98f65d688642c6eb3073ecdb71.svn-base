@@ -1,0 +1,6 @@
+/*!
+ * Start Bootstrap - Admin v3.3.7+1 (https://github.com/KevinsDeveloper/bootstrap4-admin)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+define(["jquery","bootstrap","template"],function(e,a,t){var n={_initialize:function(){var a=e(".dialog-form");e(".fieldlist",a).on("click",".btn-append,.append",function(a,t){var n=e(this).closest("dl"),i=n.data("index"),s=n.data("name"),d=n.data();i=i?parseInt(i):0,n.data("index",i+1);var t=t?t:{},l={index:i,name:s,data:d,row:t},r='<dd class="form-inline"><input type="text" name="<%=name%>[field][]" class="form-control" value="" size="10" /> <input type="text" name="<%=name%>[value][]" class="form-control" value="" size="40" /> <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span></dd>';r=r.replace("<%=name%>",l.name),r=r.replace("<%=name%>",l.name),e(r).insertBefore(e(this).closest("dd")),e(this).trigger("fa.event.appendfieldlist",e(this).closest("dd").prev())}),e(".fieldlist",a).on("click","dd .btn-remove",function(){e(this).closest("dd").remove()})}};return n});

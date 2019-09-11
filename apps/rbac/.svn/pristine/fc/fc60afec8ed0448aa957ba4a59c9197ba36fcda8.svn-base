@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs nav-curstom">
+        {foreach $allow_systems as $key => $val}
+        <li role="presentation" class="marg-left {if($params['module_id'] == $key)}active{/if}"><a href="{:url('/v1/auth/access/' . $Request.action, array('module_id'=>$key, 'id' => $params['id']))}">{$val} </a></li>
+        {/foreach}
+    </ul>

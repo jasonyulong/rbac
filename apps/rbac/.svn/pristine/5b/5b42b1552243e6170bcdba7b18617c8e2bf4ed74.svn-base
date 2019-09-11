@@ -1,0 +1,92 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<style>
+    .btn-search-icon {margin-left: 203px;margin-top: -57px;}
+    .col-xs-8 {margin-top: 50px;}
+    #giveUpBtn {margin-left: 20px;}
+</style>
+<div class="dialog-content">
+    <form class="form-horizontal ajax-form" action="" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="title" class="col-sm-3 control-label">标题：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" name="title" id="title" value="{$menuInfo['title']}" placeholder="标题">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="moduleid" class="col-sm-3 control-label">所属系统：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="moduleid" value="{$allowSystem[$moduleid]}" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="parentMenu" class="col-sm-3 control-label">父类：</label>
+                    <div class="col-sm-9">
+                        <select class="selectpicker show-tick" id="parentMenu" name="parentMenu" data-actions-box="true" data-live-search="true">
+                            <option value="0">无</option>
+                            {foreach name="parentMenu" item="val" key="kk"}
+                                <option value="{$val['id']}" {if condition="$menuInfo['pid'] eq $val['id']"}selected{elseif condition="$val['id'] eq $menuid"/}disabled="disabled"{/if}>{$val['title']}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="type" class="col-sm-3 control-label">菜单类型：</label>
+                    <div class="col-sm-9">
+                        <select class="selectpicker show-tick" id="type" name="type">
+                            <option value="0" {if condition="$menuInfo['type'] eq '0'"}selected{/if}>普通菜单</option>
+                            <option value="1" {if condition="$menuInfo['type'] eq '1'"}selected{/if}>特殊菜单</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="status0" class="col-sm-3 control-label">状态：</label>
+                    <div class="col-sm-9">
+                        <div class="radio">
+                            &nbsp; &nbsp;&nbsp;
+                            <input type="radio"  id="status0" name="status" value="0" {if condition="$menuInfo['status'] eq '0'"}checked{/if}> 禁用
+                            &nbsp; &nbsp;&nbsp; &nbsp;
+                            <input type="radio"  id="status1" name="status" value="1" {if condition="$menuInfo['status'] neq '0'"}checked{/if}> 正常
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="url" class="col-sm-3 control-label">请求地址：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="url" name="url" value="{$menuInfo['url']}" placeholder="链接地址">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="icon" class="col-sm-3 control-label">图标：</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="icon" name="icon" value="{$menuInfo['icon'] ?? 'fa fa-chevron-right'}" placeholder="图标">
+                        <a href="javascript:;" class="btn btn-default btn-search-icon">Search icon</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="weight" class="col-sm-3 control-label">权重：</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="weight" name="weight" value="{$menuInfo['weigh']}" placeholder="权重">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="remark" class="col-sm-3 control-label">备注：</label>
+                    <div class="col-sm-9">
+                    <textarea class="form-control" id="remark" name="remark" placeholder="说点什么···">{$menuInfo['remark']}</textarea>
+                    </div>
+                </div>
+                <input type="hidden" name="menu_id" value="{$menuid}">
+                <input type="hidden" name="module" value="{$moduleid}">
+            </div>
+        </div>
+        <div class="col-xs-offset-4 col-xs-8">
+            <button type="button" class="btn btn-primary saveMenus" data-url="{:url('/v1/menus/index/edit')}">保存</button>
+            <button type="button" class="btn btn-default" id="giveUpBtn">取消</button>
+        </div>
+    </form>
+</div>
+{/block}

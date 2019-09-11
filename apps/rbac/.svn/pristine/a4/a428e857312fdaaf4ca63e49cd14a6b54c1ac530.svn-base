@@ -1,0 +1,135 @@
+define(['jquery', 'bootstrap', 'template','form-validator',], function ($, undefined, template, form ) {
+    var method = {
+        open: function(dom, title, height) {
+            $(dom).click(function(){
+                var url = $(this).attr('data-url') || '';
+                var titles = title || '';
+                var height1 = height ? height : '500px'
+                Fast.api.open(url, titles, {area: ['700px', height1]});
+            });
+        },
+        get_batch_params:function(){
+            var data_arr = [];
+            var tmp_arr = $('.data-check_box');
+            var attr_name = 'data-id';
+            for (var i = 0; i < tmp_arr.length; i++) {
+                if ($(tmp_arr[i]).is(':checked')) {
+                    var data_item = $(tmp_arr[i]).attr(attr_name);
+                    data_item = $.trim(data_item);
+                    if (data_item) data_arr.push(data_item);
+                }
+            }
+            var id = data_arr;
+            return id;
+        },
+    }
+
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            //全选操作
+            $('.data-check_box_total').click(function () {
+                var thisobj = $(this);
+                var is_check = thisobj.is(':checked');
+                var sub_check_box_list = $('.data-check_box');
+                for (var i = 0; i < sub_check_box_list.length; i++) {
+                    $(sub_check_box_list[i]).prop('checked', is_check);
+                }
+                $('.box_total').html($("input[name='box_checked']:checked").length);
+            });
+            // 统计选择数量
+            $(".data-check_box").click(function () {
+                $('.box_total').html($("input[name='box_checked']:checked").length);
+            });
+            //批量删除
+            $('.batch_delete').click(function (){
+                layer.confirm('确定删除吗?',{icon:3,title:'重要提示'},function (index){
+                    var url = $('.batch_delete').attr('data-url');
+                    var id = method.get_batch_params();
+                    console.log(url);
+                    if (id.length == 0) {
+                        layer.msg('请选择操作的订单');
+                        return false;
+                    }
+                    var ids = id.join(',');
+                    var options = [];
+                    options.url = url;
+                    options.data = {ids:ids};
+                    Fast.api.ajax(options);
+                });
+            });
+
+
+            //批量移除用户
+            $('.batch_move').click(function (){
+                layer.confirm('确定移除吗?',{icon:3,title:'重要提示'},function (index){
+                    var url = $('.batch_move').attr('data-url');
+                    var id = method.get_batch_params();
+                    if (id.length == 0) {
+                        layer.msg('请选择操作的订单');
+                        return false;
+                    }
+                    var ids = id.join(',');
+                    var options = [];
+                    options.url = url;
+                    options.data = {ids:ids};
+                    Fast.api.ajax(options);
+                });
+            });
+
+            //移除单个用户
+            $('.move').click(function (){
+                var url = $(this).attr('data-url');
+                layer.confirm('确定移除吗?',{icon:3,title:'重要提示'},function (index){
+                    console.log(url);
+                    var options = [];
+                    options.url = url;
+                    Fast.api.ajax(options);
+                });
+            });
+        },
+
+        // 部门管理
+        department:function (){
+            //节点
+            var dom = {
+                add     : ".add",
+                copy    : ".copy",
+                cat     : ".cat",
+            };
+
+            //添加部门
+            method.open(dom.add,'新增部门','');
+
+            //复制部门
+            method.open(dom.copy,'复制部门','');
+
+            //禁用部门
+            $('.forbid').click(function (){
+                var url = $(this).attr('data-url');
+                var id = $(this).attr('data-id');
+                layer.confirm('确定禁用吗?',{icon:3,title:'重要提示'},function (index){
+                    console.log(url);
+                    var options = [];
+                    options.url = url;
+                    options.data = {id:id}
+                    Fast.api.ajax(options);
+                });
+            });
+
+            //启用部门
+            $('.start').click(function (){
+                var url = $(this).attr('data-url');
+                var id = $(this).attr('data-id');
+                layer.confirm('确定启用吗?',{icon:3,title:'重要提示'},function (index){
+                    console.log(url);
+                    var options = [];
+                    options.url = url;
+                    options.data = {id:id}
+                    Fast.api.ajax(options);
+                });
+            });
+        }
+    }
+    return Controller;
+});

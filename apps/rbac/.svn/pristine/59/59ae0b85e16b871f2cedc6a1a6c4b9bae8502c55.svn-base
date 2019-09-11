@@ -1,0 +1,84 @@
+<?php
+// +----------------------------------------------------------------------
+// | 默认模块默认控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller;
+
+use app\common\controller\AuthController as Controller;
+use app\common\model\Users;
+use think\Config;
+
+class Index extends Controller
+{
+    /**
+     * 首页
+     * @return string
+     */
+    public function index()
+    {
+        $userService = new \app\v1\service\User();
+        $statusNum = Config::get('users.statusNum');
+        unset($statusNum[9]);
+        $year = date('Y');
+        $month = date('m');
+        $days = date('d');
+        $statusName = [
+            'offer'   => '今日已发OFFER',
+            'wait'    => '今日待入职',
+            'work'    => '今日新入职',
+            'leave'   => '今日离职',
+        ];
+        //背景颜色配置
+        $statusColor = [
+            'offer'   => 'panel-primary',
+            'wait'    => 'panel-yellow',
+            'work'    => 'panel-green',
+            'leave'   => 'panel-red',
+        ];
+        //当天所有状态的数量
+        $list = $userService->getUserCount($year,$month,$days);
+        //拼接url
+        $url = [];
+        $str = "/v1/users/index/";
+        foreach($statusNum as $k=>$v){
+            $ur = $str.$v;
+            $url[$v] = url($ur);
+        }
+        $this->assign('statusNum',$statusNum);
+        $this->assign('urlValue',$url);
+        $this->assign('statusName',$statusName);
+        $this->assign('statusColor',$statusColor);
+        $this->assign('list',$list);
+        return parent::fetchAuto();
+    }
+    /**
+     * 个人资料
+     * @return void
+     */
+    public function profile()
+    {
+        $userService = new \app\v1\service\User();
+
+        $this->assign('userJob', Config::get('site.userJobType'));           //角色
+        $this->assign('allowSystem', Config::get('site.allowSystem'));       //可登录的系统
+        $this->assign('getUserObj', $userService->getUserObj());       //岗位
+        $this->assign('usersLabel', $userService->getUsersLabel());    //权限标签
+        $this->assign('allOrg', $userService->getOrgAll());            //部门
+        $this->assign('userinfo', Users::get($this->auth->id));
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人设置
+     * @return void
+     */
+    public function setting()
+    {
+        return parent::fetchAuto();
+    }
+}

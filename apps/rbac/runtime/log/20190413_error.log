@@ -1,0 +1,102 @@
+---------------------------------------------------------------
+[ 2019-04-13T10:12:50+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: timetypes[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:196]
+---------------------------------------------------------------
+[ 2019-04-13T10:17:26+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=1465&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:18:50+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=1465&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:21:26+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=1465&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:21:36+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:21:48+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:03+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:06+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:11+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:16+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:17+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:17+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:17+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:22:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T10:23:57+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3835&dialog=1
+[ error ] [8]未定义变量: params[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:71]
+---------------------------------------------------------------
+[ 2019-04-13T14:10:46+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 29[/opt/web/zs/apps/rbac/application/v1/service/User.php:230]
+---------------------------------------------------------------
+[ 2019-04-13T14:16:13+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 29[/opt/web/zs/apps/rbac/application/v1/service/User.php:233]
+---------------------------------------------------------------
+[ 2019-04-13T14:17:47+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [2]print_r() expects at least 1 parameter, 0 given[/opt/web/zs/apps/rbac/application/v1/service/User.php:232]
+---------------------------------------------------------------
+[ 2019-04-13T16:04:42+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/application/v1/service/User.php:1110]
+---------------------------------------------------------------
+[ 2019-04-13T16:22:53+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义变量: val[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:227]
+---------------------------------------------------------------
+[ 2019-04-13T16:29:22+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/User.php:1100]
+---------------------------------------------------------------
+[ 2019-04-13T16:56:13+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/User.php:1144]
+---------------------------------------------------------------
+[ 2019-04-13T17:23:06+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html?org_id=&job_id=217&searchKey=1&searchValue=
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/Position.php:499]
+---------------------------------------------------------------
+[ 2019-04-13T17:23:23+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html?org_id=&job_id=217&searchKey=1&searchValue=
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/Position.php:499]
+---------------------------------------------------------------
+[ 2019-04-13T17:27:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html?org_id=&job_id=217&searchKey=1&searchValue=
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/Position.php:499]
+---------------------------------------------------------------
+[ 2019-04-13T17:30:17+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html?org_id=&job_id=217&searchKey=1&searchValue=
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/Position.php:499]
+---------------------------------------------------------------
+[ 2019-04-13T17:34:59+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [2]Illegal string offset 'id'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:138]
+---------------------------------------------------------------
+[ 2019-04-13T17:37:07+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [2]Illegal string offset 'id'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:138]
+---------------------------------------------------------------
+[ 2019-04-13T17:47:31+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [2]Illegal string offset 'id'[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:127]
+---------------------------------------------------------------
+[ 2019-04-13T18:10:53+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3906&addType=edit
+[ error ] [8]未定义数组索引: preentrytime[/opt/web/zs/apps/rbac/application/v1/service/User.php:428]

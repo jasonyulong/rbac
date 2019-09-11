@@ -1,0 +1,19 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <form action="{:url('/v1/users/index/editrule')}" class="form-horizontal dialog-form"
+          data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <input type="hidden" name="ids" value="{$ids}"/>
+        {if $saveType eq 'job_id'}
+        {include file="users/index/_edit_job_id" /}
+        {elseif condition="($saveType eq 'rules_id')"/}
+        {include file="users/index/_edit_rules_id" /}
+        {elseif condition="$saveType == 'allow'" /}
+        {include file="users/index/_edit_allow_bath" /}
+        {elseif condition="$saveType eq 'all'" /}
+        {include file="users/index/_edit_rule_all" /}
+        {else /}
+        {/if}
+    </form>
+</div>
+{/block}

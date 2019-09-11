@@ -1,0 +1,48 @@
+---------------------------------------------------------------
+[ 2019-04-03T08:41:40+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: k2[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:292]
+---------------------------------------------------------------
+[ 2019-04-03T09:35:51+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=0&status=100&timetype=1&start_time=2019-04-01&end_time=2019-04-03&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/application/v1/service/User.php:80]
+---------------------------------------------------------------
+[ 2019-04-03T09:36:11+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=0&status=100&timetype=1&start_time=2019-04-01&end_time=2019-04-03&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/application/v1/service/User.php:80]
+---------------------------------------------------------------
+[ 2019-04-03T10:06:10+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: searchStatus[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:272]
+---------------------------------------------------------------
+[ 2019-04-03T10:07:14+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: searchStatus[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:272]
+---------------------------------------------------------------
+[ 2019-04-03T10:07:16+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: searchStatus[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:272]
+---------------------------------------------------------------
+[ 2019-04-03T10:08:24+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: searchStatus[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:272]
+---------------------------------------------------------------
+[ 2019-04-03T10:10:31+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: timetype[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:281]
+---------------------------------------------------------------
+[ 2019-04-03T10:15:30+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: user[/opt/web/zs/apps/rbac/application/v1/service/User.php:160]
+---------------------------------------------------------------
+[ 2019-04-03T10:25:14+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组索引: timetype[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:259]
+---------------------------------------------------------------
+[ 2019-04-03T10:25:41+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组索引: start_time[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:264]
+---------------------------------------------------------------
+[ 2019-04-03T10:29:31+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义数组索引: timetype[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:281]
+---------------------------------------------------------------
+[ 2019-04-03T10:50:05+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:371]
+---------------------------------------------------------------
+[ 2019-04-03T11:33:14+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=1391&dialog=1
+[ error ] [8]未定义数组索引: data[/opt/web/zs/apps/rbac/application/v1/service/User.php:419]
+---------------------------------------------------------------
+[ 2019-04-03T18:31:30+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]模板文件不存在:[/opt/web/zs/thinkphp/library/think/Template.php:1074]
+---------------------------------------------------------------
+[ 2019-04-03T23:32:39+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/editrule.html?
+[ error ] [8]未定义数组索引: saveType[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:333]

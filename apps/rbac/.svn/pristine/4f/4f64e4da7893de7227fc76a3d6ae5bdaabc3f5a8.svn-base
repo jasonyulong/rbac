@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+</head>
+<body class="login-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4" style="padding-top:20%;">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <img src="__CDN__/dist/img/logo.png" width="50" height="50">
+                        <h3 class="panel-title">Acl Admin</h3>
+                    </div>
+                    <div class="login-panel-body">
+                        <form role="form">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Username / E-mail" name="email" type="email" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="password" type="password" autocomplete="off">
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <!-- <p class="text-danger small login-tips"> <i class="fa fa-bullhorn"></i> 请注意正确的输入,密码错误三次将锁号一天</p> -->
+                    <div class="panel-footer">
+                        <!-- Change this to a button or input when using this as a form -->
+                        <a href="/" class="btn btn-primary btn-block">Login</a>
+                        <!-- <button class="btn btn-primary btn-block">Login</button> -->
+                        <div class="copyright">Copyright © 2018-2025 Jeoshi All rights reserved</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 加载JS脚本 -->
+    <!-- jQuery 3 -->
+    <script src="__CDN__/vendor/jquery/jquery.min.js"></script>
+    <!-- require -->
+    <script src="__CDN__/dist/js/require.js" data-main="__CDN__/dist/js/require-main.js"></script>
+</body>
+</html>

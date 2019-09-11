@@ -1,0 +1,22 @@
+<form class="form-inline">
+    <div class="panel panel-default panel-btn">
+        <div class="panel-heading">
+            <div class="form-group">
+                <label for="searchKey"></label>
+                <select class="form-control" title="" id="searchKey" name="searchKey">
+                    {foreach ($searchKey as $keyId=>$keyName)}
+                    <option value="{$keyId}" {if condition="$params['searchKey'] == $keyId"}selected{/if}>{$keyName}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="searchValue"></label>
+                <input type="text" class="form-control" id="searchValue" name="searchValue"
+                       placeholder="支持多个搜索(空格或逗号隔开)" value="{$params['searchValue']}"/>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary">搜索</button>
+            </div>
+        </div>
+    </div>
+</form>

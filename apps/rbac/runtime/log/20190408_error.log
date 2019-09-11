@@ -1,0 +1,66 @@
+---------------------------------------------------------------
+[ 2019-04-08T11:18:20+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [10501]SQLSTATE[42S22]: Column not found: 1054 Unknown column 'order' in 'order clause'[/opt/web/zs/thinkphp/library/think/db/Connection.php:385]
+---------------------------------------------------------------
+[ 2019-04-08T15:27:16+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]语法解析错误: syntax error, unexpected '}'[/opt/web/zs/apps/rbac/application/v1/service/User.php:718]
+---------------------------------------------------------------
+[ 2019-04-08T15:27:18+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected '}'[/opt/web/zs/apps/rbac/application/v1/service/User.php:718]
+---------------------------------------------------------------
+[ 2019-04-08T15:27:20+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected '}'[/opt/web/zs/apps/rbac/application/v1/service/User.php:718]
+---------------------------------------------------------------
+[ 2019-04-08T15:27:29+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected '}'[/opt/web/zs/apps/rbac/application/v1/service/User.php:718]
+---------------------------------------------------------------
+[ 2019-04-08T15:28:02+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3828&dialog=1
+[ error ] [2]Cannot use a scalar value as an array[/opt/web/zs/apps/rbac/application/v1/service/User.php:717]
+---------------------------------------------------------------
+[ 2019-04-08T15:29:38+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3828&dialog=1
+[ error ] [2]Cannot use a scalar value as an array[/opt/web/zs/apps/rbac/application/v1/service/User.php:718]
+---------------------------------------------------------------
+[ 2019-04-08T15:38:26+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:331]
+---------------------------------------------------------------
+[ 2019-04-08T15:38:30+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:331]
+---------------------------------------------------------------
+[ 2019-04-08T15:39:07+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:331]
+---------------------------------------------------------------
+[ 2019-04-08T15:39:28+08:00 ] 192.168.9.36 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:331]
+---------------------------------------------------------------
+[ 2019-04-08T15:39:31+08:00 ] 192.168.9.36 GET local.rule.com/v1/users/index/.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')'[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:331]
+---------------------------------------------------------------
+[ 2019-04-08T15:51:50+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3828&dialog=1
+[ error ] [2]date() expects parameter 2 to be integer, string given[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:103]
+---------------------------------------------------------------
+[ 2019-04-08T17:19:04+08:00 ] 192.168.8.101 GET local.rule.com/v1/users/index/.html
+[ error ] [8]未定义数组下标: 20[/opt/web/zs/apps/rbac/application/v1/service/User.php:246]
+---------------------------------------------------------------
+[ 2019-04-08T18:24:37+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:114]
+---------------------------------------------------------------
+[ 2019-04-08T19:40:41+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=1&status=100&pact_type=0&room=0&ready_computer=0&timetype=1&start_time=2019-04-01&end_time=2019-04-08&searchKey=1&searchValue=
+[ error ] [10501]SQLSTATE[42S22]: Column not found: 1054 Unknown column 's' in 'where clause'[/opt/web/zs/thinkphp/library/think/db/Connection.php:385]
+---------------------------------------------------------------
+[ 2019-04-08T19:41:08+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=1&status=100&pact_type=0&room=0&ready_computer=0&timetype=1&start_time=2019-04-01&end_time=2019-04-08&searchKey=1&searchValue=
+[ error ] [10501]SQLSTATE[42S22]: Column not found: 1054 Unknown column 'a.org_id' in 'where clause'[/opt/web/zs/thinkphp/library/think/db/Connection.php:385]
+---------------------------------------------------------------
+[ 2019-04-08T19:43:42+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=1&status=100&pact_type=0&room=0&ready_computer=0&timetype=1&start_time=2019-04-01&end_time=2019-04-08&searchKey=1&searchValue=
+[ error ] [10501]SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'id' in field list is ambiguous[/opt/web/zs/thinkphp/library/think/db/Connection.php:385]
+---------------------------------------------------------------
+[ 2019-04-08T21:27:04+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:257]
+---------------------------------------------------------------
+[ 2019-04-08T21:29:15+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:257]
+---------------------------------------------------------------
+[ 2019-04-08T21:31:45+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:365]
+---------------------------------------------------------------
+[ 2019-04-08T22:22:14+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: pact_type[/opt/web/zs/apps/rbac/application/v1/service/User.php:97]

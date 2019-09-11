@@ -1,0 +1,141 @@
+{extend name="$config.layout" /}
+
+{block name='css'}
+<link rel="stylesheet" href="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.css">
+<style>
+.badge {
+    background-color: inherit;
+}
+</style>
+{/block}
+
+{block name='content'}
+<div class="content">
+    <div class="row">
+        <div class="col-md-2">
+            {include file="auth/access/left" /}
+        </div>
+        <div class="col-md-10">
+            <!-- include file="group/access/form"  -->
+            {include file="auth/access/table" /}
+        </div>
+    </div>
+</div>
+{/block}
+
+
+{block name='js'}
+<script src="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.js" ></script>
+<script>
+$(function() {
+    var data = '{$job_tree}';
+    data = JSON.parse(data);
+    console.log(data);
+    var defaultData = [
+        {
+            text: '总经理(1)',
+            href: '#parent1',
+            icon: "glyphicon glyphicon-home",
+            // tags: [
+            //     "<a href='javascript:void(0);' data-title='删除' data-url='' onclick='access_module.role_handler($(this));'>删除</a>", 
+            //     "<a href='javascript:void(0);' data-title='编辑' data-url='/v1/auth/position/edit.html?id=81' onclick='access_module.role_handler($(this));' >编辑</a>", 
+            //     "<a href='javascript:void(0);' data-title='编辑' data-url='/v1/auth/position/copy.html?id=81' onclick='access_module.role_handler($(this));'>复制</a>"],
+            nodes: [
+                {
+                    text: 'Child 1',
+                    href: '#child1',
+                    state: {
+                        expanded: true,
+                        selected: true,
+                    },
+                    // tags: ['2'],
+                    nodes: [
+                        {
+                            text: 'Grandchild 1',
+                            href: '#grandchild1',
+                            // tags: ['0']
+                            nodes: [
+                                {
+                                    text: 'GGrandchild 1',
+                                    href: '#ggrandchild1',
+                                    // tags: ['0']
+                                },
+                                {
+                                    text: 'GGrandchild 2',
+                                    href: '#ggrandchild2',
+                                    // tags: ['0']
+                                }
+                            ]
+                        },
+                        {
+                            text: 'Grandchild 2',
+                            href: '#grandchild2',
+                            state: {
+                                expanded: true,
+                                selected: true,
+                            },
+                            // tags: ['0']
+
+                            nodes: [
+                                {
+                                    text: 'GGrandchild 1',
+                                    href: '#ggrandchild1',
+                                    // tags: ['0']
+                                },
+                                {
+                                    text: 'GGrandchild 2',
+                                    href: '#ggrandchild2',
+                                    // tags: ['0']
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    text: 'Child 2',
+                    href: '#child2',
+                    // tags: ['0']
+                }
+            ]
+        },
+        {
+            text: 'Parent 2',
+            href: '#parent2',
+            icon: "glyphicon glyphicon-home",
+            // tags: ['0']
+        },
+        {
+            text: 'Parent 3',
+            href: '#parent3',
+            // tags: ['0']
+            icon: "glyphicon glyphicon-home",
+        },
+        {
+            text: 'Parent 4',
+            href: '#parent4',
+            // tags: ['0']
+            icon: "glyphicon glyphicon-home",
+        },
+        {
+            text: 'Parent 5',
+            href: '#parent5',
+            // tags: ['0']
+            icon: "glyphicon glyphicon-home",
+        }
+    ];
+        
+    $('#tree').treeview({
+        // levels: 4,
+        color: "#555",
+        selectedColor: "#000000",
+        selectedBackColor: '#F5F5F5',
+        expandIcon: 'glyphicon glyphicon-chevron-right',
+        collapseIcon: 'glyphicon glyphicon-chevron-down',
+        nodeIcon: 'glyphicon glyphicon-user',
+        enableLinks: true,
+        showTags: true,
+        data: data
+    });
+});
+</script>
+{/block}

@@ -1,0 +1,181 @@
+<?php
+/**
+ * 
+ * @copyright Copyright (c) 2018
+ * @license   
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-09
+ */
+namespace app\api\controller\v1;
+
+use think\Config;
+use app\common\controller\ApiController;
+use app\api\service\Department;
+use app\api\service\Job;
+
+
+/**
+ * @desc 部门、岗位控制器
+ * Class Power
+ * @package app\api\controller\v1
+ */
+class Power extends ApiController
+{
+    /**
+     * @desc 不需要检查是否登录的ACTION 全部用 * 代替
+     * @var  array
+     */
+    protected $noNeedLogin = ['*'];
+
+    /**
+     * @desc  不需要校验权限的ACTION 全部用 * 代替
+     * @var   array
+     */
+    protected $noNeedRight = ['*'];
+
+    /**
+     * @desc   登录
+     * @author mina
+     * @param  post
+     * @return json
+     */
+    public function list()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Department::getInstance()->list($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        } 
+    }
+
+    /**
+     * @desc   禁用-启用
+     * @author mina
+     * @param  
+     * @return
+     */
+    public function forbidden()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Department::getInstance()->forbidden($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+
+    /**
+     * @desc   下属部门成员设置账号
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function setaccount()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Department::getInstance()->setAccount($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+
+
+    /**
+     * @desc   岗位管理
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function job()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Job::getInstance()->list($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+
+    /**
+     * @desc   查询岗位权限
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function jobpower()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Job::getInstance()->jobPower($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+
+    /**
+     * @desc   修改岗位权限
+     * @author mina
+     * @param  void
+     * @return json
+     */
+    public function updatepower()
+    {
+        if (!$this->request->isPost())
+        {
+            $this->error(__('Request Method Error'));
+        }
+        $param = $this->request->post();
+        $result = Job::getInstance()->updatePower($param);
+        if($result['status'] == 1)
+        {
+            $this->success('success', $result['data']);
+        }
+        else
+        {
+            $this->error(__($result['message']), '', $result['status']);
+        }
+    }
+}

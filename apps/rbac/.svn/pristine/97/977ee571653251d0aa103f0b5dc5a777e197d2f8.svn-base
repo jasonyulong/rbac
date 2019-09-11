@@ -1,0 +1,57 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<form class="form-inline">
+    <div class="margin-styl">
+        <div class="row pdBottom">
+            <div class="col-xs-2 col-sm-2 pdTop"><span class="red-color">*</span>真实姓名：</div>
+            <div class="col-xs-4 col-sm-4">
+                <input class="form-control" type="text" placeholder="请输入姓名">
+            </div>
+            <div class="col-xs-2 col-sm-2 pdTop"><span class="red-color">*</span>公司：</div>
+            <div class="col-xs-4 col-sm-4">
+                <select class="selectpicker show-tick form-control" id="company" title="" data-actions-box="true" data-live-search="true">
+                    <option>卓士网路</option>
+                    <option>伟世通</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row pdBottom">
+            <div class="col-xs-2 col-sm-2 pdTop"><span class="red-color">*</span>邮箱：</div>
+            <div class="col-xs-4 col-sm-4">
+                <input class="form-control" type="text" placeholder="请输入邮箱">
+            </div>
+            <div class="col-xs-2 col-sm-2 pdTop"><span class="red-color">*</span>部门：</div>
+            <div class="col-xs-4 col-sm-4">
+                <select class="selectpicker show-tick form-control" title="请选择部门" data-actions-box="true" data-live-search="true">
+                    <option>IT</option>
+                    <option>业务</option>
+                    <option>采购</option>
+                    <option>物流</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row pdBottom">
+            <div class="col-xs-2 col-sm-2 pdTop">手机号：</div>
+            <div class="col-xs-4 col-sm-4">
+                <input class="form-control" type="text" placeholder="请输入手机号">
+            </div>
+            <div class="col-xs-2 col-sm-2 pdTop"><span class="red-color">*</span>角色：</div>
+            <div class="col-xs-4 col-sm-4">
+                <select class="selectpicker show-tick form-control" title="请选择角色"  data-actions-box="true" data-live-search="true">
+                    <option>IT</option>
+                    <option>业务</option>
+                    <option>采购</option>
+                    <option>物流</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <a href="javascript:void(0)" class="btn btn-info">取消</a>
+            <a href="javascript:void(0)" class="btn btn-success">保存</a>
+        </div>
+    </div>
+</form>
+
+{/block}

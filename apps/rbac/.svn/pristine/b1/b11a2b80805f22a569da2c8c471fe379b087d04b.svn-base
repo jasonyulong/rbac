@@ -1,0 +1,379 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Position.php
+ * @Date: 2019/4/1
+ * @Time: 14:55
+ * @Description
+ */
+
+namespace app\v1\service;
+
+use app\common\model\Users;
+use app\common\model\UsersJob;
+use plugin\Tree;
+use think\Config;
+
+class Position
+{
+    /**
+     * @var UsersJob|null 岗位模型
+     */
+    private $userJob = null;
+
+    /**
+     * @var Users|null 用户模型
+     */
+    private $users = null;
+
+    /**
+     * @var int 错误状态
+     */
+    public $errors = 0;
+
+    /**
+     * @var string 错误提示
+     */
+    public $errorsMessages = "error";
+
+    /**
+     * Position constructor.
+     */
+    public function __construct()
+    {
+        $this->userJob = new UsersJob();
+        $this->users = new Users();
+    }
+
+    /**
+     * @desc 新增岗位
+     * @author 杨能文
+     * @param $request
+     * @return bool
+     */
+    public function add($request):bool
+    {
+        $addData = [
+            'pid' => (int)($request['pid'] ?? 0),
+            'title' => trim($request['title']),
+            'weigh' => (int)$request['weigh'],
+            'createtime' => time(),
+            'status' => 1, //0禁用，1启用
+        ];
+
+        $userJob = $this->userJob;
+        $treeClass = \plugin\TreeClass::instance($userJob);
+
+        $addData['rank'] = $this->rank($addData['pid']);
+        if ($addData['pid'] > 0) {
+            $parent = $userJob->where(['id' => $addData['pid']])->find();
+            $addData['tid'] = $parent->tid;
+        }
+
+        // 启动事务
+        $userJob->startTrans();
+        try {
+            // 开始更新左右值
+            $return = $treeClass->add($addData['pid']);
+            // 插入
+            $id = $userJob->insert(array_merge($addData, $return), false, true);
+            if ($addData['pid'] <= 0) {
+                $userJob->where(['id' => $id])->update(['tid' => $id]);
+            }
+            // 提交事务
+            $userJob->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('添加岗位失败'));
+            // 回滚事务
+            $userJob->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * @desc 编辑岗位
+     * @author 杨能文
+     * @date 2019/4/1 14:57
+     * @access public
+     * @param $data
+     * @return bool
+     */
+    public function edit($data):bool
+    {
+        $id = $data['id'];
+        $save = [
+            'pid' => (int)$data['pid'],
+            'title' => trim($data['title']),
+            'weigh' => (int)$data['weigh'],
+            'updatetime' => time(),
+        ];
+        $save['rank'] = $this->rank($save['pid']);
+
+        //获取编辑前岗位信息
+        $userJob = $this->userJob;
+        $treeClass = \plugin\TreeClass::instance($userJob);
+        $info = $userJob->where(['id' => $id])->find();
+        $info = is_array($info) ? collection($info)->toArray() : $info->toArray();
+
+        //如果父级岗位发生修改、检测是否存在子岗位、存在不允许修改(原因:扰乱层级关系)
+        $sonTitle = $this->checkson($id);
+        if ($save['pid'] != $info['pid'] && $sonTitle){
+            $this->setErrors(0,__("存在子级岗位【{$sonTitle}】、不允许修改【父级名称】"));
+            return false;
+        }
+
+        // 启动事务
+        $userJob->startTrans();
+        try {
+            // 开始更新左右值
+            if ($save['pid'] != $info['pid']) {
+                $return = $treeClass->add($save['pid']);
+                $save = array_merge($save, $return);
+            }
+            //更新
+            $userJob->update($save, ['id' => $id]);
+            if ($save['pid'] != $info['pid'])$this->tid($id);
+            // 提交事务
+            $userJob->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('编辑岗位失败'));
+            // 回滚事务
+            $userJob->rollback();
+            return false;
+        }
+    }
+
+
+    /**
+     * @desc 检测子岗位
+     * @author 杨能文
+     * @date 2019/4/2 9:59
+     * @access public
+     * @param $id
+     * @return string
+     */
+    public function checkson($id):string
+    {
+        if (empty($id)) return 0;
+        $userJob = $this->userJob;
+        $son = $userJob->where(['pid' => $id])->value('title');
+        return $son ? $son : '';
+    }
+
+    /**
+     * @desc 获取层级
+     * @author 杨能文
+     * @date 2019/4/2 9:20
+     * @param $pid
+     * @access public
+     * @return string
+     */
+    public function rank($pid):string
+    {
+        if (empty($pid)) return 1;
+        $userJob = $this->userJob;
+        $rank = $userJob->where(['id' => $pid])->value('rank');
+        $rank = $rank > 0 ? $rank + 1 : 1;
+        return $rank;
+    }
+
+    /**
+     * @desc 更新顶级类的tid
+     * @author 杨能文
+     * @date 2019/4/1 16:52
+     * @access public
+     * @param $id
+     */
+    public function tid($id)
+    {
+        $userJob = $this->userJob;
+        $userJob->update(['tid' => $id], ['id' => $id, 'pid' => 0]);
+    }
+
+    /**
+     * @desc 获取所有的岗位
+     * @author 杨能文
+     * @date 2019/4/1 15:54
+     * @access public
+     * @return array
+     */
+    public function position():array
+    {
+        $userJob = $this->userJob;
+        // 必须将结果集转换为数组
+        $ruleList = collection($userJob->where(['status' => 1])->order('weigh', 'desc')->select())->toArray();
+
+        Tree::instance()->init($ruleList);
+        $rulelist = Tree::instance()->getTreeList(Tree::instance()->getTreeArray(0), 'title');
+        return $rulelist;
+    }
+
+    /**
+     * @desc 获取统计后的岗位人员
+     * @author 杨能文
+     * @date 2019/4/1 18:15
+     * @access public
+     * @return array
+     */
+    public function userposition():array
+    {
+        $users = $this->users;
+        $map = [
+            'status' => ['in', '0,1,2'],
+            'job_id' => ['gt', 0]
+        ];
+        $data = $users->field('job_id,count(id) as num')
+            ->where($map)
+            ->group('job_id')->select();
+        if (is_array($data)) $data = collection($data)->toArray();
+        $return = [];
+        foreach ($data as &$val) {
+            $return[$val['job_id']] = $val['num'];
+        }
+        return $return;
+    }
+
+    /**
+     * @desc 根据id获取岗位信息
+     * @author 杨能文
+     * @date 2019/4/1 20:13
+     * @access public
+     * @param $id
+     * @return array
+     */
+    public function positioninfo($id)
+    {
+        $userJob = $this->userJob;
+        $data = $userJob->where(['id' => $id])->find();
+        $data = is_array($data) ? collection($data)->toArray() : $data->toArray();
+        return $data;
+    }
+
+    /**
+     * @desc 批量删除岗位
+     * @author 杨能文
+     * @date 2019/4/2 11:41
+     * @access public
+     * @param  $data
+     * @return bool
+     */
+    public function delete($data):bool
+    {
+        $userJob = $this->userJob;
+        $ids = $data['ids'];
+        $map = ['id'=>['in',$ids]];
+        //按层级倒序、以便删除操作
+        $positionArr = $userJob->where($map)->order('rank desc')->column('id');
+        if(!$positionArr){
+            $this->setErrors(0,__('未找到需要删除的数据'));
+            return false;
+        }
+
+        $userArr = $this->userposition();;
+
+        //循环删除数据
+        $num1 = 0;
+        $num2 = 0;
+        foreach($positionArr as $val){
+            $son = $this->checkson($val);
+            if($son || isset($userArr[$val])){
+                $num2++;
+                continue;
+            }
+            $res = $userJob->where(['id'=>$val])->delete();
+            if($res)$num1++;
+        }
+        if($num2){
+            $msg = "删除岗位成功条数【{$num1}】.失败条数【{$num2}】原因:【存在子岗位或绑定用户未移除】";
+            $this->setErrors(0,__($msg));
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * 设置错误信息
+     * @param $status
+     * @param $messages
+     * @return bool
+     */
+    private function setErrors($status, $messages)
+    {
+        $this->errors = $status;
+        $this->errorsMessages = $messages;
+        return true;
+    }
+
+
+    /**
+     * @desc 查看用户
+     * @author 杨能文
+     * @date 2019/4/2 16:02
+     * @access public
+     * @param $params
+     * @return array
+     */
+    public function cat($params):array
+    {
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : 10;
+        //当前页
+        $current_page = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : 1;
+        //分页起始值
+        $start = $page_size * ($current_page - 1);
+
+        $users = $this->users;
+
+        $where = ['status'=>['in',[0,1,2]]];
+
+        if(isset($params['id']) && $params['id'])$where['job_id'] = $params['id'];
+        if($params['username'])$where['username'] = $params['username'];
+
+        //分页url参数
+        $config = [
+            'query'     => request()->param(),
+            'type'      => 'bootstrap',
+            'var_page'  =>'page'
+        ];
+
+        $userInfo = $users
+            ->field('id,username')
+            ->where($where)
+            ->limit($start, $page_size)
+            ->paginate($page_size,false,$config);
+
+        $page = $userInfo->render();
+        $return_data = [
+            'list' => $userInfo->toArray(),
+            'page' => $page,
+        ];
+        return $return_data;
+    }
+
+    /**
+     * @desc 移除用户
+     * @author 杨能文
+     * @date 2019/4/2 17:25
+     * @access public
+     * @param $data
+     * @return bool
+     */
+    public function move($data):bool
+    {
+       $ids = $data['ids'];
+
+        // 启动事务
+        $users = $this->users;
+        try {
+            $users->update(['job_id'=>0, 'job_type'=>0],['id'=>['in',$ids] ]);
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('移除用户失败'));// 回滚事务
+            return false;
+        }
+    }
+}

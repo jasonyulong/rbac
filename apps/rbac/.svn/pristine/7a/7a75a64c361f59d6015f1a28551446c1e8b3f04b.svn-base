@@ -1,0 +1,61 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group pdBottom">
+            <label for="job_id" class="col-sm-3 control-label"><span class="red-color">*</span>岗位：</label>
+            <div class="col-sm-6">
+                <input type="hidden" name="saveType" value="all"/>
+
+                <select multiple="multiple" class="selectpicker show-tick" title="请选择(可多选)" id="job_id" name="job_id[]"
+                        data-actions-box="true" data-live-search="true">
+                    {foreach($getUserObj as $k=>$v)}
+                    <option value="{$k}" {if condition="in_array($k,$userInfo['job_id'])"}selected{/if}>{$v}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <a href="javascript:void(0)" class="btn btn-info addobj"
+                   data-url="{:url('/v1/auth/position/add.html?dialog=1')}">新增岗位</a>
+            </div>
+        </div>
+        <div class="form-group pdBottom">
+            <label for="rules_id" class="col-sm-3 control-label"><span class="red-color">*</span>权限标签：</label>
+            <div class="col-sm-9">
+                <select multiple="multiple" class="selectpicker show-tick" title="请选择(可多选)" id="rules_id" name="rules_id[]"
+                        data-actions-box="true" data-live-search="true">
+                    {foreach($usersLabel as $kk=>$vv)}
+                    <option value="{$kk}" {if condition="in_array($kk,$userInfo['rules_id'])"}selected{/if}>{$vv}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group pdBottom">
+            <label for="all" class="col-sm-3 control-label"><span class="red-color">*</span>允许登录的系统：</label>
+            <div class="col-sm-9">
+                <div class="checkbox">
+                    <label>
+                        <input class="data-check_box_total allow" type="checkbox" id="all"> 全部
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group pdBottom">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-9">
+                <div class="checkbox child">
+                    {foreach($allowSystem as $k2=>$v2)}
+                    <label>
+                        <input type="checkbox" class="data-check_box" name="allow[]" value="{$v2}" {if condition="in_array($v2,$userInfo['allow'])"}checked{/if}>{$v2}
+                    </label>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr class="bottom-br">
+<div class="td-align">
+    <button class="btn btn-warning" id="cancel">取消</button>
+    <button class="btn btn-info" type="submit">确定</button>
+</div>
+

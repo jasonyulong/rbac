@@ -1,0 +1,24 @@
+<div class="row" style="padding: 10px 0;">
+    <div class="col-sm-6 col-md-6" style="padding: 0;">
+        <select name="" id="job_list" class="form-control selectpicker" data-actions-box="true" data-live-search="true" size="6">
+            <option value="">----选择岗位----</option>
+            {foreach $all_jobs as $value}
+            <option value="{$value['id']}" {if $job_info['id'] == $value['id']}selected{/if} data-users='{$value["job_users_json"]}'>{:str_repeat('--', ($value['rank'] - 1))}{$value['title']}</option>
+            {/foreach}
+        </select>
+    </div>
+
+    <div class="col-sm-6 col-md-6" style="padding: 0;">
+        <select name="" id="select_users" class="form-control selectpicker" data-actions-box="true" data-live-search="true">
+            <option value="">----选择用户----</option>
+        </select>
+    </div>
+</div>
+
+<ul class="list-group" id="user_list">
+    {foreach $all_users as $value}
+    <a class="list-group-item {if $params['user_id'] == $value['id']}active{/if}"  href="{:url('', ['job_id' => $value['job_id'], 'user_id' => $value['id']], '')}">{$value['username']}</a>
+    {/foreach}
+</ul>
+
+<div class="navbar-default" role="navigation"></div>

@@ -1,0 +1,106 @@
+<?php
+/**
+ * @copyright Copyright (c) 2018 http://www.jeoshi.com All rights reserved.
+ * @version   Beta 5.0
+ * @author    kevin
+ */
+
+namespace app\common\behavior;
+
+use app\common\library\auth\Access;
+use app\common\model\LogsAccess;
+use app\common\model\LogsDoings;
+
+/**
+ * 系统日志
+ * Class Logs
+ * @package app\common\behavior
+ */
+class Logs
+{
+    /**
+     * @var int 系统ID
+     */
+    private $module_id = 1;
+
+    /**
+     * 写入日志
+     * @param $params
+     * @return bool
+     */
+    public function run(&$params)
+    {
+        $auth = \app\common\library\auth\Token::instance();
+        $user = $auth->getUser();
+
+        $userid = !empty($user) ? $user->id : 0;
+        $username = !empty($user) ? $user->username : '未知';
+
+        // 某些url跳过写入日志
+        $url = strtolower(trim(request()->url(), '/'));
+        if (strpos($url, 'ajax') > 0 || strpos($url, 'logs') > 0) {
+            return true;
+        }
+        // 设置当前请求的路径
+        $modulename = request()->module();
+        $controllername = strtolower(request()->controller());
+        $actionname = strtolower(request()->action());
+        $path = $modulename . '/' . str_replace('.', '/', $controllername) . '/' . $actionname;
+        // 标题
+        $title = [];
+        $access = new Access();
+        $breadcrumb = $access->getBreadcrumb($this->module_id, $path);
+        foreach ($breadcrumb as $k => $v) {
+            $title[] = $v['title'];
+        }
+        $title = implode(' ', $title);
+
+        // 访问日志
+        if (request()->isGet()) {
+            // 次数
+            $quantity = 1;
+            $datetime = date('Y-m-d', time());
+            $totalsQuantity = LogsAccess::where(['url' => $url, 'datetime' => $datetime, 'user_id' => $userid])->field(['id', 'SUM(quantity) as quantity'])->find()->toArray();
+            if (!empty($totalsQuantity) && !empty($totalsQuantity['id'])) {
+                $quantity = $totalsQuantity['quantity'] + 1;
+                LogsAccess::update(['quantity' => $quantity], ['id' => $totalsQuantity['id']]);
+            } else {
+                LogsAccess::create([
+                    'title' => $title,
+                    'url' => $url,
+                    'path' => $path,
+                    'user_id' => $userid,
+                    'username' => $username,
+                    'quantity' => $quantity,
+                    'datetime' => $datetime,
+                ]);
+            }
+
+            return true;
+        }
+
+        // 操作日志
+        if (request()->isPost()) {
+            $content = request()->param();
+            foreach ($content as $k => $v) {
+                if (is_string($v) && strlen($v) > 200 || stripos($k, 'password') !== false) {
+                    unset($content[$k]);
+                }
+                if ($k == 's') {
+                    unset($content[$k]);
+                }
+            }
+            LogsDoings::create([
+                'title' => $title,
+                'content' => !is_scalar($content) ? json_encode($content) : $content,
+                'url' => $url,
+                'user_id' => $userid,
+                'username' => $username,
+                'useragent' => request()->server('HTTP_USER_AGENT', ''),
+                'ip' => request()->ip()
+            ]);
+
+            return true;
+        }
+    }
+}

@@ -1,0 +1,88 @@
+{extend name="$config.layout" /}
+{block name='css'}
+<link rel="stylesheet" href="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.css">
+{/block}
+{block name='content'}
+<div class="content">
+    <div class="row">
+        <div class="col-md-2 left-job">
+            {include file="auth/access/useralso_left" /}
+        </div>
+        <div class="col-md-10 menu-content">
+            {include file="auth/access/useralso_table" /}
+        </div>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script src="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.js" ></script>
+<script>
+{if $Request.action == 'index'}
+$(function() {
+    var data = '{$job_tree}';
+    data = JSON.parse(data);
+    $('#tree').treeview({
+        color: "#555",
+        selectedColor: "#337ab7",
+        selectedBackColor: '#F5F5F5',
+        expandIcon: 'glyphicon glyphicon-chevron-right',
+        collapseIcon: 'glyphicon glyphicon-chevron-down',
+        nodeIcon: 'glyphicon glyphicon-user',
+        enableLinks: true,
+        showTags: true,
+        data: data
+    });
+});
+{/if}
+
+function init_onload_checkbox(level)
+{
+    var next_level = level + 1;
+    var div = $('.level' + level + '-rule');
+    for (var i = 0;i < div.length;i++)
+    {
+        var cb = $(div[i]).find('.level' + next_level + '-checkbox');
+        var check_num = 0;
+
+        var is_indeterminate = false;
+        for (var j = 0; j < cb.length; j++) {
+            if ($(cb[j]).is(':checked')) check_num++;
+            if ($(cb[j]).is(':indeterminate')) 
+            {
+                is_indeterminate = true;
+                break;
+            }
+        }
+
+        var check_status = 0; // 0 全没选 1 全选 -1  部分选中
+
+        if (is_indeterminate)
+        {
+            check_status = -1;
+        }
+        else
+        {
+            if (check_num == 0) {
+            check_status = 0;
+            }
+            else if (check_num == cb.length) {
+                check_status = 1;
+            }
+            else {
+                check_status = -1
+            }
+        }
+        
+
+        if (check_status == -1)
+        {
+            $(div[i]).find('.level' + level + '-checkbox').prop('indeterminate', true);
+            $(div[i]).find('.level' + level + '-checkbox').prop('checked', false);
+        }
+    }
+}
+init_onload_checkbox(3);
+init_onload_checkbox(2);
+init_onload_checkbox(1);
+</script>
+{/block}

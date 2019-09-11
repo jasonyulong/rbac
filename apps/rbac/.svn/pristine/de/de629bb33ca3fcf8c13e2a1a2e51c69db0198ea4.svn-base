@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-md-9">
+        <div class="form-group">
+            <input type="hidden" name="saveType" value="job_id"/>
+            <label for="job_id" class="col-sm-3 control-label"><span class="red-color">*</span>岗位</label>
+            <div class="col-sm-9">
+                <select multiple="multiple" class="selectpicker show-tick" title="请选择(可多选)" id="job_id" name="job_id[]"
+                        data-actions-box="true" data-live-search="true">
+                    {foreach($getUserObj as $k=>$v)}
+                    <option value="{$k}">{$v}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <a href="javascript:void(0)" class="btn btn-info addobj"
+               data-url="{:url('/v1/auth/position/add.html?dialog=1')}">新增岗位</a>
+        </div>
+    </div>
+</div>
+
+<hr id="bottom-br">
+<div class="td-align">
+    <button class="btn btn-warning" id="cancel"><i class="fa fa-close"></i> 取消</button>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定</button>
+</div>

@@ -1,0 +1,14 @@
+<!--
+<div class="btn-group">
+    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="badge box_total">0</span> 批量操作 <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        &lt;!&ndash;物流操作&ndash;&gt;
+        &lt;!&ndash;<li><a href="javascript:;" class="batch_delete" data-url="{:url('/v1/group/department/delete')}"><i class="glyphicon glyphicon-remove"></i> 批量删除</a></li>&ndash;&gt;
+    </ul>
+</div>
+-->
+<div class="btn-group">
+    <button class="btn btn-success btn-sm add" data-url="{:url('/v1/group/department/add')}" type="button"><i class="glyphicon glyphicon-plus"></i> 新增部门 </button>
+</div>

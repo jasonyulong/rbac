@@ -1,0 +1,59 @@
+<?php
+// +----------------------------------------------------------------------
+// | Token授权中心
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\library\auth;
+
+use plugin\Crypt;
+use think\Config;
+
+class Token extends Drive
+{
+    /**
+     * 设置TOKEN执行登录
+     * @param $token Token
+     * @return bool
+     */
+    public function setToken($token)
+    {
+        if ($this->_logined) {
+            return true;
+        }
+
+        $users = $this->decodeToken($token);
+        if (empty($users)) return false;
+
+        $tokenRedis = $this->redis->handler()->hget(Config::get('redis.user_token'), $users['id']);
+        // 判断token是否存在
+        if (!$tokenRedis || $tokenRedis != $token) {
+            $this->logout();
+            $this->setError('您的账户已重新登录, 您被强迫下线');
+
+            return false;
+        }
+        $users = (object)$users;
+        if ($users->expiretime < time()) {
+            return false;
+        }
+
+        return $this->setUserLogin($users);
+    }
+
+    /**
+     * 白名单校验
+     */
+    public function forbiddenip()
+    {
+        return true;
+    }
+
+    public function check($path)
+    {
+        return true;
+    }
+}

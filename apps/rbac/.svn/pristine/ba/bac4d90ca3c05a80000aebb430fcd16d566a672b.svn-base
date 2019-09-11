@@ -1,0 +1,137 @@
+<?php
+/**
+ * 数据服务器层 基类
+ * @copyright Copyright (c) 2018
+ * @license   
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-08
+ */
+namespace app\api\service;
+
+use plugin\Crypt;
+use app\common\model\Users;
+
+/**
+ * @desc 接口数据服务器层 基类
+ * Class User
+ * @package app\api\service
+ */
+class Base
+{
+	/**
+	 * @desc  是否实例化
+	 * @var   boolen
+	 */
+	protected static $instance;
+
+	/**
+	 * @desc  用户模型
+	 * @var   object
+	 */
+	protected $userModel;
+
+	/**
+	 * @desc  token 包含的用户信息
+	 * @var 
+	 */
+	protected $user;
+
+	/**
+	 * @desc  分页数量
+	 * @var   int
+	 */
+	protected $pageSize = 50;
+
+	/**
+	 * @desc  
+	 * @author mina
+	 * @param  
+	 * @return
+	 */
+	public function __construct()
+	{
+		$this->userModel = new Users();
+	}
+
+	/**
+	 * @desc   检查token是否过期
+	 * @author mina
+	 * @param  array $param 参数
+	 * @return array
+	 */
+	public function cktoken($param) : array
+	{
+		if(empty($param['token']))
+		{
+			return $this->_back(0, '用户TOKEN不能为空。');
+		}
+		$user = $this->_getToken($param['token']);
+		if(empty($user) || empty($user[0]))
+		{
+			return $this->_back(0, '用户TOKEN错误。');
+		}
+		$where = [
+			'id' => $user[0],
+		];
+		$row = $this->userModel->getOne($where);
+		if(empty($row))
+		{
+			return $this->_back(0, '用户TOKEN不存在。');
+		}
+		if($row['token'] != $param['token'])
+		{
+			return $this->_back(110, '用户TOKEN已过期。');
+		}
+		$this->user = $row;
+		return $this->_back(1);
+	}
+
+	/**
+	 * @desc   返回数据格式
+	 * @author mina
+	 * @param  int $status 状态 0失败  1成功
+	 * @param  string $msg 提示语
+	 * @param  array  $data 数据
+	 * @return array
+	 */
+	protected function _back($status = 1, $msg = '', $data = []) : array
+	{
+		$retData = [
+			'status'  => $status,
+			'message' => $msg,
+			'data'    => $data,
+		];
+		return $retData;
+	}
+
+	/**
+	 * @desc   用户登录生成token
+	 * @author mina
+	 * @param  array $user 用户信息
+	 * @return string
+	 */
+	protected function _setToken($user) : string
+	{
+		$accessToken = [
+            $user['id'], $user['username'], $user['org_id'], $user['job_id'], time(), strtotime("+1 hours"), \plugin\Random::uuid()
+        ];
+        $keeplogin = implode("|", $accessToken);
+        $token = Crypt::encrypt($keeplogin);
+        return $token;
+	}
+
+	/**
+	 * @desc   token解密
+	 * @author mina
+	 * @param  string $token 用户token
+	 * @return array
+	 */
+	protected function _getToken($token) : array
+	{
+		$token = Crypt::decrypt($token);
+		if(empty($token)) return [];
+		$tokenArr = explode('|', $token);
+		return $tokenArr;
+	}
+}

@@ -1,0 +1,48 @@
+define(['jquery', 'bootstrap', 'bootstrap-select', 'template'], function ($, undefined, undefined, template) {
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            // bootstrap select
+            $(".selectpicker").selectpicker({
+                selectAllText: '全选',
+                deselectAllText: '取消',
+                // 是否允许搜索
+                liveSearch: true,
+            });
+        },
+        index: function () {
+            // 全局自定义配置
+            console.log(Config);
+            // 全局自定义对象
+            console.log(Fast);
+            // 自定义模板使用
+            var data = {
+                title: "hello world"
+            };
+            var html = template("test", data);
+            console.log(html);
+
+            //自定义弹窗
+            $(".edit").click(function () {
+                var url = $('.edit').attr('data-url');
+                Fast.api.open(url, '编辑', {area: ['700px', '500px']});
+            });
+        },
+        offer:function (){
+             //自定义弹窗
+            $(".edit").click(function () {
+                var url = $('.edit').attr('data-url');
+                Fast.api.open(url, '编辑', {area: ['700px', '500px']});
+            });
+            $('.deluser').click(function (){
+                layer.confirm('确定?',{icon:3,title:'确定要删除吗？'},function (index){
+                    var url = $('.deluser').attr('data-url');
+                    layer.close(index);
+                });
+
+
+            });
+        }
+    }
+    return Controller;
+});

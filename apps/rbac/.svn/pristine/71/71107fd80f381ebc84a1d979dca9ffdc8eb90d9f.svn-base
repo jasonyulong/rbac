@@ -1,0 +1,2 @@
+<!-- jQuery 3 -->
+<script src="__CDN__/vendor/jquery/jquery.min.js?v={$config.site.version}"></script>

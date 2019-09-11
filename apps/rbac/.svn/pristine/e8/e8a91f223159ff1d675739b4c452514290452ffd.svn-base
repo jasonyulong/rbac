@@ -1,0 +1,73 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="tag-content content">
+    <form action="{:url('/v1/group/organization/addaccount')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <input type="hidden" id="td-platform-account" data-all="{:base64_encode(json_encode($platformAccountArr))}">
+        <input type="hidden" id="bind-account" data-all="{:base64_encode(json_encode($bindAccount))}">
+        <input type="hidden" name="user_id" value="{$params.user_id}">
+        <input type="hidden" name="org_id" value="{$params.org_id}">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label"><span class="red-color">*</span>平台：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" name="platform" id="platform-select" title="请选择">
+                            {volist name="platformAccountArr" id="v"}
+                            <option value="{$key}">{$key}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label"><span class="red-color">*</span>帐号：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" name="platform_account" id="select-ebay_account"  title="请选择"></select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">仓库：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" name="store_id">
+                            <option value="0">请选择</option>
+                            {volist name="storeArr" id="v"}
+                            <option value="{$key}">{$v}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">location：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" name="locations[]" multiple="multiple" data-actions-box="true" title="请选择">
+                            {volist name="locationArr" id="v"}
+                            <option value="{$v}">{$v}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label">销售标签：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control selectpicker show-tick" multiple="multiple" name="sales_label[]" data-actions-box="true" title="请选择">
+                            {volist name="saleArr" id="v"}
+                            <option value="{$v}">{$v}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dialog-footer td-align">
+                    <a class="btn btn-warning" href="javascript:parent.layer.closeAll();"> <i class="fa fa-close"></i> 取消</a>
+                    <button class="btn btn-primary" type="submit"> <i class="fa fa-save"></i> 确定</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}

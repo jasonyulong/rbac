@@ -1,0 +1,51 @@
+<div class="row quick-set">
+    <div class="col-xs-2 col-sm-2 col-md-2">
+        <h4>快速设置</h4>
+    </div>
+    <div class="col-xs-7 col-sm-7 col-md-7"></div>
+        
+    <div class="col-xs-3 col-sm-3 col-md-3">
+        <select name="" id="job_access" class="form-control selectpicker" data-actions-box="true" data-live-search="true" title="--岗位应用--" required="required">
+            {foreach $job_arr as $key => $value}
+            <option value='{$value['access']}'>{:str_repeat('----', $value['rank'] - 1)}{$value['title']}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+
+<form action="{:url('save')}" id="default_form">
+
+    <input type="hidden" name="id" value="{$params['id'] ?? 0}">
+    {foreach $menu_tree as $value}
+    <div class="panel panel-primary level1-rule">
+        <div class="panel-heading" id="anchor-{$value['id']}">
+            <label class="panel-title "><input type="checkbox" name="menu[]" class="level1-checkbox" value="{$value['id']}" {if $value['access'] == 1}checked{/if} id="cb_{$value['id']}" />{$value['title']}</label>
+        </div> 
+        {foreach $value['children'] as $k => $v}
+        <div class="panel-body  level2-rule">
+            <div class="panel panel-info">
+                    <div class="panel-heading">
+                        &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox" name="menu[]" value="{$v['id']}" {if $v['access'] == 1}checked{/if} id="cb_{$v['id']}" />{$v['title']}</label>
+                    </div>
+                    {foreach $v['children'] as $_k => $_v}
+                    <div class="panel-body level3-rule">
+                        <div>
+                            <label {if $_v['type'] == 1}class="error"{/if}><input type="checkbox" name="menu[]" class="level3-checkbox" value="{$_v['id']}" {if $_v['access'] == 1}checked{/if} id="cb_{$_v['id']}" />{$_v['title']}</label>
+                        </div>
+                        <div class="level4-rule">
+                            {foreach $_v['detail'] as $__k => $__v}
+                            <label  {if $_v['type'] == 1}class="error"{/if}><input type="checkbox" name="menu_detail[]" class="level4-checkbox" value="{$_v['id']}___{$__v['id']}" {if $__v['access'] == 1}checked{/if} id="cb_{$_v['id']}___{$__v['id']}" />{$__v['title']}</label>
+                            {/foreach}
+                        </div>
+                    </div>
+                    {/foreach}
+            </div>
+        </div>
+        {/foreach}
+    </div>
+    
+    {/foreach}
+    <div class="save-div">
+        <button class="btn btn-success" type="submit">保&nbsp;存</button>
+    </div>
+</form>

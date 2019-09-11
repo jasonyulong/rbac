@@ -1,0 +1,83 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户日志管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller\system;
+
+use app\common\controller\AuthController as Controller;
+use app\common\model\LogsAccess;
+use app\common\model\LogsDoings;
+
+/**
+ * 系统日志
+ * Class Logs
+ * @package app\v1\controller\system
+ */
+class Logs extends Controller
+{
+    protected $doingModel = null;
+    protected $accesModel = null;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->doingModel = new LogsDoings();
+        $this->accesModel = new LogsAccess();
+    }
+
+    /**
+     * 操作日志
+     * @return string
+     */
+    public function doings()
+    {
+        $sort = $this->request->get("sort", "id");
+        $order = $this->request->get("order", "DESC");
+        $keywords = $this->request->get('keywords', null);
+
+        $where = [];
+        if (!empty($keywords)) {
+            $where['username'] = ['LIKE', $keywords];
+        }
+
+        $total = $this->doingModel->where($where)->order($sort, $order)->count();
+        $list = $this->doingModel->where($where)->order($sort, $order)->paginate(20);
+
+        $this->assign('page', $list->render());
+        $this->assign('rows', $list);
+        $this->assign('total', $total);
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 访问日志
+     * @return string
+     * @throws \Exception
+     */
+    public function access()
+    {
+        $sort = $this->request->get("sort", "id");
+        $order = $this->request->get("order", "DESC");
+        $keywords = $this->request->get('keywords', null);
+
+        $where = [];
+        if (!empty($keywords)) {
+            $where['username'] = ['LIKE', $keywords];
+        }
+
+        $total = $this->accesModel->where($where)->order($sort, $order)->count();
+        $list = $this->accesModel->where($where)->order($sort, $order)->paginate(20);
+
+        $this->assign('page', $list->render());
+        $this->assign('rows', $list);
+        $this->assign('total', $total);
+
+        return parent::fetchAuto();
+    }
+}

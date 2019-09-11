@@ -1,0 +1,94 @@
+<?php
+/**
+ * 菜单应用服务
+ * User: wcd
+ * Date: 2019/4/1
+ * Time: 9:38
+ */
+namespace app\v1\service;
+use app\common\model\Menus;
+class Menu
+{
+    private $_menusModel = null;
+    private $_pageSize = 50;
+    public function __construct()
+    {
+        $this->_menusModel = new Menus();
+    }
+
+    /**
+     * 菜单列表分页展示
+     * @param $params
+     * @return array
+     */
+    public function index($params)
+    {
+        $where = [];
+        if(isset($params['searchKey'])){
+            $keyWords = trim($params['searchKey']);
+        }
+        if(isset($params['module_id']) && !empty($params['module_id'])){
+            $where['module_id'] = $params['module_id'];
+        }
+        if(isset($params['status']) && $params['status'] !== ''){
+            $where['status'] = $params['status'];
+        }
+        if(!empty($keyWords)){
+            $where['title|url'] = ['like', '%'.$keyWords.'%'];
+        }
+        unset($params['s']);
+        return $this->_menusModel->getPages($where, $this->_pageSize, $params);
+    }
+
+    /**
+     * 查询每个系统的菜单总数
+     * @author wcd
+     * @param $system
+     * @return array
+     */
+    public function getAllsystemMenus($system)
+    {
+        $menusNum = [];
+        foreach($system as $moduleid => $modname){
+            $menusNum[$modname] = $this->_menusModel->where(['module_id' => $moduleid])->count();
+        }
+       return $menusNum;
+    }
+    /**
+     * 添加一条菜单数据
+     * @author wcd
+     * @time 2019-4-1 18:28:47
+     * @param $params
+     * @return mixed
+     */
+    public function addMenus($params)
+    {
+        $save = [
+            'module_id' => rand(1, 100),
+            'type' => rand(0, 1),
+            'pid' => rand(2, 99),
+            'title' => rand(1, 9) . 'shizhe' . rand(10, 99),
+            'url' => '/v1/menus/index/add',
+            'icon' => '',
+            'remark' => 'cesh测试啊',
+            'weigh' => rand(1, 99),
+            'updatetime' => 0
+        ];
+
+        return $this->_menusModel->save($save);
+    }
+    public function editMenus($where, $params)
+    {
+        return $this->_menusModel->where($where)->update($params);
+    }
+    public function getOneMenu($where = [], $field = '')
+    {
+        if(empty($where)) return [];
+        return $this->_menusModel->where($where)->field($field)->find()->toArray();
+    }
+
+    public function delMenus()
+    {
+
+    }
+}

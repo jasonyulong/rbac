@@ -1,0 +1,75 @@
+---------------------------------------------------------------
+[ 2019-04-11T08:59:50+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组索引: rules_id[/opt/web/zs/apps/rbac/application/v1/service/User.php:629]
+---------------------------------------------------------------
+[ 2019-04-11T09:00:04+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/User.php:646]
+---------------------------------------------------------------
+[ 2019-04-11T09:00:17+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/User.php:646]
+---------------------------------------------------------------
+[ 2019-04-11T09:06:18+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组索引: rules_id[/opt/web/zs/apps/rbac/application/v1/service/User.php:629]
+---------------------------------------------------------------
+[ 2019-04-11T09:51:00+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [10501]SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 'user_id'' at line 1[/opt/web/zs/thinkphp/library/think/db/Connection.php:453]
+---------------------------------------------------------------
+[ 2019-04-11T09:52:21+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [10501]SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '= 'user_id'' at line 1[/opt/web/zs/thinkphp/library/think/db/Connection.php:453]
+---------------------------------------------------------------
+[ 2019-04-11T09:53:10+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [10501]SQLSTATE[42S22]: Column not found: 1054 Unknown column 'user_id' in 'where clause'[/opt/web/zs/thinkphp/library/think/db/Connection.php:453]
+---------------------------------------------------------------
+[ 2019-04-11T10:28:48+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [0]致命错误: Call to a member function toArray() on null[/opt/web/zs/apps/rbac/application/v1/service/User.php:650]
+---------------------------------------------------------------
+[ 2019-04-11T11:49:15+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected ')', expecting ']'[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:420]
+---------------------------------------------------------------
+[ 2019-04-11T11:59:09+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/editrule.html?saveType=all&ids=3831&status=2&dialog=1
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/e908e2d8246e244a1d32bfb504bd1221.php:171]
+---------------------------------------------------------------
+[ 2019-04-11T14:55:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Cannot use object of type stdClass as array[/opt/web/zs/apps/rbac/application/v1/service/User.php:57]
+---------------------------------------------------------------
+[ 2019-04-11T14:55:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Cannot use object of type stdClass as array[/opt/web/zs/apps/rbac/application/v1/service/User.php:57]
+---------------------------------------------------------------
+[ 2019-04-11T15:13:23+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/editrule.html?saveType=all&ids=1428&status=2&dialog=1
+[ error ] [0]类型错误: Too few arguments to function app\v1\service\Position::getparent(), 0 passed in /opt/web/zs/apps/rbac/application/v1/controller/users/Index.php on line 363 and at least 1 expected[/opt/web/zs/apps/rbac/application/v1/service/Position.php:452]
+---------------------------------------------------------------
+[ 2019-04-11T15:23:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/editrule.html?saveType=all&ids=1428&status=2&dialog=1
+[ error ] [0]语法解析错误: syntax error, unexpected 'elseif' (T_ELSEIF), expecting end of file[/opt/web/zs/apps/rbac/runtime/temp/e908e2d8246e244a1d32bfb504bd1221.php:64]
+---------------------------------------------------------------
+[ 2019-04-11T15:56:20+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected 'else' (T_ELSE), expecting end of file[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:236]
+---------------------------------------------------------------
+[ 2019-04-11T17:29:38+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/application/v1/service/User.php:452]
+---------------------------------------------------------------
+[ 2019-04-11T17:31:45+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/application/v1/service/User.php:452]
+---------------------------------------------------------------
+[ 2019-04-11T17:49:41+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组下标: 86[/opt/web/zs/apps/rbac/application/v1/service/User.php:452]
+---------------------------------------------------------------
+[ 2019-04-11T18:29:34+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]trim() expects parameter 1 to be string, array given[/opt/web/zs/apps/rbac/application/v1/service/User.php:221]
+---------------------------------------------------------------
+[ 2019-04-11T18:31:19+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]trim() expects parameter 1 to be string, array given[/opt/web/zs/apps/rbac/application/v1/service/User.php:221]
+---------------------------------------------------------------
+[ 2019-04-11T18:32:50+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]explode() expects parameter 2 to be string, array given[/opt/web/zs/apps/rbac/application/v1/service/User.php:221]
+---------------------------------------------------------------
+[ 2019-04-11T18:33:14+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/application/v1/service/User.php:221]
+---------------------------------------------------------------
+[ 2019-04-11T19:33:55+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=1442&addType=edit
+[ error ] [8]未定义数组下标: 61[/opt/web/zs/apps/rbac/application/v1/service/User.php:372]
+---------------------------------------------------------------
+[ 2019-04-11T19:34:07+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=1442&addType=edit
+[ error ] [8]未定义数组下标: 61[/opt/web/zs/apps/rbac/application/v1/service/User.php:372]
+---------------------------------------------------------------
+[ 2019-04-11T19:38:27+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组下标: 1[/opt/web/zs/apps/rbac/application/v1/service/User.php:457]

@@ -1,0 +1,42 @@
+<?php
+// +----------------------------------------------------------------------
+// | 默认模块默认控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller;
+
+use app\common\controller\PublicController as Controller;
+
+class Index extends Controller
+{
+    /**
+     * 首页
+     * @return string
+     */
+    public function index()
+    {
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人资料
+     * @return void
+     */
+    public function profile()
+    {
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人设置
+     * @return void
+     */
+    public function setting()
+    {
+        return parent::fetchAuto();
+    }
+}

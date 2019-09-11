@@ -1,0 +1,429 @@
+<?php
+// +----------------------------------------------------------------------
+// | Token授权中心
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\library\auth;
+
+
+use app\common\model\Menus;
+use app\common\model\MenusDetail;
+use app\common\model\UsersJobAccess;
+use app\common\model\UsersJobAccessAlso;
+use app\common\model\UsersLabelAccess;
+use plugin\Tree;
+use think\Config;
+
+class Access extends Drive
+{
+    protected $breadcrumb = [];
+    protected $menus = [];
+    protected $userPowers = [];
+
+    /**
+     * 设置用户信息
+     * @param $users 用户信息
+     * @return bool
+     */
+    public function setUsers($users)
+    {
+        if (empty($users) || !is_object($users)) return false;
+
+        $this->id = $users->id;
+        $this->username = $users->username;
+        $this->orgId = $users->org_id;
+        $this->jobId = $users->job_id;
+        $this->jobType = $users->job_type;
+        $this->token = $users->token;
+
+        $this->users = $users;
+
+        return true;
+    }
+
+    /**
+     * 获取所有菜单
+     * @param $module_id
+     * @return array
+     */
+    public function getMenus($module_id)
+    {
+        if (!empty($this->menus)) {
+            return $this->menus;
+        }
+
+        $this->menus = collection(Menus::where(['status' => 1, 'module_id' => $module_id])->order('weigh', 'desc')->select())->toArray();
+
+        return $this->menus;
+    }
+
+    /**
+     * 获得面包屑导航
+     * @param string $path
+     * @return array
+     */
+    public function getBreadCrumb($module_id, $path = '')
+    {
+        if ($this->breadcrumb || !$path)
+            return $this->breadcrumb;
+        $path_rule_id = 0;
+
+        // 必须将结果集转换为数组
+        $menuLists = $this->getMenus($module_id);
+        foreach ($menuLists as $rule) {
+            $path_rule_id = $rule['url'] == $path ? $rule['id'] : $path_rule_id;
+        }
+        if ($path_rule_id) {
+            $this->breadcrumb = Tree::instance()->init($menuLists)->getParents($path_rule_id, true);
+            foreach ($this->breadcrumb as $k => &$v) {
+                $v['url'] = url($v['url']);
+                $v['title'] = __($v['title']);
+            }
+        }
+        if (empty($this->breadcrumb)) {
+            $this->breadcrumb = $this->getDocComment($path);
+        }
+
+        return $this->breadcrumb;
+    }
+
+    /**
+     * 获取注释
+     * @param $path 路径
+     * @return array
+     */
+    public function getDocComment($path)
+    {
+        $explode = explode('/', $path);
+        if (empty($explode)) return [];
+
+        $class = sprintf('\app\%s\controller\%s\%s', $explode[0], $explode[1], ucfirst($explode[2]));
+        $action = $explode[3] ?? '';
+        if (empty($action)) return [];
+
+        $_this = new \ReflectionClass($class);
+        $classTitle = grepDocComment($_this->getDocComment());
+        $mechodTitle = grepDocComment($_this->getMethod($action)->getDocComment());
+        $mechodTitle = trim(trim($mechodTitle, '@desc'), '@name');
+
+        return [
+            ['title' => $classTitle],
+            ['title' => $mechodTitle],
+        ];
+    }
+
+    /**
+     * 获取菜单列表
+     * @param $module_id 系统ID
+     * @param array $params 参数
+     * @param string $fixedPage
+     * @return array
+     */
+    public function getSidebar($module_id, $params = [], $fixedPage = '/index/index/index')
+    {
+        $colorArr = ['red', 'green', 'yellow', 'blue', 'teal', 'orange', 'purple'];
+        $colorNums = count($colorArr);
+        $badgeList = [];
+
+        if (!empty($params)) {
+            // 生成菜单的badge
+            foreach ($params as $k => $v) {
+                $url = $k;
+                if (is_array($v)) {
+                    $nums = isset($v[0]) ? $v[0] : 0;
+                    $color = isset($v[1]) ? $v[1] : $colorArr[(is_numeric($nums) ? $nums : strlen($nums)) % $colorNums];
+                    $class = isset($v[2]) ? $v[2] : 'label';
+                } else {
+                    $nums = $v;
+                    $color = $colorArr[(is_numeric($nums) ? $nums : strlen($nums)) % $colorNums];
+                    $class = 'label';
+                }
+                //必须nums大于0才显示
+                if ($nums) {
+                    $badgeList[$url] = '<small class="' . $class . ' pull-right bg-' . $color . '">' . $nums . '</small>';
+                }
+            }
+        }
+
+        // 读取用户当前拥有的菜单节点
+        $userMenuIds = $this->getMenusList();
+        $select_id = 0;
+
+        // 必须将结果集转换为数组
+        $menuLists = $this->getMenus($module_id);
+
+        foreach ($menuLists as $k => &$v) {
+            if (!in_array($v['id'], $userMenuIds)) {
+                unset($menuLists[$k]);
+                continue;
+            }
+            $select_id = (trim($v['url'], '/') == $fixedPage || trim($v['url'], '/') . '/index' == $fixedPage) ? ($v['pid'] > 0 ? $v['pid'] : $v['id']) : $select_id;
+            $v['url'] = $v['url'];
+            $v['badge'] = isset($badgeList[$v['url']]) ? $badgeList[$v['url']] : '';
+            $v['title'] = __($v['title']);
+        }
+
+        $menu = $nav = '';
+
+        // 获取顶级菜单
+        $topList = [];
+        foreach ($menuLists as $index => $item) {
+            if (!$item['pid']) {
+                $topList[] = $item;
+            }
+        }
+        if ($select_id == 0 && !empty($topList)) {
+            $select_id = $topList[0]['id'] ?? 0;
+        }
+
+        $selectParentIds = [];
+        $tree = Tree::instance();
+        $tree->init($menuLists);
+        if ($select_id) {
+            $selectParentIds = $tree->getParentsIds($select_id, true);
+        }
+
+        // 顶部菜单
+        foreach ($topList as $index => $item) {
+            $childList = Tree::instance()->getTreeMenu($item['id'], '<li class="@class" pid="@pid"><a href="@url" addtabs="@id" url="@url"><i class="@icon"></i> <span>@title</span> <span class="fa arrow"></span></a> @childlist</li>', $select_id, '', 'ul', 'class="nav nav-second-level"');
+            // 生成顶部导航
+            $navchildlist = Tree::instance()->getTreeMenu($item['id'], '<div class="title">@title</div>@childlist', $select_id, '', 'div', 'class="mini clearfix"');
+            // 生成下拉
+            $navchildlistul = !empty($navchildlist) ? '<ul class="dropdown-menu dropdown-tasks">' . $navchildlist . '</ul>' : '';
+
+            $current = in_array($item['id'], $selectParentIds);
+            $url = url('/' . trim($item['url'], '/'));
+
+            $childList = str_replace('" pid="' . $item['id'] . '"', ' treeview ' . ($current ? '' : '') . '" pid="' . $item['id'] . '"', $childList);
+            $ico = (!empty($item['icon']) && trim($item['icon']) != 'fa') ? $item['icon'] : 'fa fa-chevron-right';
+
+            $nstr = '<li class="dropdown @current"><a href="@url" class="dropdown-toggle" data-hover="dropdown" addtabs="@addtabs" url="@url"> <i class="@icon"></i> <span>@title</span> <span class="pull-right-container"> </span></a> @navchildlistul</li>';
+            $nav .= strtr($nstr, [
+                '@current' => ($current ? 'active' : ''),
+                '@url' => $url,
+                '@addtabs' => $item['id'],
+                '@icon' => $ico,
+                '@title' => $item['title'],
+                '@navchildlistul' => $navchildlistul,
+            ]);
+            $menu .= $childList;
+        }
+
+        return [$menu, $nav];
+    }
+
+
+    /**
+     * 获取菜单权限
+     * @param null $uid
+     * @return array
+     */
+    public function getMenusList($uid = null)
+    {
+        $uid = is_null($uid) ? $this->id : $uid;
+
+        static $_rulelist = []; //保存用户验证通过的权限列表
+        if (isset($_rulelist[$uid])) {
+            return $_rulelist[$uid];
+        }
+
+        // 读取用户规则节点
+        list($menuId, $ruleId) = $this->getRuleIds($uid);
+        if (empty($menuId)) {
+            $_rulelist[$uid] = [];
+
+            return [];
+        }
+
+        return $menuId;
+    }
+
+    /**
+     * 获取节点权限
+     * @param null $uid
+     * @return array
+     */
+    public function getRuleList($uid = null)
+    {
+        $uid = is_null($uid) ? $this->id : $uid;
+
+        static $_rulelist = []; //保存用户验证通过的权限列表
+        if (isset($_rulelist[$uid])) {
+            return $_rulelist[$uid];
+        }
+
+        // 读取用户规则节点
+        list($menuId, $ruleId) = $this->getRuleIds($uid);
+        if (empty($ruleId)) {
+            $_rulelist[$uid] = [];
+
+            return [];
+        }
+
+        return $ruleId;
+    }
+
+    /**
+     * 获取用户岗位ID
+     * @param $uid 用户ID
+     * @return mixed
+     */
+    public function getRuleIds($uid)
+    {
+        static $groups = [];
+        if (isset($groups[$uid])) {
+            return $groups[$uid];
+        }
+
+        // 获取权限
+        $this->getAccess($this->id, Config::get('app.system_id'), $this->jobId, $this->getRulesId());
+        // 返回权限
+        $groups[$uid] = [$this->userPowers['menus_id'] ?? [], $this->userPowers['menus_detail_id'] ?? []];
+
+        return $groups[$uid];
+    }
+
+    /**
+     * 获取用户岗位和标签权限
+     * @param $module_id 系统ID
+     * @param $job_id 岗位ID
+     * @param array $label_ids 标签ID
+     * @return array
+     */
+    public function getAccess($user_id, $module_id, $job_id, $label_ids = []) : array
+    {
+        if (!empty($this->userPowers)) {
+            return $this->userPowers;
+        }
+
+        // 从redis获取权限
+        $getRedis = $this->redis->handler()->hget(Config::get('redis.user_power_all'), $user_id);
+        if ($getRedis) {
+            $moduleAuth = json_decode($getRedis, true);
+            $this->userPowers = $moduleAuth;
+            if (isset($moduleAuth['module_auth'][$module_id])) {
+                return $moduleAuth['module_auth'][$module_id];
+            }
+        }
+
+        if ($job_id <= 0 && empty($label_ids)) return [];
+        // 超级管理员拥有所有权限
+        if ($job_id == 1 || in_array(1, $label_ids)) {
+            return $this->getAllAccess($user_id, $module_id);
+        }
+        $lableAccess = [];
+        // 岗位菜单
+        $jobAccess = UsersJobAccess::all(['job_id' => $job_id, 'module_id' => $module_id]);
+        // 标签权限
+        if (count($label_ids) > 0) {
+            $lableAccess = UsersLabelAccess::all(['label_id' => ['IN', $label_ids], 'module_id' => $module_id]);
+        }
+        $menu_ids = $menu_detail_ids = $nodes = [];
+        // 岗位权限
+        if (!empty($jobAccess)) {
+            foreach ($jobAccess as $access) {
+                // 菜单
+                if ($access->type == 0) {
+                    if ($access->menu_id > 0) $menu_ids[] = $access->menu_id;
+                }
+                // 节点
+                if ($access->type == 1) {
+                    if ($access->menu_detail_id > 0) $nodes[] = $access->menu_detail_id;
+                }
+            }
+        }
+        // 标签权限
+        if (!empty($lableAccess)) {
+            foreach ($lableAccess as $access) {
+                // 菜单
+                if ($access->type == 0) {
+                    if ($access->menu_id > 0) $menu_ids[] = $access->menu_id;
+                }
+                // 节点
+                if ($access->type == 1) {
+                    if ($access->menu_detail_id > 0) $nodes[] = $access->menu_detail_id;
+                }
+            }
+        }
+
+        $userMenus = $userMenusDetail = $userNodes = [];
+        if (!empty($menu_ids)) {
+            $userMenus = Menus::where(['id' => ['IN', $menu_ids], 'status' => 1])->column('url');
+        }
+        if (!empty($nodes)) {
+            $userMenusDetail = MenusDetail::where(['id' => ['IN', $nodes], 'status' => 1, 'type' => 0])->column('url');
+            $userNodes = MenusDetail::where(['id' => ['IN', $nodes], 'status' => 1, 'type' => 1])->column('condition');
+        }
+        $this->userPowers = [
+            'menus' => array_merge($userMenus, $userMenusDetail),
+            'nodes' => $userNodes,
+            'menus_id' => array_unique($menu_ids),
+            'menus_detail_id' => array_unique($menu_detail_ids),
+        ];
+
+        // 系统权限
+        $moduleAuth = [$module_id => array_merge($this->userPowers['menus'], $this->userPowers['nodes'])];
+        $this->userPowers['module_auth'] = $moduleAuth;
+        // 将权限写入Redis
+        $this->redis->handler()->hset(Config::get('redis.user_power'), $user_id, json_encode($moduleAuth));
+        // 将权限所有参数写入redis
+        $this->redis->handler()->hset(Config::get('redis.user_power_all'), $user_id, json_encode($this->userPowers));
+
+        return array_merge($this->userPowers['menus'], $this->userPowers['nodes']);
+    }
+
+    /**
+     * 获取所有权限
+     * @param $user_id 用户ID
+     * @param $module_id 系统ID
+     * @return array
+     */
+    protected function getAllAccess($user_id, $module_id)
+    {
+        if (!empty($this->userPowers)) {
+            return $this->userPowers;
+        }
+        // 用户菜单
+        $userMenus = Menus::where([
+            'module_id' => $module_id,
+            'status' => 1,
+            'url' => ['NEQ', '']
+        ])->column('id,url');
+        // 用户菜单详情
+        $userMenusDetail = MenusDetail::where([
+            'module_id' => $module_id,
+            'status' => 1,
+            'type' => 0,
+            'url' => ['NEQ', '']
+        ])->column('menu_id,url');
+        // 用户菜单节点
+        $userNodes = MenusDetail::where([
+            'module_id' => $module_id,
+            'status' => 1,
+            'type' => 1,
+        ])->column('menu_id,condition');
+        // 菜单ID
+        $menu_ids = array_merge(array_keys($userMenus), array_keys($userMenusDetail));
+
+        // 菜单权限
+        $this->userPowers = [
+            'menus' => array_merge($userMenus, $userMenusDetail),
+            'nodes' => $userNodes,
+            'menus_id' => array_unique($menu_ids),
+            'menus_detail_id' => array_keys($userMenusDetail)
+        ];
+        // 系统权限
+        $moduleAuth = [$module_id => array_merge($this->userPowers['menus'], $this->userPowers['nodes'])];
+        $this->userPowers['module_auth'] = $moduleAuth;
+        // 将权限写入Redis
+        $this->redis->handler()->hset(Config::get('redis.user_power'), $user_id, json_encode($moduleAuth));
+        // 将权限所有参数写入redis
+        $this->redis->handler()->hset(Config::get('redis.user_power_all'), $user_id, json_encode($this->userPowers));
+
+        return array_merge($this->userPowers['menus'], $this->userPowers['nodes']);
+    }
+}

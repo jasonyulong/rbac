@@ -1,0 +1,36 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content content">
+    <div>
+        <a class="btn btn-success btn-sm add_account" data-url="{:url('/v1/group/organization/addaccount',array('user_id'=>$info['user_id']))}" data-id="{$info.org_id}" href="javascript:;"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i>新增帐号</a>
+        &nbsp;&nbsp;
+        <a class="btn btn-success btn-sm add_account" data-url="{:url('/v1/group/organization/batchaccount',array('user_id'=>$info['user_id']))}" data-id="{$info.org_id}" href="javascript:;"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i>批量新增</a>
+        &nbsp;&nbsp;
+        <a class="btn btn-danger btn-sm batch_move_account" href="javascript:;" data-url="{:url('/v1/group/organization/moveaccount')}" data-org="{$info.org_id}" data-user="{$info.user_id}"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i>一键移除</a>
+    </div>
+    <br>
+    <form action="{:url('/v1/group/organization/edit')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="td-align">平台</th>
+            <th class="td-align">帐号</th>
+            <th class="td-align">操作</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+        {volist name="accountInfo" id="vo"}
+        <tr>
+            <td class="td-align td-padding">{$vo.platform}</td>
+            <td class="td-align td-padding">{$vo.platform_account}</td>
+            <td class="td-align td-padding">
+                <a class="btn btn-info btn-xs edit_account" data-url="{:url('/v1/group/organization/editaccount',array('id'=>$vo['id']) )}" href="javascript:;"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>编辑</a>
+                <a class="btn btn-danger btn-xs move_account" href="javascript:;" data-url="{:url('/v1/group/organization/moveaccount')}" data-id="{$vo.id}"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i>移除</a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    </form>
+</div>
+{/block}

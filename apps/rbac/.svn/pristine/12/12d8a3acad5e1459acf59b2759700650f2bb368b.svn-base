@@ -1,0 +1,195 @@
+<?php
+// +----------------------------------------------------------------------
+// | 组织架构相关数据同步
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command\toerp;
+
+
+use think\console\Input;
+use think\console\Output;
+use think\Config;
+
+class Organization
+{
+    /**
+     * 输入对象
+     * @var Input
+     */
+    private $input;
+
+    /**
+     * 输出对象
+     * @var Output
+     */
+    private $output;
+
+    /**
+     * 构造函数
+     * Orders constructor.
+     * @param Input $input 输入对象
+     * @param Output $output 输出对象
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * 同步数据
+     */
+    public function run()
+    {
+        $start = strtotime("-10 minute");
+
+        $erpOrgModel = new \app\common\model\erp\Organization();
+        $erpAccountModel = new \app\common\model\erp\EbayAccount();
+        $organizationUserModel = new \app\common\model\erp\OrganizationUser();
+        $organizationPropertyModel = new \app\common\model\erp\OrganizationProperty();
+        $organizationEbayModel = new \app\common\model\erp\OrganizationEbay();
+
+        $usermodel = new \app\common\model\Users();
+        $organizationModel = new \app\common\model\Organization();
+
+        $organizations = $organizationModel->where('createtime|updatetime', 'EGT', $start)->select();
+        //$organizations = $organizationModel->where(['id' => 235])->select();
+        $this->output->writeln("sync org total:" . count($organizations));
+        if (count($organizations) <= 0) {
+            return false;
+        }
+
+        // 已经存在的部门
+        $erpOrgIds = $erpOrgModel->column('id');
+
+        // 已经存在的用户
+        $userIds = [];
+        $users = $usermodel->column('id,username,company_id,job_id,job_type');
+        foreach ($users as $user) {
+            $userIds[$user['id']] = $user;
+        }
+
+        // 生成部门代码
+        $code = function ($id, $rank) {
+            $arr = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E', 6 => 'F'];
+
+            return $arr[$rank] . ($id >= 100 ? $id : '0' . $id);
+        };
+
+        foreach ($organizations as $org) {
+            $orgData = [
+                'code' => $code($org->id, $org->rank),
+                'parent_id' => $org->pid,
+                'tid' => $org->tid,
+                'lid' => $org->lid,
+                'rid' => $org->rid,
+                'name' => $org->title,
+                'level' => $org->rank,
+                'manage' => $org->manage,
+                'manage_uid' => $org->manage_uid,
+                'org_status' => $org->status,
+                'company_id' => $userIds[$org->manage_uid]['company_id'] ?? 1,
+                'attr_id' => $userIds[$org->manage_uid]['job_type'] ?? 1,
+            ];
+
+            $orgusers = $orgproperty = $orgebay = [];
+            // 部门成员
+            if ($org->orgusers) {
+                foreach ($org->orgusers as $orguser) {
+                    $orgusers[] = [
+                        'organize_id' => $orguser->org_id,
+                        'user_id' => $orguser->user_id,
+                        'user_name' => $orguser->user_name,
+                        'status' => $orguser->status,
+                        'company_id' => $userIds[$orguser->user_id]['company_id'] ?? 1,
+                        'attr_id' => $userIds[$orguser->user_id]['job_type'] ?? 1,
+                    ];
+                }
+            }
+            // 绑定帐号
+            if ($org->orguserAccounts) {
+                foreach ($org->orguserAccounts as $account) {
+                    // ebay特殊处理
+                    if ($account->platform == 'ebay') {
+                        $orgebay[] = [
+                            'organize_id' => $account->org_id,
+                            'user_id' => $account->user_id,
+                            'account' => $account->platform_account,
+                            'store_id' => $account->store_id ?? 0,
+                            'locations' => $account->locations ?? '',
+                            'sales_label' => $account->sales_label ?? '',
+                            'status' => $account->status,
+                        ];
+                    } else {
+                        $keys = $account->user_id . $account->org_id . $account->platform;
+                        $orgproperty[$keys][] = [
+                            'organize_id' => $account->org_id,
+                            'user_id' => $account->user_id,
+                            'options' => 1,
+                            'groups' => $account->platform,
+                            'value' => $account->platform_account,
+                            'status' => $account->status,
+                        ];
+                    }
+                }
+            }
+            // 开始更新数据
+            if (in_array($org->id, $erpOrgIds)) {
+                $erpOrgModel->update($orgData, ['id' => $org->id]);
+            } else {
+                $erpOrgModel->create(array_merge($orgData, ['id' => $org->id]));
+            }
+            // 成员
+            if (count($orgusers) > 0) {
+                foreach ($orgusers as $user) {
+                    $userExits = $organizationUserModel->get(['user_id' => $user['user_id'], 'organize_id' => $user['organize_id']]);
+                    if (!empty($userExits)) {
+                        $organizationUserModel->update($user, ['id' => $userExits->id]);
+                    } else {
+                        $organizationUserModel->create($user);
+                    }
+                }
+            }
+            // 非ebay帐号
+            if (count($orgproperty) > 0) {
+                foreach ($orgproperty as $property) {
+                    $accounts = !empty($property) ? array_column($property, 'value') : [];
+                    $accountsStr = implode(",", $accounts);
+                    $saveData = $property[0];
+                    $saveData['value'] = $accountsStr;
+
+                    $propertyExits = $organizationPropertyModel->get(['user_id' => $saveData['user_id'], 'organize_id' => $saveData['organize_id'], 'groups' => $saveData['groups']]);
+                    if (!empty($propertyExits)) {
+                        $organizationPropertyModel->update($saveData, ['id' => $propertyExits->id]);
+                    } else {
+                        $organizationPropertyModel->create($saveData);
+                    }
+                }
+            }
+            // ebay帐号
+            if (count($orgebay) > 0) {
+                foreach ($orgebay as $ebay) {
+                    $ebayExits = $organizationEbayModel->get([
+                        'user_id' => $ebay['user_id'],
+                        'organize_id' => $ebay['organize_id'],
+                        'account' => $ebay['account'],
+                        'store_id' => $ebay['store_id'],
+                        'locations' => $ebay['locations'],
+                        'sales_label' => $ebay['sales_label'],
+                    ]);
+                    if (!empty($ebayExits)) {
+                        $organizationEbayModel->update($ebay, ['id' => $ebayExits->id]);
+                    } else {
+                        $organizationEbayModel->create($ebay);
+                    }
+                }
+            }
+            $this->output->writeln("{$org->id} {$org->title} success");
+        }
+        $this->output->writeln("success");
+    }
+}

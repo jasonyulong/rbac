@@ -1,0 +1,162 @@
+<?php
+
+// +----------------------------------------------------------------------
+// | 配置 处理 库
+// +----------------------------------------------------------------------
+// | COPYRIGHT (C) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | AUTHOR : lamkakyun
+// | DATE   : 2019-04-12 09:46:29
+// | VERSION：0.0.1
+// +----------------------------------------------------------------------
+
+namespace app\common\library;
+
+use plugin\Tree;
+use think\Config;
+use app\common\model\Menus;
+use app\common\model\MenusDetail;
+use app\common\model\UsersJobAccess;
+
+class MenuLib
+{
+    // 静态对象
+    protected static $instance = null;
+
+    /**
+     * 单例
+     * @author lamkakyun
+     * @date 2019-04-12 09:47:11
+     * @return void
+     */
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+
+    /**
+     * 菜单 树结构
+     * @author lamkakyun
+     * @date 2019-04-12 09:48:26
+     * @return void
+     */
+    public function getMenuTree($module_id, $job_id)
+    {
+        if (!preg_match('/^\d+$/', $module_id)) return ['code' => -1, 'msg' => '参数错误'];
+
+        $where = ['status' => 1, 'module_id' => $module_id];
+        $fields = 'id,type,pid,title,url,icon';
+        $all_menus = Menus::field($fields)->where($where)->order('weigh DESC,id ASC')->select()->toArray();
+
+        $all_access = UsersJobAccess::where(['job_id' => $job_id])->select()->toArray();
+        $menu_access = [];
+        $menu_detail_access = [];
+        foreach ($all_access as $key => $value)
+        {
+            if ($value['type'] == 0) $menu_access[$value['menu_id']] = $value['job_id'];
+
+            $tmp_key = "{$value['menu_id']}___{$value['menu_detail_id']}";
+            if ($value['type'] == 1) $menu_detail_access[$tmp_key] = $value['job_id'];
+        }
+        // echo '<pre>';var_dump($menu_access, $menu_detail_access);echo '</pre>';
+        // exit;
+        // $all_access = tranform_data($all_access, 1);
+
+        foreach ($all_menus as $key => $value)
+        {
+            $all_menus[$key]['access'] = isset($menu_access[$value['id']]) ? '1' : '0';
+        }
+
+        // echo '<pre>';var_dump($all_menus);echo '</pre>';
+        // exit;
+
+        $menu_ids = array_column($all_menus, 'id');
+        $where_detail = ['status' => 1, 'menu_id' => ['IN', $menu_ids]];
+        $fields = 'id, menu_id, title, url, type';
+        $tmp = MenusDetail::field($fields)->where($where_detail)->order('weigh DESC, id ASC')->select()->toArray();
+
+        $all_menu_details = [];
+        foreach ($tmp as $value)
+        {
+            $tmp_key = "{$value['menu_id']}___{$value['id']}";
+            $value['access'] = isset($menu_detail_access[$tmp_key]) ? '1' : '0';
+            $all_menu_details[$value['menu_id']][$value['id']] = $value;
+        }
+
+        // echo '<pre>';var_dump(2323,$all_menu_details);echo '</pre>';
+        // exit;
+
+        $tmp = $all_menus;
+        $all_menus = [];
+        foreach ($tmp as $key => $value)
+        {
+            $value['detail'] = $all_menu_details[$value['id']] ?? [];
+            $value['children'] = [];
+            $all_menus[$value['id']] = $value;
+        }
+
+        // 假设最大 10级 无限分类
+        $max_level = 10;
+        $level = 1;
+
+        $reshape_menus = [];
+        while ($level <= $max_level)
+        {
+            if (empty($all_menus)) break;
+            $tmp_ids = array_keys($reshape_menus);
+
+            $unset_ids = [];
+            foreach ($all_menus as $key => $value)
+            {
+                if ($level == 1) // root
+                {
+                    if ($value['pid'] == 0) 
+                    {
+                        $value['level'] = $level;
+                        $reshape_menus[$value['id']] = $value;
+                        $unset_ids[] = $value['id'];
+                    }
+                    else continue;
+                }
+                else
+                {
+                    if (in_array($value['pid'], $tmp_ids))
+                    {
+                        $value['level'] = $level;
+                        $reshape_menus[$value['id']] = $value;
+                        $unset_ids[] = $value['id'];
+                    }
+                    else continue;
+                }
+            }
+
+            foreach ($unset_ids as $value)
+            {
+                unset($all_menus[$value]);
+            }
+
+            $level ++;
+        }
+
+        $current_level = max(array_column($reshape_menus,'level'));
+        $min_level = 1;
+        while ($min_level < $current_level)
+        {
+            $tmp_menus = $reshape_menus;
+            foreach ($tmp_menus as $key => $value)
+            {
+                if ($value['level'] != $current_level) continue;
+                unset($reshape_menus[$value['id']]);
+                $reshape_menus[$value['pid']]['children'][$value['id']] = $value;
+            }
+            $current_level --;
+        }
+
+        return ['code' => 0, 'msg' => 'success', 'data' => $reshape_menus];
+    }
+    
+}

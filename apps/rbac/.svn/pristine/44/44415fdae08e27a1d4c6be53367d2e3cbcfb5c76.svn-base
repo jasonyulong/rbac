@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+</head>
+<body class="skin-blue adaptive">
+    <div id="wrapper">
+        {include file="common/header" /}
+        <!-- Full Width Column -->
+        <div id="page-wrapper">
+            
+        </div>
+    </div>
+    <!-- 加载JS脚本 -->
+    {include file="common/script" /}
+</body>
+</html>

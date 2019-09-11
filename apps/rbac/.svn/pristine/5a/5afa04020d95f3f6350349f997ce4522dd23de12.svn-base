@@ -1,0 +1,156 @@
+define(['jquery', 'bootstrap', 'template'], function ($, undefined, template) {
+    var method = {
+        open: function (dom, title, height) {
+            $(dom).click(function () {
+                var url = $(this).attr('data-url') || '';
+                var titles = title || '';
+                var height1 = height ? height : '550px'
+                Fast.api.open(url, titles, {area: ['700px', height1]});
+            });
+        },
+        get_batch_params: function () {
+            var data_arr = [];
+            var tmp_arr = $('.data-check_box');
+            var attr_name = 'data-id';
+            for (var i = 0; i < tmp_arr.length; i++) {
+                if ($(tmp_arr[i]).is(':checked')) {
+                    var data_item = $(tmp_arr[i]).attr(attr_name);
+                    data_item = $.trim(data_item);
+                    if (data_item) data_arr.push(data_item);
+                }
+            }
+            var id = data_arr;
+            return id;
+        },
+        //刷新页面
+        fun:function(){window.location.reload();}
+    }
+
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            //全选操作
+            $('.data-check_box_total').click(function () {
+                var thisobj = $(this);
+                var is_check = thisobj.is(':checked');
+                var sub_check_box_list = $('.data-check_box');
+                for (var i = 0; i < sub_check_box_list.length; i++) {
+                    $(sub_check_box_list[i]).prop('checked', is_check);
+                }
+                $('.box_total').html($("input[name='box_checked']:checked").length);
+            });
+            // 统计选择数量
+            $(".data-check_box").click(function () {
+                $('.box_total').html($("input[name='box_checked']:checked").length);
+            });
+            //批量删除
+            $('.batch_delete').click(function () {
+                layer.confirm('确定删除吗?', {icon: 3, title: '重要提示'}, function (index) {
+                    var url = $('.batch_delete').attr('data-url');
+                    var id = method.get_batch_params();
+                    console.log(url);
+                    if (id.length == 0) {
+                        layer.msg('请选择操作的订单');
+                        return false;
+                    }
+                    var ids = id.join(',');
+                    var options = [];
+                    options.url = url;
+                    options.data = {ids: ids};
+                    Fast.api.ajax(options,method.fun);
+                });
+            });
+
+
+            //批量移除用户
+            $('.batch_move').click(function () {
+                layer.confirm('确定移除吗?', {icon: 3, title: '重要提示'}, function (index) {
+                    var url = $('.batch_move').attr('data-url');
+                    var id = method.get_batch_params();
+                    if (id.length == 0) {
+                        layer.msg('请选择操作的订单');
+                        return false;
+                    }
+                    var ids = id.join(',');
+                    var options = [];
+                    options.url = url;
+                    options.data = {ids: ids};
+                    Fast.api.ajax(options,method.fun);
+                });
+            });
+
+            //移除单个用户
+            $('.move').click(function () {
+                var url = $(this).attr('data-url');
+                layer.confirm('确定移除吗?', {icon: 3, title: '重要提示'}, function (index) {
+                    console.log(url);
+                    var options = [];
+                    options.url = url;
+                    Fast.api.ajax(options,method.fun);
+                });
+            });
+        },
+
+        // 岗位管理
+        position: function () {
+            //节点
+            var dom = {
+                add: ".add",
+                edit: ".edit",
+                copy: ".copy",
+                cat: ".cat",
+                auth: ".auth"
+            };
+
+            
+
+            //添加岗位
+            method.open(dom.add, '新增岗位', '');
+
+            //编辑岗位
+            method.open(dom.edit, '编辑岗位', '');
+
+            //复制岗位
+            method.open(dom.copy, '复制岗位', '');
+
+            //查看用户
+            method.open(dom.cat, '查看用户', '680px');
+
+            //查看权限
+            $(dom.auth).click(function () {
+                layer.msg('待开发');
+            })
+        },
+        //权限标签管理
+        tag: function () {
+            //节点
+            var dom = {
+                add: ".add",
+                edit: ".edit",
+                copy: ".copy",
+                cat: ".cat",
+                auth: ".auth"
+            };
+
+            //添加岗位
+            method.open(dom.add, '新增标签', '400px');
+
+            //编辑岗位
+            method.open(dom.edit, '编辑标签', '400px');
+
+            //复制岗位
+            method.open(dom.copy, '复制标签', '400px');
+
+            //查看用户
+            method.open(dom.cat, '查看用户', '680px');
+
+            //查看权限
+            $(dom.auth).click(function () {
+                layer.msg('待开发');
+            })
+        },
+    }
+    return Controller;
+});
+
+

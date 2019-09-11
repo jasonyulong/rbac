@@ -1,0 +1,42 @@
+---------------------------------------------------------------
+[ 2019-04-09T12:44:43+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?id=1414&dialog=1
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:888]
+---------------------------------------------------------------
+[ 2019-04-09T12:51:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=2
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:876]
+---------------------------------------------------------------
+[ 2019-04-09T12:51:55+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=2
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:876]
+---------------------------------------------------------------
+[ 2019-04-09T12:52:33+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=3
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:883]
+---------------------------------------------------------------
+[ 2019-04-09T12:54:23+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=2
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:883]
+---------------------------------------------------------------
+[ 2019-04-09T14:01:29+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:384]
+---------------------------------------------------------------
+[ 2019-04-09T14:01:32+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:384]
+---------------------------------------------------------------
+[ 2019-04-09T14:01:34+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:384]
+---------------------------------------------------------------
+[ 2019-04-09T14:01:38+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:384]
+---------------------------------------------------------------
+[ 2019-04-09T14:06:01+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:385]
+---------------------------------------------------------------
+[ 2019-04-09T14:06:37+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:385]
+---------------------------------------------------------------
+[ 2019-04-09T14:20:22+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:280]
+---------------------------------------------------------------
+[ 2019-04-09T14:20:58+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:272]
+---------------------------------------------------------------
+[ 2019-04-09T16:07:19+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: pact_type[/opt/web/zs/apps/rbac/application/v1/service/User.php:98]

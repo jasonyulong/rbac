@@ -1,0 +1,6 @@
+<button id="btn_top" title="回到顶部"><span class="glyphicon glyphicon-chevron-up"></span></button>
+<script>
+    $(function (){
+        
+    });
+</script>

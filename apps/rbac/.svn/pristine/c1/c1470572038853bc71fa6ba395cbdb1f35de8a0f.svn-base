@@ -1,0 +1,94 @@
+define(['jquery', 'bootstrap', 'bootstrap-select', 'template','form-validator'], function ($, undefined, undefined, template,form) {
+    var hepler = {
+        open: function(dom, title, width, height) {
+            var width = width || '830px';
+            var height = height || '500px';
+            $(dom).click(function (){
+                var url = $(this).attr('data-url') || '';
+                var titles = title || '编辑';
+                Fast.api.open(url, titles, {area: [width, height]});
+            });
+        },
+        delmenus:function (dom,title){
+            //删除的confirm
+            var title = title || '确定？';
+            $(dom).click(function (){
+                layer.confirm('确定要删除?',{icon:3,title:title},function (index){
+                    var url = $(this).attr('data-url');
+                    layer.close(index);
+                });
+            });
+        },
+        cancel:function (dom){
+            //取消按钮
+            $(dom).click(function (){
+                parent.layer.closeAll();
+            });
+        },
+        //表单提交
+        formSubmit: function(dom, object){
+            $(dom).click(function(){
+                var url = $(this).attr('data-url');
+                var data = object.serializeArray();
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        if (data.status == 1) {
+                            layer.msg(data.msg, {icon: 1, time: 5000});
+                            parent.location.reload();
+                        }
+                        else {
+                            layer.msg(data.msg, {icon: 3});
+                        }
+                    },
+                    error: function (error) {
+                        layer.closeAll('loading');
+                        layer.alert('请求或返回数据异常', {icon: 5});
+                    }
+                });
+            })
+        }
+    };
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            $(".selectpicker").selectpicker({
+                selectAllText: '全选',
+                deselectAllText: '取消',
+                // 是否允许搜索
+                liveSearch: true,
+            });
+            $.validator.setTheme('bootstrap', {
+                validClass: 'has-success',
+                invalidClass: 'has-error',
+                bindClassTo: '.form-group',
+                formClass: 'n-default n-bootstrap',
+                msgClass: 'n-right'
+            });
+        },
+        index: function () {
+            // 页面dom节点
+            var doms = {
+                add: ".addmenus",
+                edit: ".editmenus",
+                del: ".delmenus",
+                menudetail: ".menudetail",
+                addmenudetail : ".addmenudetail",
+                editdetail : ".editdetail",
+                saveMenuDetail: ".saveMenuDetail"
+            };
+            hepler.open(doms.add,'添加', '950px', '550px');
+            hepler.open(doms.edit,'编辑', '950px', '550px');
+            hepler.open(doms.menudetail, '查看节点因子', '1050px', '750px');
+            hepler.delmenus(doms.del,'删除');
+            hepler.cancel('#giveUpBtn');
+            hepler.open(doms.addmenudetail, '添加节点');
+            hepler.open(doms.editdetail);
+            hepler.formSubmit(doms.saveMenuDetail, $('.ajax-form'));
+        }
+    };
+    return Controller;
+});

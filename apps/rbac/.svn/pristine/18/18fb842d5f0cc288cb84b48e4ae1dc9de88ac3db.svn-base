@@ -1,0 +1,14 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <table class="table table-striped table-bordered table-hover">
+        <tbody>
+        {volist name="location" id="vo"}
+        <tr>
+            <td class="td-align td-padding">发货地</td>
+            <td class="td-align td-padding">{$vo}</td>
+        {/volist}
+        </tbody>
+    </table>
+</div>
+{/block}

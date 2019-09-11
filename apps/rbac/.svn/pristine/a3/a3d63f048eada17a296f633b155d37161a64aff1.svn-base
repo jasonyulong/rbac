@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+<div class="container-fluid">
+    <br>
+    <form action="{:url('/v1/auth/tag/cat')}" class="form-horizontal" method="post">
+        <input type="hidden" name="id" id="rules_id" value="{$params.id}">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control form-control-sm"  name="username" value="{$params.username}" placeholder="请输入姓名">
+                    </div>
+                    <button class="btn btn-info" type="Submit">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="btn-group batch-bottom">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="badge box_total">0</span> 批量操作 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <!--物流操作-->
+            <li><a href="javascript:;" class="batch_move" data-url="{:url('/v1/auth/tag/move')}"><i class="glyphicon glyphicon-remove"></i> 批量移除</a></li>
+        </ul>
+    </div>
+
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="td-align td-width-40px">
+                <input class="data-check_box_total" type="checkbox"/>
+            </th>
+            <th class="td-align">姓名</th>
+            <th class="td-align">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name='list.data' id='vo'}
+        <tr>
+            <td class="td-align td-padding">
+                <input type="checkbox" name="box_checked" data-id="{$vo.id}" class="data-check_box">
+            </td>
+            <td>{$vo.username}</td>
+            <td class="td-align td-padding">
+                <button type="button" class="btn btn-danger btn-xs move"
+                        data-url="{:url('/v1/auth/tag/move',array('ids'=>$vo['id'],'rules_id'=>$params['id']))}"><i
+                        class="glyphicon glyphicon-remove-circle"></i> 移除
+                </button>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="pages">{$page ?? ''}</div>
+</div>
+{include file="common/template" /}
+<!-- 加载JS脚本 -->
+<!-- jQuery 3 -->
+{include file="common/script" /}
+{block name='js'}<!-- 自定义js -->{/block}
+{block name='template'}<!-- 自定义js模板 -->{/block}
+{include file="common/require" /}
+</body>
+</html>

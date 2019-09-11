@@ -1,0 +1,6 @@
+/*!
+ * Start Bootstrap - Admin v3.3.7+1 (https://github.com/KevinsDeveloper/bootstrap4-admin)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+define(["jquery","bootstrap","bootstrap-select","template"],function(e,t,t,l){var o={_initialize:function(){e(".selectpicker").selectpicker({selectAllText:"全选",deselectAllText:"取消",liveSearch:!0})},index:function(){console.log(Config),console.log(Fast);var t={title:"hello world"},o=l("test",t);console.log(o),e("#add").click(function(){Fast.api.open("https://www.baidu.com/","测试",{area:["500px","500px"]})})}};return o});

@@ -1,0 +1,219 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户数据同步
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command\sync;
+
+use app\common\model\erp\OrganizationUser;
+use think\console\Input;
+use think\console\Output;
+use think\Config;
+use think\Log;
+
+class Users
+{
+    /**
+     * 输入对象
+     * @var Input
+     */
+    private $input;
+
+    /**
+     * 输出对象
+     * @var Output
+     */
+    private $output;
+
+    /**
+     * 构造函数
+     * Orders constructor.
+     * @param Input $input 输入对象
+     * @param Output $output 输出对象
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * 开始同步用户数据
+     */
+    public function run()
+    {
+        $erpUser = new \app\common\model\erp\EbayUser();
+        $usersModel = new \app\common\model\Users();
+        $usersAllowModel = new \app\common\model\UsersAllow();
+        $usersAlsoModel = new \app\common\model\UsersAlso();
+        $usersDetailModel = new \app\common\model\UsersDetail();
+        $erpAccountModel = new \app\common\model\erp\EbayAccount();
+
+        $erpusers = $erpUser->select();
+        if (empty($erpusers)) {
+            return $this->output->writeln("nont data");
+        }
+        $this->output->writeln("erp users total:" . count($erpusers));
+        // 系统配置
+        $allowSystem = Config::get('site.allowSystem');
+
+        // 所有帐号
+        $allAccounts = $erpAccountModel->where([])->column('ebay_account,id');
+
+        // 组织信息
+        $userOrgs = $this->getOrganizationUser();
+
+        $usersIds = $usersModel->column('id');
+        foreach ($erpusers as $val) {
+            $orgs = $userOrgs[$val->id] ?? [];
+            $del_time = !empty($val->del_time) ? strtotime($val->del_time) : 0;
+            // 保存数据
+            $saveData = [
+                'username' => trim($val->username),
+                'password' => $val->password,
+                'mobile' => $val->tel ?? '',
+                'email' => $val->mail ?? '',
+                'salt' => $usersModel->createSalt(),
+                'logintime' => strtotime($val->logtime),
+                'loginip' => $val->ip ?? '',
+                'status' => $val->is_del == 0 ? 1 : 9,
+                'company_id' => $orgs['company_id'] ?? 1,
+                'maturitytime' => $val->isauth == 0 ? 0 : strtotime('2020-01-01 00:00:00'),
+                'org_id' => $orgs['organize_id'] ?? 0,
+                'job_id' => $orgs['job_id'] ?? 0,
+                'job_type' => $orgs['attr_id'] ?? 0,
+                'entrytime' => $val->regdate ?? 0,
+                'createtime' => $val->regdate ?? time(),
+            ];
+            // 超级管理员
+            if (in_array($val->username, ['vipadmin'])) {
+                $saveData['org_id'] = 1;
+                $saveData['job_id'] = 1;
+            }
+            if (in_array($val->username, ['李洪琳'])) {
+                $saveData['org_id'] = 1;
+                $saveData['rules_id'] = 1;
+            }
+            // 已离职人员
+            if (strpos($val->truename, '离职') > 0) {
+                $saveData['status'] = 3;
+            }
+            // 没有组织架构的人,直接进入回收站
+            if ($saveData['org_id'] == 0) {
+                $saveData['status'] = 9;
+            }
+            if ($saveData['org_id'] > 0 && isset($orgs['status']) && $orgs['status'] != 1) {
+                $saveData['status'] = 3;
+            }
+            if ($saveData['status'] != 1) {
+                $saveData['maturitytime'] = $del_time;
+            }
+            // 允许登录的系统
+            $allows = [2];
+            $allowsName = [$allowSystem[2]];
+            if ($val->is_app > 0) {
+                $allows = array_merge($allows, [5]);
+                $allowsName = array_merge($allowsName, [$allowSystem[5]]);
+            }
+            if ($val->is_count > 0) {
+                $allows = array_merge($allows, [4]);
+                $allowsName = array_merge($allowsName, [$allowSystem[4]]);
+            }
+            $saveData['allow'] = implode(",", $allowsName);
+
+            // 帐号权限
+            $ebayaccounts = $val->ebayaccounts;
+            $viewstore = $val->viewstore;
+            $vieworder = $val->vieworder;
+            $ebayaccountIds = [];
+
+            if (!empty($ebayaccounts)) {
+                $ebayaccountsArr = explode(',', $ebayaccounts);
+                foreach ($ebayaccountsArr as $account) {
+                    if (isset($allAccounts[$account])) {
+                        $ebayaccountIds[] = $allAccounts[$account];
+                    }
+                }
+            }
+            $accountids = !empty($ebayaccountIds) ? implode(',', $ebayaccountIds) : '';
+            $usersAlso = $usersAlsoModel->where(['user_id' => $val->id, 'module_id' => 2])->column('keys,id');
+            $alsoArr = [
+                'store_id' => trim($viewstore, ','),
+                'account' => trim($accountids, ','),
+                'order_status' => trim($vieworder, ','),
+            ];
+
+            //开始保存数据
+            // 启动事务
+            $usersModel->startTrans();
+            try {
+                if (in_array($val->id, $usersIds)) {
+                    $usersModel->update($saveData, ['id' => $val->id]);
+                } else {
+                    $usersModel->create(array_merge($saveData, ['id' => $val->id]));
+                    // 用户详情表
+                    $usersDetailModel->create(['user_id' => $val->id, 'createuser' => 'vipadmin']);
+                    // 删除
+                    $usersAllowModel->where(['user_id' => $val->id])->delete();
+                    // 允许登录系统表
+                    foreach ($allows as $allowId) {
+                        $usersAllowModel->create(['user_id' => $val->id, 'module_id' => $allowId, 'module_name' => $allowSystem[$allowId] ?? '']);
+                    }
+                }
+
+                // 更新已有可见授权
+                foreach ($alsoArr as $keys => $value) {
+                    if (empty($value)) continue;
+
+                    if (isset($usersAlso[$keys])) {
+                        $usersAlsoModel->update(['values' => $value], ['id' => $usersAlso[$keys]]);
+                    } else {
+                        $usersAlsoModel->create(['user_id' => $val->id, 'module_id' => 2, 'keys' => $keys, 'values' => $value]);
+                    }
+                }
+
+                // 提交事务
+                $usersModel->commit();
+                $this->output->writeln($val->username . " success");
+                continue;
+            } catch (\Exception $e) {
+                $this->output->writeln($val->username . $e->getMessage());
+                // 回滚事务
+                $usersModel->rollback();
+                continue;
+            }
+        }
+
+        $this->output->writeln("success");
+    }
+
+    /**
+     * 获取组织架构所有成员
+     * @return array
+     */
+    public function getOrganizationUser()
+    {
+        $model = new OrganizationUser();
+        $users = $model->select();
+        if (empty($users)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($users as $val) {
+            $result[$val->user_id] = [
+                'user_position' => $val->user_position,
+                'organize_id' => $val->organize_id,
+                'company_id' => $val->company_id,
+                'attr_id' => $val->attr_id,
+                'status' => $val->status
+            ];
+        }
+
+        return $result;
+    }
+}

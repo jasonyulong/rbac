@@ -1,0 +1,462 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Tag.php
+ * @Date: 2019/4/2
+ * @Time: 19:52
+ * @Description 权限标签服务层
+ */
+
+namespace app\v1\service;
+
+use app\common\model\Users;
+use app\common\model\UsersLabel;
+use app\common\model\UsersLabelAccess;
+use think\Config;
+use think\Exception;
+
+class Tag extends Base
+{
+    /**
+     * @var null 权限模型
+     */
+    private $userLabel = null;
+
+    /**
+     * @var Users|null 用户模型
+     */
+    private $users = null;
+
+    /**
+     * @var null 标签权限模型
+     */
+    private $usersLabelAccess = null;
+
+    /**
+     * Position constructor.
+     */
+    public function __construct()
+    {
+        $this->userLabel = new UsersLabel();
+        $this->users = new Users();
+        $this->usersLabelAccess = new UsersLabelAccess();
+    }
+
+    /**
+     * @desc 标签列表
+     * @author 杨能文
+     * @date 2019/4/2 20:25
+     * @access public
+     * @param $params
+     * @return array
+     */
+    public function taglist($params):array
+    {
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : 20;
+        //当前页
+        $current_page = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : 1;
+        //分页起始值
+        $start = $page_size * ($current_page - 1);
+
+        $model = $this->userLabel;
+
+        $where = [];
+        $name = preg_split('/[\s,，]+/', trim($params['name']));
+        if ($name[0]) $where['name'] = ['in', $name];
+
+        $info = $model->where($where)->limit($start, $page_size)->paginate($page_size, false);
+
+        $page = $info->render();
+        $return_data = [
+            'list' => $info->toArray(),
+            'page' => $page,
+        ];
+
+        return $return_data;
+    }
+
+    /**
+     * @desc 添加权限标签
+     * @author 杨能文
+     * @date 2019/4/2 20:10
+     * @access public
+     * @param $data 参数数组
+     * @return bool
+     */
+    public function add($data):bool
+    {
+        $addData = [
+            'name' => trim($data['name']),
+            'desc' => trim($data['desc']),
+            'createtime' => time(),
+            'updatetime' => time(),
+            'status' => 1, //0禁用，1启用
+        ];
+
+        $res = $this->checktag($addData['name']);
+        if ($res) {
+            $this->setErrors(0, __('标签名已存在'));
+
+            return false;
+        }
+
+        $userLabel = $this->userLabel;
+        try {
+            // 插入
+            $userLabel->insert(array_merge($addData), false, true);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('添加标签失败'));
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 编辑标签
+     * @author 杨能文
+     * @date 2019/4/3 9:41
+     * @access public
+     * @param $data
+     * @return bool
+     */
+    public function edit($data):bool
+    {
+        $saveData = [
+            'name' => trim($data['name']),
+            'desc' => trim($data['desc']),
+            'updatetime' => time()
+        ];
+        $res = $this->checktag($saveData['name'], $data['id']);
+        if ($res) {
+            $this->setErrors(0, __('标签名已存在'));
+
+            return false;
+        }
+
+        $userLabel = $this->userLabel;
+        try {
+            $userLabel->update($saveData, ['id' => $data['id']]);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('编辑标签失败'));
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 复制标签
+     * @author 杨能文
+     * @date 2019/4/3 11:44
+     * @access public
+     * @param $data
+     * @return bool
+     */
+    public function copy($data):bool
+    {
+        $addData = [
+            'name' => trim($data['name']),
+            'createtime' => time(),
+            'updatetime' => time(),
+            'status' => 1, //0禁用，1启用
+        ];
+        $res = $this->checktag($addData['name']);
+        if ($res) {
+            $this->setErrors(0, __('标签名已存在'));
+
+            return false;
+        }
+
+        $userLabel = $this->userLabel;
+        $authArr = $this->tagauth($data['id']);
+
+        //开启事物
+        $userLabel->startTrans();
+        try {
+            $id = $userLabel->insert($addData, false, true);
+            //如果存在权限、进行权限复制
+            if ($authArr) {
+                $time = time();
+                $usersLabelAccess = $this->usersLabelAccess;
+                foreach ($authArr as $val) {
+                    unset($val['id']);
+                    unset($val['updatetime']);
+                    $val['createtime'] = $time;
+                    $val['label_id'] = $id;
+                    $usersLabelAccess->insert($val);
+                }
+            }
+            $userLabel->commit();
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('复制标签失败'));
+            $userLabel->rollback();
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 根据标签id获取标签权限
+     * @author 杨能文
+     * @date 2019/4/3 11:44
+     * @param $label_id 标签id
+     * @access public
+     * @return array
+     */
+    public function tagauth($label_id):array
+    {
+        if (!$label_id) return [];
+        $usersLabelAccess = $this->usersLabelAccess;
+        $data = $usersLabelAccess->where(['label_id' => $label_id])->select();
+
+        return collection($data)->toArray();
+    }
+
+    /**
+     * @desc 根据id获取标签信息
+     * @author 杨能文
+     * @date 2019/4/3 9:28
+     * @access public
+     * @param $id
+     * @return array
+     */
+    public function info($id):array
+    {
+        if (!$id) return [];
+        $userLabel = $this->userLabel;
+        $data = $userLabel->where(['id' => $id])->find()->toArray();
+
+        return $data;
+    }
+
+    /**
+     * @desc 获取权限标签用户数
+     * @author 杨能文
+     * @date 2019/4/3 9:59
+     * @access public
+     * @return array
+     */
+    public function usertag():array
+    {
+        $users = $this->users;
+        $map = [
+            'status' => ['in', '0,1,2'],
+            'rules_id' => ['neq', '']
+        ];
+        $data = $users->field('rules_id,count(id) as num')
+            ->where($map)
+            ->group('rules_id')->select();
+        $data = collection($data)->toArray();
+        $return = [];
+        foreach ($data as &$val) {
+            $ruleArr = explode(',', $val['rules_id']);
+            foreach ($ruleArr as $v) {
+                $return[$v] = isset($return[$v]) ? $val['num'] + $return[$v] : $val['num'];
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * 获取权限标签的用户明细
+     * @return array
+     */
+    public function getTagUsers():array
+    {
+        $users = $this->users;
+        $map = [
+            'status' => ['in', '0,1,2'],
+            'rules_id' => ['neq', '']
+        ];
+        $data = $users->field('id,rules_id,count(id) as num')
+            ->where($map)
+            ->group('rules_id')->select();
+        $data = collection($data)->toArray();
+        $return = [];
+        foreach ($data as &$val) {
+            $ruleArr = explode(',', $val['rules_id']);
+            foreach ($ruleArr as $v) {
+                $return[$v][] = $val['id'];
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * @desc 查看用户
+     * @author 杨能文
+     * @date 2019/4/2 16:02
+     * @access public
+     * @param $params
+     * @return array
+     */
+    public function cat($params):array
+    {
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : 10;
+        //当前页
+        $current_page = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : 1;
+        //分页起始值
+        $start = $page_size * ($current_page - 1);
+
+        $users = $this->users;
+
+        $where = "status in(0, 1, 2)";
+
+        if ($params['username']) $where .= "and username = '{$params['username']}'";
+
+        if (isset($params['id']) && $params['id']) {
+            $where .= "and find_in_set('{$params['id']}',rules_id)";
+        }
+
+        $_GET['id'] = $params['id'];
+
+        //分页url参数
+        $config = [
+            'query' => request()->param(),
+        ];
+
+
+        $userInfo = $users
+            ->field('id,username')
+            ->where($where)
+            ->limit($start, $page_size)
+            ->paginate($page_size, false, $config);
+
+        $page = $userInfo->render();
+        $return_data = [
+            'list' => $userInfo->toArray(),
+            'page' => $page,
+        ];
+
+        return $return_data;
+    }
+
+    /**
+     * @desc 批量删除岗位
+     * @author 杨能文
+     * @date 2019/4/2 11:41
+     * @access public
+     * @param  $data
+     * @return bool
+     */
+    public function delete($data):bool
+    {
+        $userLabel = $this->userLabel;
+        $usersLabelAccess = $this->usersLabelAccess;
+        $ids = $data['ids'];
+        $taArr = $userLabel->where(['id' => ['in', $ids]])->column('id');
+        if (!$taArr) {
+            $this->setErrors(0, __('未找到需要删除的数据'));
+
+            return false;
+        }
+
+        $userArr = $this->usertag();;
+
+        //循环删除数据
+        $num1 = 0;
+        $num2 = 0;
+        foreach ($taArr as $val) {
+            if (isset($userArr[$val])) {
+                $num2++;
+                continue;
+            }
+            $res = $userLabel->where(['id' => $val])->delete();
+            $usersLabelAccess->where(['label_id' => $val])->delete();
+            if ($res) $num1++;
+        }
+        if ($num2) {
+            $msg = "删除标签成功条数【{$num1}】.失败条数【{$num2}】原因:【绑定用户未移除】";
+            $this->setErrors(0, __($msg));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @desc 移除用户
+     * @author 杨能文
+     * @date 2019/4/2 17:25
+     * @access public
+     * @param $data
+     * @return bool
+     */
+    public function move($data):bool
+    {
+        $ids      = $data['ids'];
+        $rulesId  = $data['rules_id'];
+        $users    = $this->users;
+        $userData = $users->field('id,rules_id')->where(['id' => ['in', $ids]])->select();
+        $userData = is_object($userData) ? collection($userData)->toArray() : [];
+
+        if(!$rulesId){
+            $this->setErrors(0,__('参数错误'));
+            return false;
+        }
+
+        try {
+            $saveData = [];
+            foreach($userData as $val){
+                $rulesArr = explode(',',$val['rules_id']);
+                array_splice($rulesArr,array_search($rulesId,$rulesArr),1);
+                $rulesId  = $rulesArr ? implode(',',$rulesArr) : '';
+                $arr = ['id'=>$val['id'], 'rules_id'=>$rulesId];
+                array_push($saveData,$arr);
+            }
+            $users->saveAll($saveData);
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('移除用户失败'));// 回滚事务
+            return false;
+        }
+    }
+
+
+    /**
+     * @desc 获取全部启用的权限标签
+     * @author 杨能文
+     * @date 2019/4/10 12:00
+     * @access public
+     * @return array
+     */
+    public function gettag():array
+    {
+        $model = $this->userLabel;
+        $data = $model->where(['status' => 1])->field('id,name')->select();
+        $data = collection($data)->toArray();
+
+        return $data;
+    }
+
+    /**
+     * @desc 检测标签名称是否重复
+     * @author 杨能文
+     * @date 2019/4/11 16:15
+     * @access public
+     * @param $name
+     * @param int $id
+     * @return bool
+     */
+    public function checktag($name, $id = 0):bool
+    {
+        if (!$name) return false;
+        $userLabel = $this->userLabel;
+        $map['name'] = $name;
+        if ($id > 0) $map['id'] = ['neq', $id];
+        $id = $userLabel->where($map)->value('id');
+
+        return $id ? true : false;
+    }
+}

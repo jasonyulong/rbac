@@ -1,0 +1,6 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+
+</div>
+{/block}

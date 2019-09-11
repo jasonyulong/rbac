@@ -1,0 +1,91 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: wcd
+ * Date: 2019/4/2
+ * Time: 19:28
+ */
+namespace app\v1\service;
+use app\common\model\MenusDetail;
+use app\common\model\Menus;
+class MenuDetail
+{
+    private $_menuDetailModel = null;
+    public function __construct()
+    {
+        $this->_menuDetailModel = new MenusDetail();
+    }
+
+    /**
+     * @param array $where
+     * @return array
+     */
+    public function getDetail($where = [])
+    {
+        if(empty($where)) return [];
+        return $this->_menuDetailModel->getDetail($where);
+    }
+    /**
+     * 前端页面获取一条节点数据
+     * @author wcd
+     * @param array $where
+     * @param string $field
+     * @param string $isdetail
+     * @return array
+     */
+    public function getOneDetail($where = [], $field = '*', $isdetail = '')
+    {
+        if(empty($where) || !$isdetail) {
+            return [
+                'id' => '',
+                'module_id' => '',
+                'title' => '',
+                'type' => '',
+                'menu_id' => '',
+                'url' => '',
+                'condition' => '',
+                'weigh' => '',
+                'status' => '',
+                'createtime' => 0,
+                'updatetime' => 0
+            ];
+        }
+        return $this->_menuDetailModel->getOne($where, $field);
+    }
+
+    /**
+     * 新增和更新菜单详情
+     * @author wcd
+     * @param $params
+     * @return false|int
+     */
+    public function saveDetail($params)
+    {
+        $menu_id = trim($params['menuid']);
+        if(empty($menu_id)) return false;
+        $saveData = [
+            'title'      => trim($params['title']),
+            'type'       => $params['type'],
+            'url'        => trim(trim($params['url']), '/'),
+            'condition'  => trim($params['condition']),
+            'weigh'      => $params['weight'],
+            'status'     => $params['status']
+        ];
+        if(!isset($params['detailid']) || !$params['detailid'])
+        {
+            //新增
+            $menusModel = new Menus();
+            $menu = $menusModel->getOne(['id' => intval($menu_id)], 'id,module_id');
+            $saveData['module_id'] = $menu['module_id'];
+            $saveData['menu_id'] = (int)$menu_id;
+            $saveData['createtime'] = time();
+            $resid = $this->_menuDetailModel->save($saveData);
+        }else{
+            //修改
+            $where['id'] = (int)$params['detailid'];
+            $saveData['updatetime'] = time();
+            $resid = $this->_menuDetailModel->editDetail($where, $saveData);
+        }
+        return $resid;
+    }
+}

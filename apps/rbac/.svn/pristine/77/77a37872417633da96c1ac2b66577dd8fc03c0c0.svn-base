@@ -1,0 +1,154 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户数据同步
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command\sync;
+
+use app\common\model\erp\OrganizationUser;
+use think\console\Input;
+use think\console\Output;
+use think\Config;
+use think\Log;
+
+class Users
+{
+    /**
+     * 输入对象
+     * @var Input
+     */
+    private $input;
+
+    /**
+     * 输出对象
+     * @var Output
+     */
+    private $output;
+
+    /**
+     * 构造函数
+     * Orders constructor.
+     * @param Input $input 输入对象
+     * @param Output $output 输出对象
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * 开始同步用户数据
+     */
+    public function sync()
+    {
+        $erpUser = new \app\common\model\erp\EbayUser();
+        $usersModel = new \app\common\model\Users();
+        $usersAllowModel = new \app\common\model\UsersAllow();
+        $usersDetailModel = new \app\common\model\UsersDetail();
+
+        $erpusers = $erpUser->select();
+        if (empty($erpusers)) {
+            return $this->output->writeln("nont data");
+        }
+        $this->output->writeln("erp users total:" . count($erpusers));
+        // 系统配置
+        $allowSystem = Config::get('site.allowSystem');
+
+        // 组织信息
+        $userOrgs = $this->getOrganizationUser();
+
+        $usersIds = $usersModel->column('id');
+        foreach ($erpusers as $val) {
+            $orgs = $userOrgs[$val->id] ?? [];
+
+            $saveData = [
+                'username' => trim($val->username),
+                'password' => $val->password,
+                'mobile' => $val->tel ?? '',
+                'email' => $val->mail ?? '',
+                'salt' => $usersModel->createSalt(),
+                'logintime' => strtotime($val->logtime),
+                'loginip' => $val->ip ?? '',
+                'status' => $val->is_del == 0 ? 1 : 9,
+                'company_id' => $orgs['company_id'] ?? 1,
+                'maturitytime' => strtotime('2020-01-01 00:00:00'),
+                'org_id' => $orgs['organize_id'] ?? 1,
+                'job_id' => $orgs['job_id'] ?? 1,
+                'job_type' => $orgs['attr_id'] ?? 1,
+                'entrytime' => $val->regdate ?? 0,
+            ];
+            // 允许登录的系统
+            $allows = [2];
+            $allowsName = [$allowSystem[2]];
+            if ($val->is_app > 0) {
+                $allows = array_merge($allows, [5]);
+                $allowsName = array_merge($allowsName, [$allowSystem[5]]);
+            }
+            if ($val->is_count > 0) {
+                $allows = array_merge($allows, [4]);
+                $allowsName = array_merge($allowsName, [$allowSystem[4]]);
+            }
+            $saveData['allow'] = implode(",", $allowsName);
+
+            //开始保存数据
+            // 启动事务
+            $usersModel->startTrans();
+            try {
+                if (in_array($val->id, $usersIds)) {
+                    $usersModel->where(['id' => $val->id])->update($saveData);
+                } else {
+                    $usersModel->insert(array_merge($saveData, ['id' => $val->id]));
+                    // 用户详情表
+                    $usersDetailModel->insert(['user_id' => $val->id]);
+                    // 删除
+                    $usersAllowModel->where(['user_id' => $val->id])->delete();
+                    // 允许登录系统表
+                    foreach ($allows as $allowId) {
+                        $usersAllowModel->insert(['user_id' => $val->id, 'module_id' => $allowId, 'module_name' => $allowSystem[$allowId] ?? '']);
+                    }
+                }
+                // 提交事务
+                $usersModel->commit();
+                $this->output->writeln($val->username . " success");
+                continue;
+            } catch (\Exception $e) {
+                $this->output->writeln($val->username . $e->getMessage());
+                // 回滚事务
+                $usersModel->rollback();
+                continue;
+            }
+        }
+
+        $this->output->writeln("success");
+    }
+
+    /**
+     * 获取组织架构所有成员
+     * @return array
+     */
+    public function getOrganizationUser()
+    {
+        $model = new OrganizationUser();
+        $users = $model->where(['status' => 1])->select();
+        if (empty($users)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($users as $val) {
+            $result[$val->user_id] = [
+                'user_position' => $val->user_position,
+                'organize_id' => $val->organize_id,
+                'company_id' => $val->company_id,
+                'attr_id' => $val->attr_id,
+            ];
+        }
+
+        return $result;
+    }
+}

@@ -1,0 +1,34 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="row page-header content-header">
+    <h3>用户管理</h3>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+        <li>用户管理</li>
+        <li class="active">查看</li>
+    </ol>
+</div>
+<div class="content">
+    {include file="users/index/_search" /}
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="badge box_total">0</span>批量操作 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="savePending" href="javascript:void(0)" data-url="{:url('/v1/users/index/pending',array('statusValue'=>9))}">批量转入回收站</a></li>
+                    <li><a href="javascript:void(0)" class="bathdel" data-url="{:url('/v1/users/index/del',array('status'=>3))}">批量删除</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        {include file="users/index/_navtabs" /}
+        <div class="table-responsive">
+            {include file="users/index/_table" /}
+        </div>
+    </div>
+</div>
+{/block}

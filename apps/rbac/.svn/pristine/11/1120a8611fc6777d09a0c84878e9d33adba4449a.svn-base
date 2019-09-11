@@ -1,0 +1,64 @@
+<table class="table table-striped table-bordered table-hover dataTables">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="data-check_box_total" type="checkbox"/>
+        </th>
+        <th class="td-align">岗位名称</th>
+        <th class="td-align">用户</th>
+        <th class="td-align">自动获取所有帐号可见权限</th>
+        <th class="td-align">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name='data' id='vo'}
+    {if condition="$vo['rank'] neq 1"}
+    <tr class="show-{$vo.tid}" style="display: none">
+    {else/}
+    <tr>
+    {/if}
+        <td class="td-align td-padding">
+            <input type="checkbox" name="box_checked" data-id="{$vo.id}" class="data-check_box">
+        </td>
+        <td class="td-padding {$vo.rank}">
+            {if condition="$vo['rank'] eq 1"}
+            <i class="glyphicon glyphicon-home"></i>
+            {/if}
+            {if $vo.id == 1}<span class="text-danger">{$vo.title}</span>{else}{$vo.title}{/if}
+            {if condition="$vo['rank'] eq 1 and $vo.id != 1"}
+            <a href="#" class="pos-show" data-id="{$vo.tid}"><i class="glyphicon glyphicon-menu-down"></i></a>
+            {/if}
+        </td>
+        {if condition="($vo['under'])"}
+            <td class="td-align td-padding"><a class="a-show cat" data-url="{:url('/v1/auth/position/cat',array('id'=>$vo['id']))}">{$vo.under}</a></td>
+        {else/}
+            <td class="td-align td-padding">0</td>
+        {/if}
+        <td class="td-align td-padding">
+            {if $vo.auto_account == 1} <span class="label label-success">是</span> {else} <span class="label label-default">否</span> {/if}
+        </td>
+        <td class="td-align td-padding">
+            {if $vo.id != 1}
+
+            {:build_toolbar('button',
+            ['class' => 'btn btn-primary btn-sm btn-padding edit','data-url' => url('/v1/auth/position/edit',array('id'=>$vo['id']))],
+            '<i class="glyphicon glyphicon-pencil"></i> 编辑')}
+
+            {:build_toolbar('a',
+            ['class' => 'btn btn-info btn-sm btn-padding','href' => url('/v1/auth/access/index', ['id'=>$vo['id']])],
+            '<i class="fa fa-cube"></i> 功能权限')}
+
+            {:build_toolbar('a',
+            ['class' => 'btn btn-success btn-sm btn-padding','href' => url('/v1/auth/access/useralso', ['job_id'=>$vo['id']])],
+            '<i class="fa  fa-eye"></i> 可见权限')}
+
+            {:build_toolbar('button',
+            ['class' => 'btn btn-warning btn-sm btn-padding copy','data-url' => url('/v1/auth/position/copy',array('id'=>$vo['id']))],
+            '<i class="glyphicon glyphicon-copy"></i> 复制')}
+
+            {/if}
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>

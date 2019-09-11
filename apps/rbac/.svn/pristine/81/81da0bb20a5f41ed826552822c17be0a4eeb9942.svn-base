@@ -1,0 +1,303 @@
+<?php
+/**
+ * 用户 数据服务器层
+ * @copyright Copyright (c) 2018
+ * @license
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-02
+ */
+namespace app\api\service;
+
+use think\Cache;
+use think\Config;
+
+use app\common\model\UsersJobAccess;
+use app\common\model\Menus;
+use app\common\model\MenusDetail;
+use app\common\model\Organization;
+use app\common\model\OrganizationUser;
+
+/**
+ * @desc 用户 数据服务器层
+ * Class User
+ * @package app\api\service
+ */
+class User extends Base
+{
+    /**
+     * @desc  允许登录的用户状态
+     * @var   array
+     */
+    private $_allUserStatus = [1, 3];
+
+    /**
+     * @desc  redis 对象
+     * @var   object
+     */
+    private $_redis;
+
+    /**
+     * @desc   静态实例化
+     * @author mina
+     * @param  void
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (!self::$instance instanceof User) {
+            self::$instance = new User();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * @desc   构造函数
+     * @author mina
+     * @param
+     * @return
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->_redis = Cache::init(Config::get('cache.redis'));
+    }
+
+    /**
+     * @desc   登录
+     * @author mina
+     * @param  $param 参数
+     * @return array
+     */
+    public function login($param) : array
+    {
+        $check = $this->_checkLogin($param);
+        if (!$check['status']) {
+            return $check;
+        }
+        $user = $this->userModel->getOne(['username' => $param['username']]);
+        if (empty($user)) {
+            return $this->_back(0, '用户不存在。');
+        }
+        $newPassword = $this->userModel->encryptPassword($param['password'], $user['salt']);
+        if ($user['loginfailure'] >= 10) {
+            return $this->_back(0, '用户密码错误次数超过最大次数，禁止登录。');
+        }
+        $where = ['id' => $user['id']];
+        if (md5(md5($param['password'])) != $user['password'] && $newPassword != $user['password']) {
+            $this->userModel->where($where)->setInc('loginfailure');
+
+            return $this->_back(0, '用户密码错误，超过10次禁止登录。');
+        }
+        if (!in_array($user['status'], $this->_allUserStatus)) {
+            return $this->_back(0, '用户状态不允许登录。');
+        }
+        if (md5($param['password']) == $user['password']) {
+            $user['salt'] = $this->userModel->createSalt();
+            $newPassword = $this->userModel->encryptPassword($param['password'], $user['salt']);
+            $saveData = [
+                'password' => $newPassword,
+                'salt' => $user['salt'],
+            ];
+            $this->userModel->updateRow($where, $saveData);
+        }
+        $user['token'] = $this->_setToken($user);
+        $update = [
+            'token' => $user['token'],
+            'logintime' => time(),
+            'loginip' => $param['loginIp'],
+        ];
+        $this->userModel->updateRow($where, $update);
+        $data = $this->_setUserInfo($user);
+
+        return $this->_back(1, '', $data);
+    }
+
+    /**
+     * @desc   退出
+     * @author mina
+     * @param  array $param 参数
+     * @return array
+     */
+    public function loginout($param) : array
+    {
+        if (empty($param['token'])) {
+            return $this->_back(0, '用户TOKEN不能为空。');
+        }
+        $user = $this->_getToken($param['token']);
+        $this->_redis->handler()->srem(Config::get('redis.user_token'), $param['token']);
+        if (!empty($user)) {
+            $this->_redis->handler()->hdel(Config::get('redis.user_power'), $user[1]);
+            //$this->_redis->handler()->sadd(Config::get('redis.user_login'), $user[1]);
+        }
+
+        return $this->_back(1);
+    }
+
+    /**
+     * @desc   15天授权
+     * @author mina
+     * @param  array $params 参数
+     * @return array
+     */
+    public function authorize($param) : array
+    {
+        $check = $this->cktoken($param);
+        if ($check['status'] != 1) {
+            return $check;
+        }
+        if (empty($param['userId'])) {
+            return $this->_back(0, '需要授权的用户ID不能为空。');
+        }
+        $where = [
+            'id' => $param['userId'],
+        ];
+        $row = $this->userModel->getOne($where);
+        if (empty($row)) {
+            return $this->_back(0, '需要授权的用户不存在。');
+        }
+        $day = strtotime("-5 days");
+        if ($row['maturitytime'] > $day) {
+            return $this->_back(0, '只能授权已过期或到期时间5天内的用户。');
+        }
+        $saveData = [
+            'authtime' => time(),
+            'maturitytime' => strtotime("+2 years"),
+            'maturityuser' => $this->user['username'],
+        ];
+        $this->userModel->updateRow($where, $saveData);
+
+        return $this->_back(1);
+    }
+
+    /**
+     * @desc   需要授权的用户列表
+     * @author mina
+     * @param  array $param 用户ID
+     * @return array
+     */
+    public function authorList($param)
+    {
+        $check = $this->cktoken($param);
+        if ($check['status'] != 1) {
+            return $check;
+        }
+        $userOrganization = Organization::get(['id' => $this->user['org_id']]);
+        $where = [
+            'o.tid' => $userOrganization['tid'],
+            'o.lid' => ['gt', $userOrganization['lid']],
+            'o.rid' => ['lt', $userOrganization['rid']],
+            'u.status' => 1,
+        ];
+        $page = 1;
+        if (isset($param['page']) && $param['page']) {
+            if ($param['page'] > 1) $page = $param['page'];
+        }
+        if (isset($param['orgId']) && $param['orgId']) {
+            $where['o.tid'] = $param['orgId'];
+        }
+        if (isset($param['username']) && $param['username']) {
+            $where['u.user_name'] = $param['username'];
+        }
+        $model = new OrganizationUser();
+        $count = $model->getCount($where);
+        if ($count == 0) {
+            return $this->_back(1, '', []);
+        }
+        $pageCount = ceil($count / $this->pageSize);
+        if ($page > $pageCount) $page = $pageCount;
+        $list = $model->getAll($where, 'user_id, user_name', $page, $this->pageSize);
+        $list = $list->toArray();
+        $userId = array_column($list, 'user_id');
+        $user_where = [
+            'id' => ['in', $userId],
+        ];
+        $field = "id, username,createtime,authtime,maturitytime,maturityuser";
+        $data = $this->userModel->getAll($user_where, $field);
+        $data = $data->toArray();
+        $retData = [
+            'pageCount' => $pageCount,
+            'page' => $page,
+            'count' => $count,
+            'list' => $data,
+        ];
+
+        return $this->_back(1, '', $retData);
+    }
+
+    /**
+     * @desc   登录入参校验
+     * @author mina
+     * @param  array $params 入参
+     * @return array
+     */
+    private function _checkLogin($param) : array
+    {
+        if (empty($param)) {
+            return $this->_back(0, '参数错误。');
+        }
+        if (empty($param['username'])) {
+            return $this->_back(0, '用户名不能为空。');
+        }
+        if (!preg_match('/^[a-zA-Z0-9_\x{4e00}-\x{9fa5}]+$/u', $param['username'])) {
+            return $this->_back(0, '用户名格式字母数字汉字下划线。');
+        }
+        if (empty($param['password'])) {
+            return $this->_back(0, '密码不能为空。');
+        }
+        if (empty($param['loginIp'])) {
+            return $this->_back(0, '登录IP不能为空。');
+        }
+
+        return $this->_back();
+    }
+
+    /**
+     * @desc   登录成功返回数据
+     * @author mina
+     * @param  array $user 用户基础信息
+     * @return arrar
+     */
+    private function _setUserInfo($user)
+    {
+        $return = [
+            'username' => $user['username'],
+            'sex' => $user['sex'],
+            'mobile' => $user['mobile'],
+            'email' => $user['email'],
+            'job_type' => $user['job_type'],
+            'entrytime' => $user['entrytime'],
+            'allow' => $user['allow'],
+            'token' => $user['token'],
+            'power' => [],
+            'menus' => [],
+        ];
+        $jobModel = new UsersJobAccess();
+        $where = ['job_id' => $user['job_id']];
+        $power = $jobModel->getAll($where)->toArray();
+        if (empty($power)) {
+            return $return;
+        }
+        $menuId = array_filter(array_unique(array_column($power, 'menu_id')));
+        $menuDetailId = array_filter(array_unique(array_column($power, 'menu_detail_id')));
+        // 查询主菜单信息
+        $menuModel = new Menus();
+        $menuList = $menuModel->selectMore(['id' => ['in', $menuId]]);
+        $menus = array_unique(array_column($menuList, 'url'));
+        // 查询菜单因子
+        $menusDetailModel = new MenusDetail();
+        $detail = $menusDetailModel->getDetail(['id' => ['in', $menuDetailId]]);
+        $menusDetail = array_unique(array_column($power, 'condition'));
+        $tree = new \plugin\Tree();
+        $treeArr = $tree->getTreeCate($menuList);
+        $return['menus'] = $treeArr;
+        $return['power'] = array_filter(array_unique(array_merge($menus, $menusDetail)));
+
+        $this->_redis->handler()->sadd(Config::get('redis.user_token'), $user['token']);
+        $this->_redis->handler()->hset(Config::get('redis.user_power'), $user['username'], json_encode($return['power']));
+
+        //$this->_redis->handler()->sadd(Config::get('redis.user_login'), $user['username'], $user['token']);
+        return $return;
+    }
+}

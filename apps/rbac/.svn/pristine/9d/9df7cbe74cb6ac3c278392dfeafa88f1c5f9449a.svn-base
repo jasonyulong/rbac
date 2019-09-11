@@ -1,0 +1,92 @@
+<div class="panel-group table-responsive" role="tablist">
+    {volist name='leftArr' id='value'}
+    <div class="panel panel-primary leftMenu">
+        <div class="panel-heading" id="collapse{$value.id}" data-toggle="collapse" data-target="#Group{$value.id}" role="tab" >
+            <h4 class="panel-title">
+                {$value.title}<span class="left-span">[{$value.manage}]</span>
+                <span class="glyphicon glyphicon-menu-left right"></span>
+            </h4>
+        </div>
+        <div id="Group{$value.id}" class="panel-collapse collapse {if in_array($value['id'],$orgIdArr)}in{/if}" role="tabpanel" aria-labelledby="collapse{$value.id}">
+            <ul class="list-group">
+            {volist name="value['childlist']" id='vo'}
+                {if condition="$vo['childlist']"}
+                    <li class="list-group-item">
+                        <div class="panel panel-primary leftMenu">
+                            <div class="panel-heading" id="collapse{$vo.id}" data-toggle="collapse" data-target="#Group{$vo.id}" role="tab" >
+                                <h4 class="panel-title">
+                                    {$vo.title}<span class="left-span">[{$vo.manage}]</span>
+                                    <span class="glyphicon glyphicon-menu-left right"></span>
+                                </h4>
+                            </div>
+                            <div id="Group{$vo.id}" class="panel-collapse collapse {if in_array($vo['id'],$orgIdArr)}in{/if}" role="tabpanel" aria-labelledby="collapse{$vo.id}">
+                                <ul class="list-group">
+                                    {volist name="vo['childlist']" id='v1'}
+                                        {if condition="$v1['childlist']"}
+                                            <li class="list-group-item">
+                                                <div class="panel panel-primary leftMenu">
+                                                    <div class="panel-heading" id="collapse{$v1.id}" data-toggle="collapse" data-target="#Group{$v1.id}" role="tab" >
+                                                        <h4 class="panel-title">
+                                                            {$v1.title}<span class="left-span">[{$v1.manage}]</span>
+                                                            <span class="glyphicon glyphicon-menu-left right"></span>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="Group{$v1.id}" class="panel-collapse collapse {if in_array($v1['id'],$orgIdArr)}in{/if}" role="tabpanel" aria-labelledby="collapse{$v1.id}">
+                                                        <ul class="list-group">
+                                                            {volist name="v1['childlist']" id='v2'}
+                                                                {if condition="$v2['childlist']"}
+                                                                    <li class="list-group-item">
+                                                                        <div class="panel panel-primary leftMenu">
+                                                                            <div class="panel-heading" id="collapse{$v2.id}" data-toggle="collapse" data-target="#Group{$v2.id}" role="tab" >
+                                                                                <h4 class="panel-title">
+                                                                                    {$v2.title}<span class="left-span">[{$v2.manage}]</span>
+                                                                                    <span class="glyphicon glyphicon-menu-left right"></span>
+                                                                                </h4>
+                                                                            </div>
+                                                                            <div id="Group{$v2.id}" class="panel-collapse collapse {if in_array($v2['id'],$orgIdArr)}in{/if}" role="tabpanel" aria-labelledby="collapse{$v2.id}">
+                                                                                <ul class="list-group">
+                                                                                    {volist name="v2['childlist']" id='v3'}
+                                                                                    <li class="list-group-item">
+                                                                                        <a class="menu-item-left {if $v3['id'] eq $params['org_id']}left-a-color{/if}" href="{$url}&org_id={$v3.id}">{$v3.title}<span class="left-span">[{$v3.manage}]</span>
+                                                                                            <i class="glyphicon glyphicon-menu-right"></i></a>
+                                                                                    </li>
+                                                                                    {/volist}
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                {else/}
+                                                                    <li class="list-group-item">
+                                                                        <a class="menu-item-left {if $v2['id'] eq $params['org_id']}left-a-color{/if}" href="{$url}&org_id={$v2.id}">{$v2.title}<span class="left-span">[{$v2.manage}]</span>
+                                                                            <i class="glyphicon glyphicon-menu-right"></i></a>
+                                                                    </li>
+                                                                {/if}
+                                                            {/volist}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            {else/}
+                                            <li class="list-group-item">
+                                                <a class="menu-item-left {if $v1['id'] eq $params['org_id']}left-a-color{/if}" href="{$url}&org_id={$v1.id}">{$v1.title}<span class="left-span">[{$v1.manage}]</span>
+                                                    <i class="glyphicon glyphicon-menu-right"></i></a>
+                                            </li>
+                                        {/if}
+                                    {/volist}
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                {else/}
+                    <li class="list-group-item">
+                        <a class="menu-item-left {if $vo['id'] eq $params['org_id']}left-a-color{/if}" href="{$url}&org_id={$vo.id}">{$vo.title}<span class="left-span">[{$vo.manage}]</span>
+                            <i class="glyphicon glyphicon-menu-right"></i></a>
+                    </li>
+                {/if}
+            {/volist}
+            </ul>
+        </div>
+
+    </div>
+    {/volist}
+</div>

@@ -1,0 +1,71 @@
+<form class="form-inline">
+    <div class="panel panel-default panel-btn">
+        <div class="panel-heading">
+            <div class="form-group">
+                <label for="org_id">部门：</label>
+                <select class="form-control" title="" id="org_id" name="org_id">
+                    <option value="">全部</option>
+                    {foreach($orgInfo as $orgid=>$orgList)}
+                    <option value="{$orgList['id']}" {if condition="$params['org_id'] == $orgList['id']"}selected{/if}>{$orgList['title']}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pact_type">协议：</label>
+                <select class="form-control" title="" id="pact_type" name="pact_type">
+                    {foreach ($pact_type as $pactId=>$pactName)}
+                    <option value="{$pactId}" {if condition="$params['pact_type'] EQ $pactId"}selected{/if}>{$pactName}</option>
+                    {/foreach}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="room">住宿：</label>
+                <select class="form-control" title="" id="room" name="room">
+                    {foreach ($room as $roomId=>$roomName)}
+                    <option value="{$roomId}" {if condition="$params['room'] EQ $roomId"}selected{/if}>{$roomName}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ready_computer">电脑：</label>
+                <select class="form-control" title="" id="ready_computer" name="ready_computer">
+                    {foreach ($ready_computer as $readyId=>$readyName)}
+                    <option value="{$readyId}" {if condition="$params['ready_computer'] EQ $readyId"}selected{/if}>{$readyName}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="timetype"></label>
+                <select class="form-control" title="" id="timetype" name="timetype">
+                    {foreach($timetype as $k3=>$v3)}
+                    <option value="{$k3}" {if condition="($params['timetype'] == $k3)"}selected{/if}>{$v3}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control input-sm input-width for-input-wid" type="text" id="start_time" name="start_time" value="{$params['start_time']}" readonly>
+                <span>到</span>
+                <input class="form-control input-sm input-width for-input-wid" type="text" id="end_time" name="end_time" value="{$params['end_time']}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="searchKey"></label>
+                <select class="form-control" title="" id="searchKey" name="searchKey">
+                    {foreach ($searchKey as $keyId=>$keyName)}
+                    <option value="{$keyId}" {if condition="$params['searchKey'] == $keyId"}selected{/if}>{$keyName}</option>
+                    {/foreach}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="searchValue"></label>
+                <input type="text" class="form-control" id="searchValue" name="searchValue"
+                       placeholder="支持多个搜索(空格或逗号隔开)" value="{$params['searchValue']}"/>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary">搜索</button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,48 @@
+<form class="form-inline">
+    <div class="panel panel-default panel-btn">
+        <div class="panel-heading">
+            <div class="form-group">
+                <label>岗位：</label>
+                <select class="form-control">
+                    <option value="">请选择岗位</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>状态：</label>
+                <select class="form-control">
+                    <option value="">请选择状态</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>账号：</label>
+                <select class="form-control">
+                    <option value="">是否绑定</option>
+                    <option value="1">是</option>
+                    <option value="2">否</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>角色：</label>
+                <select class="form-control">
+                    <option value="">请选择角色</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="text"  class="form-control" id="exampleInputEmail1" placeholder="多姓名搜索(空格逗号隔开)">
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-info" type="Submit"><i class="glyphicon glyphicon-search" aria-hidden="true"></i>搜索</button>
+                {if $params['org_id']}
+                <a class="btn btn-success add" data-id="{$params.org_id}" data-url="{:url('/v1/group/organization/add')}" href="javaScript:;"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i>新增</a>
+                {/if}
+                <a class="btn btn-danger" onclick="" href="javaScript:;"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>日志</a>
+            </div>
+        </div>
+    </div>
+    <br>
+</form>

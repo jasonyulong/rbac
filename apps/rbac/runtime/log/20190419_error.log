@@ -1,0 +1,9 @@
+---------------------------------------------------------------
+[ 2019-04-19T15:58:46+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]Use of undefined constant eixt - assumed 'eixt'[/opt/web/zs/apps/rbac/application/common/library/auth/Access.php:158]
+---------------------------------------------------------------
+[ 2019-04-19T16:00:27+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]Use of undefined constant eixt - assumed 'eixt'[/opt/web/zs/apps/rbac/application/common/library/auth/Access.php:158]
+---------------------------------------------------------------
+[ 2019-04-19T16:00:27+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]Use of undefined constant eixt - assumed 'eixt'[/opt/web/zs/apps/rbac/application/common/library/auth/Access.php:158]

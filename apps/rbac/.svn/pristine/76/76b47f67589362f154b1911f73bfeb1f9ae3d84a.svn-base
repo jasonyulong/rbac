@@ -1,0 +1,68 @@
+.margin-styl{
+  padding:10px;
+  text-align:center;
+}
+.bgColor{
+  background:#fff;
+}
+.pdTop{
+  padding-top:8px;
+}
+.pdBottom{
+  padding-bottom:48px;
+}
+.batch-bar{
+  width:100%;
+  position:relative;
+}
+.right-detail{
+  position:absolute;
+  top:43px;
+  right:320px;
+  min-width:20%
+}
+.page-lay{
+  position:relative;
+}
+.lable-title{
+  text-align: right;
+  vertical-align: middle;
+}
+.table-striped tr .lable-title{
+
+}
+.table-striped tr .td-padding{
+  display:table-cell;
+  vertical-align:middle;
+  padding:8px;
+}
+.td-width-1{
+  width:5%;
+}
+.td-width-10{
+  width:10%;
+}
+.td-width-20{
+  width:20%;
+}
+.td-width-40px{
+  width:40px;
+}
+
+.td-align{
+  text-align:center;
+}
+.nav-padd{
+  padding:20px 20px 0px 20px;
+}
+.nav-padd .nav-pills .left-act{
+  background: #eee;
+}
+.nav-padd .nav-pills .marg-left {
+  margin-left:6px;
+}
+.red-color{
+  color:red;
+}
+
+

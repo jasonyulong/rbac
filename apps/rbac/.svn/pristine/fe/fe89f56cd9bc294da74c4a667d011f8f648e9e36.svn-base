@@ -1,0 +1,27 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="content">
+    {include file="users/index/_offersearch" /}
+    <div class="panel-body">
+        {include file="users/index/_navtabs" /}
+        <div class="form-group margin-t">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="badge box_total">0</span>&nbsp;批量操作 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="savePending" href="javascript:void(0)" data-url="{:url('/v1/users/index/pending',array('statusValue'=>2))}">批量转入待入职</a></li>
+                    <li><a href="javascript:void(0)" class="bathdel" data-url="{:url('/v1/users/index/del',array('status'=>0))}">批量删除</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-info addusername" data-url="{:url('/v1/users/index/add')}"><i class="glyphicon glyphicon-pencil"></i> 新增用户</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            {include file="users/index/_offertable" /}
+        </div>
+    </div>
+</div>
+{/block}

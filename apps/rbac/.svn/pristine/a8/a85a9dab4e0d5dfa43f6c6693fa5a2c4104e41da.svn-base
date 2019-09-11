@@ -1,0 +1,33 @@
+.td-padding-left-30{padding-left:20px!important;}
+.td-padding-left-40{padding-left:30px!important;}
+.td-padding-left-50{padding-left:40px!important;}
+.td-padding-left-60{padding-left:50px!important;}
+.td-padding-left-70{padding-left:60px!important;}
+.green-color{color: green}
+
+.panel-group{max-height:770px;overflow: auto;}
+.leftMenu .panel-heading{font-size:14px;height:36px;line-height:36px;color:#333333;position:relative;cursor:pointer;background-color: #F2F2F2}/*转成手形图标*/
+.leftMenu .panel-heading .right{position:absolute;right:10px;top:12px;}
+.leftMenu .panel-heading .right1{position:absolute;right:10px;top:12px;}
+.leftMenu .menu-item-left{padding: 6px; background: transparent; border:1px solid transparent;border-radius: 6px;}
+.leftMenu .menu-item-left{text-decoration: none;}
+.leftMenu .menu-item-left1{text-decoration: none;}
+.list-group-item{padding: 6px;min-height:36px}
+#ora-top{border-color: #33a6b7;}
+#panel-top{background-color: #33a6b7;}
+.form-group{padding-left: 0px!important;}
+#search{min-width: 300px!important;}
+#org-bottom-br{width: 110%;margin-left: -5%;margin-top: 60px}
+.panel-primary{margin-top: 1px!important;border-color: #E6E6E6}
+.glyphicon-menu-left{font-size: 8px}
+.glyphicon-menu-down{font-size: 8px}
+.table-responsive{margin-right: 2px}
+.glyphicon-menu-right{float: right;font-size: 8px}
+.left-span{font-size: 12px;margin-left: 5px}
+.left-a-color{color: blue!important;}
+
+.form-group .control-label .one-delete{text-align: right!important;}
+.cat_locations{text-decoration: none!important;color: blue!important;}
+.cat_label{text-decoration: none!important;color: blue!important;}
+
+.dep-option{color: blue!important;}

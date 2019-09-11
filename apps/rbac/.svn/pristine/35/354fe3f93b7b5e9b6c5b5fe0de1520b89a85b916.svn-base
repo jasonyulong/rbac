@@ -1,0 +1,46 @@
+<?php
+// +----------------------------------------------------------------------
+// | 组织架构相关数据同步
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command\sync;
+
+use think\console\Input;
+use think\console\Output;
+use think\Config;
+
+class Organization
+{
+    /**
+     * 输入对象
+     * @var Input
+     */
+    private $input;
+
+    /**
+     * 输出对象
+     * @var Output
+     */
+    private $output;
+
+    /**
+     * 构造函数
+     * Orders constructor.
+     * @param Input $input 输入对象
+     * @param Output $output 输出对象
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    public function run()
+    {
+
+    }
+}

@@ -1,0 +1,88 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Organization.php
+ * @Date: 2019/4/8
+ * @Time: 9:45
+ * @Description
+ */
+
+namespace app\v1\controller\group;
+
+use app\common\controller\PublicController as Controller;
+use app\v1\service\Department;
+use app\v1\service\Tag;
+
+
+class Organization extends Controller
+{
+
+    /**
+     * @var null 成员服务层
+     */
+    private $organizationService = null;
+
+    /**
+     * @var null 部门服务层
+     */
+    private $departmentService = null;
+
+    /**
+     * @var null 权限标签服务层
+     */
+    private $tagService = null;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->organizationService = new \app\v1\service\Organization();
+        $this->departmentService = new Department();
+        $this->tagService = new Tag();
+    }
+
+    /**
+     * @desc 组织架构列表
+     * @author 杨能文
+     * @date 2019/4/8 9:46
+     * @access public
+     * @return string
+     */
+    public function index():string
+    {
+        $params = input('param.');
+        $params['org_id'] = isset($params['org_id']) ? $params['org_id'] : 0;
+        $params['status'] = isset($params['status']) ? $params['status'] : '';
+        $params['binding'] = isset($params['binding']) ? $params['binding'] : '';
+        $params['user_name'] = isset($params['user_name']) ? $params['user_name'] : '';
+
+        $organizationService = $this->organizationService;
+        $data = $organizationService->list($params);
+        $this->assign('data', $data['list']['data']);
+        $this->assign('page', $data['page']);
+
+        $this->assign('orgleft', $this->organizationService->orglists($params['org_id']));
+        $this->assign('adaptive', '');
+        $this->assign('params', $params);
+        $this->assign('url', url('index'));
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 添加组织架构成员
+     * @author 杨能文
+     * @date 2019/4/9 14:26
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function add()
+    {
+        $departmentService = $this->departmentService;
+        $tagService = $this->tagService;
+        $this->assign('saleUser', $departmentService->saleuser());
+        $this->assign('org_id', input('param.org_id'));
+        $this->assign('tagArr', $tagService->gettag());
+        return parent::fetchAuto();
+    }
+}

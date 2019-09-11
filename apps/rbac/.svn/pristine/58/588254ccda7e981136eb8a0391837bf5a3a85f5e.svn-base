@@ -1,0 +1,48 @@
+<?php
+// +----------------------------------------------------------------------
+// | 自动任务基类
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\command;
+
+use think\console\Command;
+use think\console\Input;
+use think\console\input\Option;
+use think\console\Output;
+use think\Exception;
+
+class Commands extends Command
+{
+    protected $name = null;
+
+    /**
+     * 执行入口
+     * @param Input $input 输入
+     * @param Output $output 输出
+     * @return void
+     */
+    protected function execute(Input $input, Output $output)
+    {
+        $ns_prefix = "\\" . __NAMESPACE__ . "\\" . $this->name . "\\";
+        $class_dir = __DIR__ . DIRECTORY_SEPARATOR . $this->name;
+        $this->defaultExecute($input, $output, $class_dir, $ns_prefix);
+    }
+
+    /**
+     * 默认执行
+     * @param $command_name 脚本名称
+     * @param string $desc 描述
+     */
+    protected function defaultConfigure($command_name, $desc = '')
+    {
+        $this->setName($command_name)
+            ->addOption('module', 'm', Option::VALUE_REQUIRED, __('类名称, 对应你要操作的那个类文件'), null)
+            ->addOption('action', 'a', Option::VALUE_REQUIRED, __('方法名称, 对应你要操作的类文件里的方法名称'), null)
+            ->setDescription($desc);
+    }
+}
+

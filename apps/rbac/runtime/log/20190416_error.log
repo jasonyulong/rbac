@@ -1,0 +1,54 @@
+---------------------------------------------------------------
+[ 2019-04-16T16:13:31+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3927&addType=edit
+[ error ] [0]类型错误: Return value of app\v1\service\Base::getErrors() must be of the type string, null returned[/opt/web/zs/apps/rbac/application/v1/service/Base.php:43]
+---------------------------------------------------------------
+[ 2019-04-16T16:13:39+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3927&addType=edit
+[ error ] [0]类型错误: Return value of app\v1\service\Base::getErrors() must be of the type string, null returned[/opt/web/zs/apps/rbac/application/v1/service/Base.php:43]
+---------------------------------------------------------------
+[ 2019-04-16T16:14:26+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3927&addType=edit
+[ error ] [0]类型错误: Return value of app\v1\service\Base::getErrors() must be of the type string, null returned[/opt/web/zs/apps/rbac/application/v1/service/Base.php:43]
+---------------------------------------------------------------
+[ 2019-04-16T16:37:54+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [0]致命错误: Call to undefined function app\v1\service\data()[/opt/web/zs/apps/rbac/application/v1/service/User.php:1276]
+---------------------------------------------------------------
+[ 2019-04-16T17:35:19+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [2]A non-numeric value encountered[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:32]
+---------------------------------------------------------------
+[ 2019-04-16T17:36:28+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [2]A non-numeric value encountered[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:32]
+---------------------------------------------------------------
+[ 2019-04-16T17:37:02+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [2]A non-numeric value encountered[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:33]
+---------------------------------------------------------------
+[ 2019-04-16T17:37:49+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [2]A non-numeric value encountered[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:33]
+---------------------------------------------------------------
+[ 2019-04-16T17:50:34+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:13+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:15+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:16+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:16+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:16+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:21+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义变量: url[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:48+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义数组索引: 今日已发OFFER[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T17:52:49+08:00 ] 192.168.8.80 GET local.rule.com/v1.html
+[ error ] [8]未定义数组索引: 今日已发OFFER[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:132]
+---------------------------------------------------------------
+[ 2019-04-16T18:19:34+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3929&dialog=1
+[ error ] [0]致命错误: Function name must be a string[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:72]

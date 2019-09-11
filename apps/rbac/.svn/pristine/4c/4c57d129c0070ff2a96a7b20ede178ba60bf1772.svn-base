@@ -1,0 +1,6 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+       岗位
+    </div>
+</div>
+<div class="navbar-default" role="navigation" id="tree"></div>

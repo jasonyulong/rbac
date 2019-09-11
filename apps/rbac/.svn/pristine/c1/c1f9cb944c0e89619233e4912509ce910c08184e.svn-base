@@ -1,0 +1,52 @@
+<?php
+// +----------------------------------------------------------------------
+// | 默认模块默认控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller;
+
+use app\common\controller\AuthController as Controller;
+use app\common\model\Users;
+use think\Config;
+
+class Index extends Controller
+{
+    /**
+     * 首页
+     * @return string
+     */
+    public function index()
+    {
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人资料
+     * @return void
+     */
+    public function profile()
+    {
+        $userService = new \app\v1\service\User();
+
+        $this->assign('userJob', Config::get('site.userJobType'));           //角色
+        $this->assign('allowSystem', Config::get('site.allowSystem'));       //可登录的系统
+        $this->assign('getUserObj', $userService->getUserObj());       //岗位
+        $this->assign('usersLabel', $userService->getUsersLabel());    //权限标签
+        $this->assign('allOrg', $userService->getOrgAll());            //部门
+        $this->assign('userinfo', Users::get($this->auth->id));
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人设置
+     * @return void
+     */
+    public function setting()
+    {
+        return parent::fetchAuto();
+    }
+}

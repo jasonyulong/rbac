@@ -1,0 +1,19 @@
+<?php
+/**
+ * User: wcd
+ * Date: 2019/4/2
+ * Time: 15:03
+ */
+
+
+/**
+ * allowSystemViews 所有系统的单独页面
+ */
+return [
+    'allowSystemViews' => [
+        'systemrbac' => '权限系统(RBAC)',
+        'systemerp'  => 'ERP',
+        'systemoms'  => '订单系统(OMS)',
+        'systemcount' => '报表系统(COUNT)'
+    ],
+];

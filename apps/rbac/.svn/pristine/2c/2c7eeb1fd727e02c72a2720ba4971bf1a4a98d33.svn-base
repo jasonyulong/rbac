@@ -1,0 +1,18 @@
+<div class="form-group margin-t">
+    <div class="btn-group">
+        <button type="button" class="btn btn-success dropdown-toggle"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="badge box_total">0</span>批量操作 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'savePending','data-url' => url('/v1/users/index/pending',array('statusValue'=>0))],
+                '<i class="glyphicon glyphicon-pencil"></i> 转入已发OFFER')}
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'bathdel','data-url' => url('/v1/users/index/del',array('status'=>2))],
+                '<i class="glyphicon glyphicon-remove"></i> 批量删除')}
+        </ul>
+    </div>
+</div>

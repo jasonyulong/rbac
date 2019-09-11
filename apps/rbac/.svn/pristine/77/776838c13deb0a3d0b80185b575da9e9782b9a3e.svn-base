@@ -1,0 +1,35 @@
+<?php
+// +----------------------------------------------------------------------
+// | 数据同步任务
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command;
+use app\common\command\Commands;
+
+/**
+ * 数据同步任务
+ */
+class Sync extends Commands
+{
+    protected $name = 'pull';
+
+    /**
+     * 执行入口
+     * @return void
+     */
+    protected function configure()
+    {
+        $desc = __("自动数据同步入口");
+
+        $this->defaultConfigure($this->name, $desc);
+        // ------------- 自定义参数 ---------------
+
+        // 用法介绍
+        $usage = "php think sync -m 类 -a 方法 自定义参数";
+        $this->addUsage($usage);
+    }
+}

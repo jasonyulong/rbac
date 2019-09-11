@@ -1,0 +1,104 @@
+{foreach $menu_tree as $value}
+<div class="panel panel-primary level1-rule">
+    <div class="panel-heading">
+        <label class="panel-title "><input type="checkbox" class="level1-checkbox" value="{$value['id']}"/>{$value['title']}</label>
+    </div> 
+    {foreach $value['children'] as $k => $v}
+    <div class="panel-body  level2-rule">
+        <div class="panel panel-info">
+                <div class="panel-heading">
+                    &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox" value="{$v['id']}"/>{$v['title']}</label>
+                </div>
+                {foreach $v['children'] as $_k => $_v}
+                <div class="panel-body level3-rule">
+                    <div>
+                        <label><input type="checkbox" class="level3-checkbox" value="{$_v['id']}"/>{$_v['title']}</label>
+                    </div>
+                    <div class="level4-rule">
+                        {foreach $_v['detail'] as $__k => $__v}
+                        <label><input type="checkbox" class="level4-checkbox" value="{$__v['id']}"/>{$__v['title']}</label>
+                        {/foreach}
+                    </div>
+                </div>
+                {/foreach}
+        </div>
+    </div>
+    {/foreach}
+</div>
+{/foreach}
+
+<!-- 
+<div class="panel panel-primary">
+    <div class="panel-heading level1-rule">
+        <label class="panel-title "><input type="checkbox"/>订单管理</label>
+    </div>
+    <div class="panel-body">
+        <div class="panel panel-info">
+                <div class="panel-heading level2-rule">
+                    <label class="panel-title "><input type="checkbox"/>订单规则</label>
+                </div>
+                <div class="panel-body">
+                    <div class="level3-rule">
+                        <label><input type="checkbox"/>订单规则2</label>
+                    </div>
+                    <div class="level4-rule">
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="level3-rule">
+                        <label><input type="checkbox"/>订单规则2</label>
+                    </div>
+                    <div class="level4-rule">
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                        <label><input type="checkbox"/>订单规则3</label>
+                    </div>
+                </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="panel panel-primary">
+        <div class="panel-heading level1-rule">
+            <label class="panel-title "><input type="checkbox"/>订单管理</label>
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-info">
+                    <div class="panel-heading level2-rule">
+                        <label class="panel-title "><input type="checkbox"/>订单规则</label>
+                    </div>
+                    <div class="panel-body">
+                        <div class="level3-rule">
+                            <label><input type="checkbox"/>订单规则2</label>
+                        </div>
+                        <div class="level4-rule">
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                        </div>
+                    </div>
+    
+                    <div class="panel-body">
+                        <div class="level3-rule">
+                            <label><input type="checkbox"/>订单规则2</label>
+                        </div>
+                        <div class="level4-rule">
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                            <label><input type="checkbox"/>订单规则3</label>
+                        </div>
+                    </div>
+            </div>
+            
+        </div>
+    </div> 
+-->

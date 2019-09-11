@@ -1,0 +1,43 @@
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="data-check_box_total" type="checkbox"/>
+        </th>
+        <th class="td-align">标签名称</th>
+        <th class="td-align">用户</th>
+        <th class="td-align">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name='list.data' id='vo'}
+    <tr>
+        <td class="td-align td-padding">
+            <input type="checkbox" name="box_checked" data-id="{$vo.id}" class="data-check_box">
+        </td>
+        <td class="td-align td-padding">{$vo.name}</td>
+        {if condition="($userTag[$vo.id] ?? 0) gt 0"}
+            <td class="td-align td-padding"><a class="a-show cat" data-url="{:url('/v1/auth/tag/cat',array('id'=>$vo['id']))}">查看用户({$userTag[$vo.id] ?? 0})</a></td>
+        {else/}
+            <td class="td-align td-padding">{$userTag[$vo.id] ?? 0}</td>
+        {/if}
+        <td class="td-align td-padding">
+            <button type="button" class="btn btn-primary btn-sm btn-padding edit"
+                    data-url="{:url('/v1/auth/tag/edit',array('id'=>$vo['id']))}"><i
+                    class="glyphicon glyphicon-pencil"></i> 编辑
+            </button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-info btn-sm btn-padding auth"><i class="glyphicon glyphicon-eye-open"></i>
+                权限
+            </button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-warning btn-sm btn-padding copy"
+                    data-url="{:url('/v1/auth/tag/copy',array('id'=>$vo['id']))}"><i
+                    class="glyphicon glyphicon-copy"></i> 复制
+            </button>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<div class="pages">{$page ?? ''}</div>

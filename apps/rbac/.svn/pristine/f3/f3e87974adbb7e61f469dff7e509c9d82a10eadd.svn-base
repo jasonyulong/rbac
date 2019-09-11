@@ -1,0 +1,251 @@
+.skin-blue .navbar-top {
+  background-color: #337ab7;
+  color: #fff;
+}
+
+.skin-blue .navbar-top .dropdown .dropdown-toggle {
+  color: #fff;
+  font-size: 16px;
+}
+
+.skin-blue .navbar-top .dropdown .dropdown-toggle:hover, .skin-blue .navbar-top .dropdown .dropdown-toggle:focus {
+  background-color: #2d6da2;
+}
+
+.skin-blue .navbar-top .navbar-brand {
+  width: 181px;
+  background-color: #2d6da2;
+  color: #fff;
+  text-align: center;
+}
+
+.navbar-top-links .active > a, .nav .open > a, .nav .open > a:focus, .nav .open > a:hover {
+  background-color: #2d6da2;
+}
+
+// 固定头部
+.fixed .main-header {
+  position: fixed;
+  width: 100%;
+}
+
+.navbar-collapse {
+  display: none;
+}
+
+.adaptive .navbar-collapse {
+  display: block;
+}
+
+@media (min-width: 1919px) {
+  .adaptive .navbar-top .navbar-brand {
+    width: 181px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .skin-blue .navbar-header {
+    display: none;
+  }
+
+  .skin-blue .navbar-right {
+    display: none;
+  }
+}
+
+@media (max-width: 1919px) {
+  .adaptive .navbar-collapse {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .modal-dialog {
+    margin: 10% auto;
+  }
+}
+
+// 头部
+.btn-top {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #000;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  color: #fff;
+  opacity: 0.5;
+  display: none;
+  -moz-transition: background 1s;
+  -webkit-transition: background 1s;
+  -o-transition: background 1s;
+}
+
+.dialog-content {
+  padding: 20px;
+  min-height: 450px;
+  margin-bottom: 50px;
+}
+
+.content {
+  background: #fff;
+}
+
+.content .panel {
+  margin-bottom: 0px;
+}
+
+.content .panel-btn .panel-heading {
+  padding: 5px;
+}
+
+.content .panel-body {
+  padding: 5px 0px;
+}
+
+.btn-top:active {
+  border: none;
+}
+
+.form-selectpicker {
+  min-width: 160px;
+}
+
+.navbar-brand small {
+  font-size: 60%;
+  font-style: italic
+}
+
+.nav-curstom {
+  margin-top: 10px;
+}
+
+.nav-curstom > li.active > a, .nav-curstom > li.active > a:focus, .nav-curstom > li.active > a:hover {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+
+.pagination-detail {
+  margin-right: 20px;
+  padding-top: 7px
+}
+
+.table-titles {
+  margin-bottom: 5px;
+}
+
+.dialog-footer {
+  position: fixed;
+  height: 50px;
+  right: 38%;
+  bottom: 0px;
+}
+
+.sidebar-toggle {
+  width: 45px;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+  padding: 0;
+  float: left;
+  color: #fff;
+}
+
+.sidebar-toggle:hover, .sidebar-toggle:active, .sidebar-toggle:focus {
+  background: #337ab7;
+  color: #fff;
+}
+
+.fieldlist dd {
+  margin: 5px 0;
+}
+
+.nav-tabs-custom .nav-tabs {
+  border-bottom: 0px;
+}
+
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+  vertical-align: middle
+}
+
+.panel-body .margin-t {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+  vertical-align: middle
+}
+
+.orglist {
+  border: 1px solid #ddd
+}
+
+.orglist ul, li {
+  list-style-type: none;
+}
+
+.orglist li .active {
+  color: #337ab7;
+}
+
+.orglist .collapse a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+}
+
+.orglist .collapse a:focus, .orglist .collapse a:hover {
+  text-decoration: none;
+  background-color: #eee
+}
+
+.orglist .nav-second-level {
+  padding-left: 15px;
+  background: #fff;
+}
+
+.fieldlist dd {
+  margin: 5px 0;
+}
+
+.nav-tabs-custom .nav-tabs {
+  border-bottom: 0px;
+}
+
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+  vertical-align: middle
+}
+
+.panel-body .margin-t {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+  vertical-align: middle
+}
+
+.box-header {
+  margin-bottom: 10px;
+}
+
+.dataTables {
+  margin-bottom: 0px;
+}
+
+.dataTables_filter {
+  text-align: right;
+}
+
+.dataTables_wrapper .row {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.dataTables_scrollBody {
+  height: 100%;
+}

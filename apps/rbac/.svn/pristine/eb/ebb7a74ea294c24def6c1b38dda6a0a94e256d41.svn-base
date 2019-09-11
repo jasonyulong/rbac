@@ -1,0 +1,68 @@
+<div class="panel-group table-responsive" role="tablist">
+
+    <div class="panel panel-primary leftMenu" id="ora-top">
+        <div class="panel-heading" id="panel-top">
+            <h4 class="panel-title">
+                组织架构
+            </h4>
+        </div>
+    </div>
+
+    <div class="panel panel-primary leftMenu">
+        <!-- 利用data-target指定要折叠的分组列表 -->
+        <div class="panel-heading" id="collapseListGroupHeading1" data-toggle="collapse" data-target="#collapseListGroup1" role="tab" >
+            <h4 class="panel-title">
+                分组1
+                <span class="glyphicon glyphicon-chevron-up right"></span>
+            </h4>
+        </div>
+
+        <!-- .panel-collapse和.collapse标明折叠元素 .in表示要显示出来 -->
+        <div id="collapseListGroup1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseListGroupHeading1">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a class="menu-item-left" href="#">分组项</a>
+                </li>
+                <li class="list-group-item">
+                    <div class="panel panel-primary leftMenu">
+                        <div class="panel-heading" id="collapseListGroupHeading2" data-toggle="collapse" data-target="#collapseListGroup2" role="tab" >
+                            <h4 class="panel-title">
+                                分组2
+                                <span class="glyphicon glyphicon-chevron-down right"></span>
+                            </h4>
+                        </div>
+                        <div id="collapseListGroup2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseListGroupHeading2">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <a class="menu-item-left" href="#">分组项</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a class="menu-item-left" href="#">分组项</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div><!--panel end-->
+
+
+    <div class="panel panel-primary leftMenu">
+        <div class="panel-heading" id="collapse2" data-toggle="collapse" data-target="#Group2" role="tab" >
+            <h4 class="panel-title">
+                分组2
+                <span class="glyphicon glyphicon-chevron-down right"></span>
+            </h4>
+        </div>
+        <div id="Group2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapse2">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a class="menu-item-left" href="#">分组项</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+</div>

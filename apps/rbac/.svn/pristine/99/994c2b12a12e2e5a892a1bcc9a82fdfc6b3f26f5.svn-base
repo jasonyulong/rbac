@@ -1,0 +1,145 @@
+<?php
+// +----------------------------------------------------------------------
+// | 默认模块默认控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller;
+
+use app\common\controller\AuthController as Controller;
+use app\common\model\LogsDoings;
+use app\common\model\Users;
+use app\common\model\UsersNotice;
+use think\Config;
+
+class Index extends Controller
+{
+    /**
+     * 首页
+     * @return string
+     * @throws \ReflectionException
+     */
+    public function index()
+    {
+        $userService = new \app\v1\service\User();
+        $statusNum = Config::get('users.statusNum');
+        unset($statusNum[9]);
+        $year = date('Y');
+        $month = date('m');
+        $days = date('d');
+        $statusName = [
+            'offer' => '本月已发OFFER',
+            'wait' => '本月待入职',
+            'work' => '本月新入职',
+            'leave' => '本月离职',
+        ];
+        //背景颜色配置
+        $statusColor = [
+            'offer' => 'panel-primary',
+            'wait' => 'panel-yellow',
+            'work' => 'panel-green',
+            'leave' => 'panel-red',
+        ];
+        //当天所有状态的数量
+        $list = $userService->getUserCount($year, $month, $days);
+        //拼接url
+        $url = [];
+        $str = "/v1/users/index/";
+        foreach ($statusNum as $k => $v) {
+            $ur = $str . $v;
+            $url[$v] = url($ur);
+        }
+        // 获取通知列表
+        $this->assign('userNotice', $userService->getNotice($this->auth->id));
+        $this->assign('statusNum', $statusNum);
+        $this->assign('urlValue', $url);
+        $this->assign('statusName', $statusName);
+        $this->assign('statusColor', $statusColor);
+        $this->assign('list', $list);
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 个人资料
+     * @return string
+     * @throws \ReflectionException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function profile()
+    {
+        $userService = new \app\v1\service\User();
+
+        $this->assign('userJob', Config::get('site.userJobType'));           //角色
+        $this->assign('allowSystem', Config::get('site.allowSystem'));       //可登录的系统
+        $this->assign('getUserObj', $userService->getUserObj());       //岗位
+        $this->assign('usersLabel', $userService->getUsersLabel());    //权限标签
+        $this->assign('allOrg', $userService->getOrgAll());            //部门
+        $this->assign('userinfo', Users::get($this->auth->id));
+        $this->assign('usersLogs', LogsDoings::where(['user_id' => $this->auth->id])->order('createtime', 'desc')->limit(20)->select());
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 修改个人密码
+     * @return string|void
+     * @throws \ReflectionException
+     * @throws \think\exception\DbException
+     */
+    public function changepass()
+    {
+        if ($this->request->isPost()) {
+            $row = $this->request->post("row/a");
+            if ($row) {
+                $users = Users::get($this->auth->id);
+                if (!empty($row['password'])) {
+                    $row['password'] = Users::encryptPassword($row['password']);
+                }
+                if ($users->save($row)) {
+                    return $this->success(__('修改成功'));
+                }
+            }
+
+            return $this->error(__('修改失败'));
+        }
+        $this->assign('users', Users::get($this->auth->id));
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * 阅读通知
+     */
+    public function notice()
+    {
+        if ($this->request->isPost()) {
+            $noticeId = $this->request->post('id');
+            if (UsersNotice::update(['status' => 1], ['id' => $noticeId])) {
+                return $this->success('success');
+            }
+
+            return $this->error('error');
+        }
+
+        return $this->error('404');
+    }
+
+    /**
+     * 刷新权限
+     */
+    public function cleanup()
+    {
+        if ($this->request->isAjax()) {
+            // 将权限移除
+            \app\common\library\auth\Drive::instance()->clearAuth($this->auth->id);
+            return $this->success('刷新权限成功');
+        }
+        return $this->error('404');
+    }
+}

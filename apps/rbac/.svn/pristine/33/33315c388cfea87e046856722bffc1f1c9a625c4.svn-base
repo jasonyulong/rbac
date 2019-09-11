@@ -1,0 +1,427 @@
+<?php
+// +----------------------------------------------------------------------
+// | 权限设置
+// +----------------------------------------------------------------------
+// | COPYRIGHT (C) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | AUTHOR : lamkakyun
+// | DATE   : 2019-04-15 14:42:59
+// | VERSION：0.0.1
+// +----------------------------------------------------------------------
+
+namespace app\v1\service;
+
+use plugin\Tree;
+use think\Config;
+use app\common\model\Menus;
+use app\common\model\Users;
+use app\common\model\UsersJob;
+use app\common\library\MenuLib;
+use app\common\model\UsersJobAccess;
+use app\common\model\UsersLabelAccess;
+use app\common\model\UsersJobAccessAlso;
+use app\common\model\UsersLabelAccessAlso;
+
+class Access 
+{
+    // 针对特殊的权限的关键字
+    private const ACCESS_KEYS = [
+        'store_id', // 能看到的 仓库
+        'account' // 能看到的 账号
+    ];
+
+    /**
+     * 更新岗位 权限
+     * @author lamkakyun
+     * @date 2019-04-15 14:44:12
+     * @return void
+     */
+    public function updateJobAccess($job_id, $params)
+    {
+        $params['menu'] = isset($params['menu']) ? explode(',', $params['menu']) : [];
+        $params['menu_detail'] = isset($params['menu_detail']) ? explode(',', $params['menu_detail']) : [];
+
+        foreach ($params['menu_detail'] as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $params['menu'][] = $tmp_arr[0];
+        }
+        $params['menu'] = array_unique($params['menu']);
+     
+        $parent_menu_ids = MenuLib::instance()->getAllParentMenuId($params['menu'], $params['module_id']);
+        $all_menu_ids = array_map('trim', array_unique(array_merge($params['menu'], $parent_menu_ids)));
+        
+        // 查看岗位 拥有的权限
+        $where = ['job_id' => $job_id];
+        $access_list = UsersJobAccess::field('menu_id, menu_detail_id')->where($where)->select()->toArray();
+
+        $old_access_menu_and_detail = [];
+        foreach ($access_list as $value)
+        {
+            $old_access_menu_and_detail[] = $value['menu_id'] . '___' . $value['menu_detail_id'];
+        }
+
+        $new_access_menu_and_detail = [];
+        // if (isset($params['menu']))
+        // {
+        //     foreach ($params['menu'] as $value)
+        //     {
+        //         $new_access_menu_and_detail[] = $value . '___0';
+        //     }
+        // }
+        sort($all_menu_ids);
+
+        foreach ($all_menu_ids as $value)
+        {
+            $new_access_menu_and_detail[] = $value . '___0';
+        }
+
+        if (isset($params['menu_detail']))
+        {
+            foreach ($params['menu_detail'] as $value)
+            {
+                $new_access_menu_and_detail[] = $value;
+            }
+        }
+
+        // echo '<pre>';var_dump($all_menu_ids, $old_access_menu_and_detail, $new_access_menu_and_detail);echo '</pre>';
+        // exit;
+
+        // 要删除的权限
+        $deleted_access = array_diff($old_access_menu_and_detail, $new_access_menu_and_detail);
+
+        // 要增加的权限
+        $added_access = array_diff($new_access_menu_and_detail, $old_access_menu_and_detail);
+
+        $added_menu_ids = array_unique(array_map(function($v) {return explode('___', $v)[0];}, $added_access));
+
+        $added_menus = !empty($added_menu_ids) ? Menus::where(['id' => ['IN', $added_menu_ids]])->select()->toArray() : [];
+        $added_menus = tranform_data($added_menus, 1);
+
+        // 构造删除条件
+        $where_delete = [];
+        foreach ($deleted_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+
+            $where_delete[] = "(menu_id = {$tmp_menu_id} AND menu_detail_id = {$tmp_node_id})";
+        }
+        $where_delete_str = implode(' OR ', $where_delete);
+
+        // 构造添加数据
+        $now_time = time();
+        $all_add_data = [];
+        foreach ($added_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+            $type = ($tmp_node_id != '0');
+            
+            $tmp_data = [
+                'job_id' => $job_id,
+                'type' => $type,
+                'stand' => $added_menus[$tmp_menu_id]['type'] ?? 0,
+                'menu_id' => $tmp_menu_id,
+                'module_id' => $params['module_id'],
+                'menu_detail_id' => $tmp_node_id,
+                'createtime' => $now_time,
+                'updatetime' => $now_time,
+            ];
+
+            $all_add_data[] = $tmp_data;
+        }
+
+        // echo '<pre>';var_dump($added_access, $all_add_data, $new_access_menu_and_detail, $old_access_menu_and_detail);echo '</pre>';
+        // exit;
+
+        UsersJobAccess::startTrans();
+
+        // 特殊权限处理
+        foreach (self::ACCESS_KEYS as $acc_key)
+        {
+            if (isset($params[$acc_key]))
+            {
+                $tmp_where = ['job_id' => $job_id, 'module_id' => $params['module_id'], 'keys' => $acc_key];
+                $tmp_data = UsersJobAccessAlso::where($tmp_where)->find();
+
+                $tmp_save = [
+                    'job_id' => $job_id,
+                    'module_id' => $params['module_id'],
+                    'keys' => $acc_key,
+                    'values' => $params[$acc_key],
+                ];
+
+                if ($tmp_data)
+                {
+                    $tmp_save['updatetime'] = $now_time;
+                    $tmp_ret = UsersJobAccessAlso::where($tmp_where)->update($tmp_save);
+                }
+                else
+                {
+                    $tmp_save['createtime'] = $now_time;
+                    $tmp_ret = UsersJobAccessAlso::insert($tmp_save);
+                }
+
+                if ($tmp_ret === false) 
+                {
+                    UsersJobAccess::rollback();
+                    return ['code' => 10001, 'msg' => '操作失败'];
+                }
+            }
+        }
+
+
+
+        $ret_delete = true;
+        if (!empty($where_delete))
+        {
+            $ret_delete = UsersJobAccess::where($where_delete_str)->delete();
+        }
+
+        $ret_add = true;
+        if (!empty($all_add_data))
+        {
+            $ret_add = $ret_add = UsersJobAccess::insertAll($all_add_data);
+        }
+
+        if ($ret_add !== false && $ret_delete !== false)
+        {
+            UsersJobAccess::commit();
+            return ['code' => 0, 'msg' => '操作成功'];
+        }
+        else
+        {
+            UsersJobAccess::rollback();
+            return ['code' => -1, 'msg' => '操作失败'];
+        }
+    }
+
+
+    /**
+     * 保存 标签权限
+     * @author lamkakyun
+     * @date 2019-04-16 19:53:28
+     * @return void
+     */
+    public function updateTagAccess($label_id, $params)
+    {
+        $params['menu'] = isset($params['menu']) ? explode(',', $params['menu']) : [];
+        $params['menu_detail'] = isset($params['menu_detail']) ? explode(',', $params['menu_detail']) : [];
+
+        foreach ($params['menu_detail'] as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $params['menu'][] = $tmp_arr[0];
+        }
+        $params['menu'] = array_unique($params['menu']);
+     
+        $parent_menu_ids = MenuLib::instance()->getAllParentMenuId($params['menu'], $params['module_id']);
+        $all_menu_ids = array_map('trim', array_unique(array_merge($params['menu'], $parent_menu_ids)));
+        
+        // 查看标签 拥有的权限
+        $where = ['label_id' => $label_id];
+        $access_list = UsersLabelAccess::field('menu_id, menu_detail_id')->where($where)->select()->toArray();
+
+        $old_access_menu_and_detail = [];
+        foreach ($access_list as $value)
+        {
+            $old_access_menu_and_detail[] = $value['menu_id'] . '___' . $value['menu_detail_id'];
+        }
+
+        $new_access_menu_and_detail = [];
+        // if (isset($params['menu']))
+        // {
+        //     foreach ($params['menu'] as $value)
+        //     {
+        //         $new_access_menu_and_detail[] = $value . '___0';
+        //     }
+        // }
+        sort($all_menu_ids);
+
+        foreach ($all_menu_ids as $value)
+        {
+            $new_access_menu_and_detail[] = $value . '___0';
+        }
+
+        if (isset($params['menu_detail']))
+        {
+            foreach ($params['menu_detail'] as $value)
+            {
+                $new_access_menu_and_detail[] = $value;
+            }
+        }
+
+        // 要删除的权限
+        $deleted_access = array_diff($old_access_menu_and_detail, $new_access_menu_and_detail);
+
+        // 要增加的权限
+        $added_access = array_diff($new_access_menu_and_detail, $old_access_menu_and_detail);
+
+        $added_menu_ids = array_unique(array_map(function($v) {return explode('___', $v)[0];}, $added_access));
+
+        $added_menus = !empty($added_menu_ids) ? Menus::where(['id' => ['IN', $added_menu_ids]])->select()->toArray() : [];
+        $added_menus = tranform_data($added_menus, 1);
+
+        // 构造删除条件
+        $where_delete = [];
+        foreach ($deleted_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+
+            $where_delete[] = "(menu_id = {$tmp_menu_id} AND menu_detail_id = {$tmp_node_id})";
+        }
+        $where_delete_str = implode(' OR ', $where_delete);
+
+        // 构造添加数据
+        $now_time = time();
+        $all_add_data = [];
+        foreach ($added_access as $value)
+        {
+            $tmp_arr = explode('___', $value);
+            $tmp_menu_id = $tmp_arr[0];
+            $tmp_node_id = $tmp_arr[1];
+            $type = ($tmp_node_id != '0');
+            
+            $tmp_data = [
+                'label_id' => $label_id,
+                'type' => $type,
+                'menu_id' => $tmp_menu_id,
+                'module_id' => $params['module_id'],
+                'menu_detail_id' => $tmp_node_id,
+                'createtime' => $now_time,
+                'updatetime' => $now_time,
+            ];
+
+            $all_add_data[] = $tmp_data;
+        }
+
+        UsersLabelAccess::startTrans();
+
+         // 特殊权限处理
+        foreach (self::ACCESS_KEYS as $acc_key)
+        {
+            if (isset($params[$acc_key]))
+            {
+                $tmp_where = ['label_id' => $label_id, 'module_id' => $params['module_id'], 'keys' => $acc_key];
+                $tmp_data = UsersLabelAccessAlso::where($tmp_where)->find();
+
+                $tmp_save = [
+                    'label_id' => $label_id,
+                    'module_id' => $params['module_id'],
+                    'keys' => $acc_key,
+                    'values' => $params[$acc_key],
+                ];
+
+                if ($tmp_data)
+                {
+                    $tmp_save['updatetime'] = $now_time;
+                    $tmp_ret = UsersLabelAccessAlso::where($tmp_where)->update($tmp_save);
+                }
+                else
+                {
+                    $tmp_save['createtime'] = $now_time;
+                    $tmp_ret = UsersLabelAccessAlso::insert($tmp_save);
+                }
+
+                if ($tmp_ret === false) 
+                {
+                UsersLabelAccess::rollback();
+                    return ['code' => 10001, 'msg' => '操作失败'];
+                }
+            }
+        }
+
+        $ret_delete = true;
+        if (!empty($where_delete))
+        {
+            $ret_delete = UsersLabelAccess::where($where_delete_str)->delete();
+        }
+
+        $ret_add = true;
+        if (!empty($all_add_data))
+        {
+            $ret_add = $ret_add = UsersLabelAccess::insertAll($all_add_data);
+        }
+
+        if ($ret_add !== false && $ret_delete !== false)
+        {
+            UsersLabelAccess::commit();
+            return ['code' => 0, 'msg' => '操作成功'];
+        }
+        else
+        {
+            UsersLabelAccess::rollback();
+            return ['code' => -1, 'msg' => '操作失败'];
+        }
+
+    }
+
+
+    /**
+     * 获取 其他权限
+     * @author lamkakyun
+     * @date 2019-04-17 10:11:24
+     * @return void
+     */
+    public function getAccessAlso($id, $type = 1)
+    {
+        $fields = 'keys, values';
+        switch ($type)
+        {
+            case '1':
+                $where = ['job_id' => $id];
+                $data = UsersJobAccessAlso::field($fields)->where($where)->select()->toArray();
+                break;
+            
+            case '2':
+                $where = ['label_id' => $id];
+                $data = UsersLabelAccessAlso::field($fields)->where($where)->select()->toArray();
+                break;
+        }
+        
+        $ret_data = [];
+        foreach ($data as $key => $value)
+        {
+            $ret_data[$value['keys']] = array_filter(array_map('trim', explode(',', $value['values'])), function($v){return !empty($v);});
+        }
+
+        return $ret_data;
+    }
+
+
+    /**
+     * 获取 所有 其他权限
+     * @author lamkakyun
+     * @date 2019-04-17 11:56:47
+     * @return void
+     */
+    public function getAllAccessAlso($type = 1)
+    {
+        $fields = 'keys, values';
+        switch ($type)
+        {
+            case '1':
+                $fields .= ",job_id as id";
+                $data = UsersJobAccessAlso::field($fields)->select()->toArray();
+                break;
+            
+            case '2':
+                $fields .= ",label_id as id";
+                $data = UsersLabelAccessAlso::field($fields)->select()->toArray();
+                break;
+        }
+
+        $ret_data = [];
+        foreach ($data as $key => $value)
+        {
+            $ret_data[$value['id']][$value['keys']] = $value['values'];
+        }
+
+        return $ret_data;
+    }
+}

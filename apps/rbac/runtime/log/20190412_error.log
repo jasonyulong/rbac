@@ -1,0 +1,54 @@
+---------------------------------------------------------------
+[ 2019-04-12T09:25:50+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=2
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:984]
+---------------------------------------------------------------
+[ 2019-04-12T09:33:40+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/showlog.html?page=3
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/service/User.php:984]
+---------------------------------------------------------------
+[ 2019-04-12T09:38:03+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义变量: rule_ids[/opt/web/zs/apps/rbac/application/v1/service/User.php:600]
+---------------------------------------------------------------
+[ 2019-04-12T09:45:10+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义数组下标: 81[/opt/web/zs/apps/rbac/application/v1/service/User.php:195]
+---------------------------------------------------------------
+[ 2019-04-12T09:45:32+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义数组下标: 1[/opt/web/zs/apps/rbac/application/v1/service/User.php:195]
+---------------------------------------------------------------
+[ 2019-04-12T09:58:45+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/pending.html?statusValue=2
+[ error ] [2]sprintf(): Too few arguments[/opt/web/zs/apps/rbac/application/v1/service/User.php:833]
+---------------------------------------------------------------
+[ 2019-04-12T10:17:36+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=&status=100&timetype=1&start_time=&end_time=&searchKey=1&searchValue=%E9%AA%8C%E8%B4%A7&debug=sql
+[ error ] [8]未定义变量: searchValue[/opt/web/zs/apps/rbac/application/v1/service/User.php:114]
+---------------------------------------------------------------
+[ 2019-04-12T10:50:28+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [2]implode(): Invalid arguments passed[/opt/web/zs/apps/rbac/application/v1/service/User.php:486]
+---------------------------------------------------------------
+[ 2019-04-12T11:13:39+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/saveNote.html
+[ error ] [0]类型错误: Too few arguments to function app\v1\service\User::addLog(), 1 passed in /opt/web/zs/apps/rbac/application/v1/service/User.php on line 968 and exactly 3 expected[/opt/web/zs/apps/rbac/application/v1/service/User.php:979]
+---------------------------------------------------------------
+[ 2019-04-12T11:20:11+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/editrule.html?saveType=all&ids=1482&status=2&dialog=1
+[ error ] [0]语法解析错误: syntax error, unexpected 'elseif' (T_ELSEIF), expecting end of file[/opt/web/zs/apps/rbac/runtime/temp/e908e2d8246e244a1d32bfb504bd1221.php:65]
+---------------------------------------------------------------
+[ 2019-04-12T11:24:14+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]Uninitialized string offset: 0[/opt/web/zs/apps/rbac/application/v1/service/User.php:437]
+---------------------------------------------------------------
+[ 2019-04-12T11:55:27+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=&status=0&timetype=1&start_time=&end_time=&searchKey=1&searchValue=
+[ error ] [8]未定义变量: statusTotals[/opt/web/zs/apps/rbac/application/v1/service/User.php:211]
+---------------------------------------------------------------
+[ 2019-04-12T13:39:13+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组索引: [/opt/web/zs/apps/rbac/application/v1/service/User.php:162]
+---------------------------------------------------------------
+[ 2019-04-12T16:24:39+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/editrule.html?saveType=all&ids=1518&status=2&dialog=1
+[ error ] [2]in_array() expects parameter 2 to be array, string given[/opt/web/zs/apps/rbac/runtime/temp/e908e2d8246e244a1d32bfb504bd1221.php:132]
+---------------------------------------------------------------
+[ 2019-04-12T17:40:20+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:126]
+---------------------------------------------------------------
+[ 2019-04-12T17:40:59+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:126]
+---------------------------------------------------------------
+[ 2019-04-12T17:42:14+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:126]
+---------------------------------------------------------------
+[ 2019-04-12T17:43:02+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:126]

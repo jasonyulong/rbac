@@ -1,0 +1,153 @@
+---------------------------------------------------------------
+[ 2019-04-02T10:24:29+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/del.html?status=0
+[ error ] [10501]SQLSTATE[42S02]: Base table or view not found: 1146 Table 'rbac.user_detail' doesn't exist[/opt/web/zs/thinkphp/library/think/db/Connection.php:385]
+---------------------------------------------------------------
+[ 2019-04-02T11:11:00+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/del.html?status=2
+[ error ] [0]method not exist:think\db\Query->save[/opt/web/zs/thinkphp/library/think/db/Query.php:103]
+---------------------------------------------------------------
+[ 2019-04-02T11:38:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: table[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:167]
+---------------------------------------------------------------
+[ 2019-04-02T11:38:53+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected 'if' (T_IF)[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:161]
+---------------------------------------------------------------
+[ 2019-04-02T11:39:13+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义变量: table[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:168]
+---------------------------------------------------------------
+[ 2019-04-02T11:44:39+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]模板文件不存在:[/opt/web/zs/thinkphp/library/think/Template.php:1074]
+---------------------------------------------------------------
+[ 2019-04-02T12:37:10+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:310]
+---------------------------------------------------------------
+[ 2019-04-02T12:49:06+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类的属性不存在:app\common\model\Users->job_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-02T14:09:38+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:395]
+---------------------------------------------------------------
+[ 2019-04-02T14:56:17+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Illegal offset type[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:169]
+---------------------------------------------------------------
+[ 2019-04-02T14:58:13+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Invalid argument supplied for foreach()[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:165]
+---------------------------------------------------------------
+[ 2019-04-02T15:06:25+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: *items[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:164]
+---------------------------------------------------------------
+[ 2019-04-02T15:06:30+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: items[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:164]
+---------------------------------------------------------------
+[ 2019-04-02T15:07:26+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:07:49+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:14:20+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Illegal offset type[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:171]
+---------------------------------------------------------------
+[ 2019-04-02T15:14:52+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Illegal offset type[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:170]
+---------------------------------------------------------------
+[ 2019-04-02T15:15:16+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Illegal offset type[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:170]
+---------------------------------------------------------------
+[ 2019-04-02T15:15:17+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [2]Illegal offset type[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:170]
+---------------------------------------------------------------
+[ 2019-04-02T15:19:02+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: page[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:179]
+---------------------------------------------------------------
+[ 2019-04-02T15:26:55+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function toArray() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:26:57+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function toArray() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:28:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组索引: data[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:28:50+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:136]
+---------------------------------------------------------------
+[ 2019-04-02T15:29:26+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:30:44+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to a member function render() on array[/opt/web/zs/apps/rbac/application/v1/service/User.php:135]
+---------------------------------------------------------------
+[ 2019-04-02T15:52:18+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]致命错误: Call to undefined function app\v1\controller\users\data()[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:177]
+---------------------------------------------------------------
+[ 2019-04-02T16:01:44+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:330]
+---------------------------------------------------------------
+[ 2019-04-02T16:02:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:330]
+---------------------------------------------------------------
+[ 2019-04-02T16:03:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:330]
+---------------------------------------------------------------
+[ 2019-04-02T16:15:07+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/recycle.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/21ebbb67e4ab89e1a7683bc59fbcb84d.php:322]
+---------------------------------------------------------------
+[ 2019-04-02T16:15:30+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:336]
+---------------------------------------------------------------
+[ 2019-04-02T16:23:52+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:217]
+---------------------------------------------------------------
+[ 2019-04-02T16:26:49+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:28:56+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:29:03+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:29:05+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:29:06+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:29:06+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:29:06+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/work.html
+[ error ] [0]语法解析错误: syntax error, unexpected ':'[/opt/web/zs/apps/rbac/runtime/temp/fb47a261c245d6ed7ead751a2a3525ea.php:345]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:05+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:34+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T16:40:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [0]类型错误: Too few arguments to function think\db\Query::where(), 0 passed and at least 1 expected[/opt/web/zs/thinkphp/library/think/db/Query.php:1033]
+---------------------------------------------------------------
+[ 2019-04-02T21:28:11+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/edit.html?type=job
+[ error ] [8]未定义数组索引: addType[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:308]
+---------------------------------------------------------------
+[ 2019-04-02T21:28:23+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/edit.html?type=job
+[ error ] [8]未定义数组索引: addType[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:308]
+---------------------------------------------------------------
+[ 2019-04-02T21:33:37+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/editrule.html?type=job
+[ error ] [0]类型错误: Too few arguments to function app\v1\service\User::editUser(), 1 passed in /opt/web/zs/apps/rbac/application/v1/controller/users/Index.php on line 331 and exactly 3 expected[/opt/web/zs/apps/rbac/application/v1/service/User.php:168]
+---------------------------------------------------------------
+[ 2019-04-02T22:12:05+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/wait.html
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/apps/rbac/runtime/temp/38c73209733b23f1f724874adfb52397.php:379]
+---------------------------------------------------------------
+[ 2019-04-02T22:15:10+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [2]date() expects parameter 2 to be integer, string given[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:338]

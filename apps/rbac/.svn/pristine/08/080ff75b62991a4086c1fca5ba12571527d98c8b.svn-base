@@ -1,0 +1,103 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户相关操作服务
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\service;
+
+use app\common\model\Users;
+
+class User
+{
+    /**
+     * @var int 错误代码
+     */
+    public $returnCode = 0;
+    /**
+     * @var string 错误提示
+     */
+    public $returnMsg = 'success';
+
+    /**
+     * @var 每页显示的数量
+     */
+    public $pageSize = 100;
+
+    public $current_page = 1;
+
+    public function index($params)
+    {
+        $user = new Users();
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : $this->pageSize;
+        //当前页
+        $current_page      = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : $this->current_page;
+        //分页起始值
+        $select_start      = $page_size * ($current_page - 1);
+        if(!empty($params['section']))$where['section'] = $params['section'];
+        if(!empty($params['status']))$where['status'] = $params['status'];
+        switch(!empty($params['searchKey'])){
+            case 1:
+
+                $where['username'] = $username ?? '';
+                break;
+        }
+        $userInfo = $user->limit($select_start, $page_size)
+            ->paginate($page_size);
+        $page = $userInfo->render();
+        $return_data = [
+            'user' => $userInfo,
+            'page' => $page,
+        ];
+        return $return_data;
+    }
+
+    /**
+     * 根据用户状态返回数量
+     * @param array $statusArr
+     * @return array
+     */
+    public function getStatusTotals($statusNum)
+    {
+        $user = new Users();
+        $info = $user->group('status')->column('count(id)','status');
+        $count = array_sum($info);
+        $statusArr = [];
+        foreach($info as $ke=>$va){
+            $statusArr[$statusNum[$ke]] = $va;
+        }
+        $all_status['index'] = $count;
+        $arr = array_merge($statusArr,$all_status);
+        return $arr;
+    }
+
+
+    /**
+     * 编辑用户信息
+     * @param $user_id 用户ID
+     * @param array $saveData 保存的数据
+     * @return array
+     */
+    public function editUser($user_id, $saveData = []) : array
+    {
+        $this->setError(-1, '提交失败');
+        return [];
+    }
+
+    /**
+     * 设置错误信息
+     * @param $code 错误代码
+     * @param $msg 错误提示
+     * @return bool
+     */
+    private function setError($code, $msg)
+    {
+        $this->returnCode = $code;
+        $this->returnMsg = $msg;
+        return true;
+    }
+}

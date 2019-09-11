@@ -1,0 +1,27 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="content">
+    {include file="users/index/_finance_wait_search" /}
+    <div class="panel-body">
+        {include file="users/index/_navtabs" /}
+        <div class="form-group margin-t">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="badge box_total">0</span>批量操作 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        {:build_toolbar('a',
+                        ['class' => 'savePending','data-url' => url('/v1/users/index/pending',array('statusValue'=>1))],
+                        '<i class="glyphicon glyphicon-pencil"></i> 批量转入已入职')}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="table-responsive">
+            {include file="users/index/_public_table" /}
+        </div>
+    </div>
+</div>
+{/block}

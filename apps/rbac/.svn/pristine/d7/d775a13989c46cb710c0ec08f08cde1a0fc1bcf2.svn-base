@@ -1,0 +1,64 @@
+<?php
+
+// +----------------------------------------------------------------------
+// | redis 缓存库
+// +----------------------------------------------------------------------
+// | COPYRIGHT (C) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | AUTHOR : lamkakyun
+// | DATE   : 2019-04-15 18:24:41
+// | VERSION：0.0.1
+// +----------------------------------------------------------------------
+namespace app\common\library;
+
+use think\Config;
+use think\Cache;
+use app\common\model\erp\EbayUser;
+
+class RedisLib
+{
+
+    public function __construct()
+    {
+        $this->redis = Cache::init(Config::get('cache.redis'));
+    }
+
+    // 静态对象
+    protected static $instance = null;
+
+    /**
+     * 单例
+     * @author lamkakyun
+     * @date 2019-04-12 09:47:11
+     * @return void
+     */
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+
+    /**
+     * 获取所有 erp 的用户信息
+     * @author lamkakyun
+     * @date 2019-04-15 18:26:49
+     * @return void
+     */
+    public function getAllErpUsers($format_type = 1)
+    {
+        $key = Config::get('redis.user_power');
+        $data = $this->redis->get($key);
+        $fields = 'id, username, is_del';
+
+        $data = EbayUser::field($fields)->select()->toArray();
+    }
+
+
+    public function getAllErpAccounts($format_type = 1)
+    {
+
+    }
+}

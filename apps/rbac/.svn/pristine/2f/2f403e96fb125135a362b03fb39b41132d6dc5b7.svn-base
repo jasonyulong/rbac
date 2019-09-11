@@ -1,0 +1,5 @@
+<div class="navbar-default" role="navigation">
+    <ul class="nav side-menu orglist">
+        {$orgleft}
+    </ul>
+</div>

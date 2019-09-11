@@ -1,0 +1,204 @@
+---------------------------------------------------------------
+[ 2019-04-01T11:02:26+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:05:06+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:05:52+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:06:11+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:06:28+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:08:18+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:08:55+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [8]Array to string conversion[/opt/web/zs/apps/rbac/application/v1/service/User.php:203]
+---------------------------------------------------------------
+[ 2019-04-01T11:09:44+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]查询表达式错误:2629[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-01T11:38:12+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [8]未定义数组索引: status[/opt/web/zs/apps/rbac/application/v1/service/User.php:202]
+---------------------------------------------------------------
+[ 2019-04-01T11:42:41+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]致命错误: Class 'app\v1\service\Config' not found[/opt/web/zs/apps/rbac/application/v1/service/User.php:198]
+---------------------------------------------------------------
+[ 2019-04-01T11:56:47+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/pending.html
+[ error ] [0]method not exist:think\db\Query->save[/opt/web/zs/thinkphp/library/think/db/Query.php:103]
+---------------------------------------------------------------
+[ 2019-04-01T13:56:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: status[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:242]
+---------------------------------------------------------------
+[ 2019-04-01T14:43:42+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=all&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=%E5%8F%B2%E7%8E%89%E9%BE%99%EF%BC%8C%E6%9D%A8%E8%83%BD%E6%96%87
+[ error ] [8]未定义数组索引: search_value[/opt/web/zs/apps/rbac/application/v1/service/User.php:60]
+---------------------------------------------------------------
+[ 2019-04-01T14:50:04+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=all&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=%E5%8F%B2%E7%8E%89%E9%BE%99
+[ error ] [8]未定义变量: arr[/opt/web/zs/apps/rbac/application/v1/service/User.php:64]
+---------------------------------------------------------------
+[ 2019-04-01T15:03:43+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: where[/opt/web/zs/apps/rbac/application/v1/service/User.php:106]
+---------------------------------------------------------------
+[ 2019-04-01T15:06:04+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: where[/opt/web/zs/apps/rbac/application/v1/service/User.php:102]
+---------------------------------------------------------------
+[ 2019-04-01T15:29:24+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=all&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:328]
+---------------------------------------------------------------
+[ 2019-04-01T15:51:25+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=all&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [8]未定义数组下标: 1[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:322]
+---------------------------------------------------------------
+[ 2019-04-01T15:52:16+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=all&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [8]未定义数组下标: 1[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:322]
+---------------------------------------------------------------
+[ 2019-04-01T15:52:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: org_id[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:234]
+---------------------------------------------------------------
+[ 2019-04-01T15:54:56+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组下标: 1[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:322]
+---------------------------------------------------------------
+[ 2019-04-01T16:03:45+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:334]
+---------------------------------------------------------------
+[ 2019-04-01T16:16:06+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:334]
+---------------------------------------------------------------
+[ 2019-04-01T16:17:49+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:334]
+---------------------------------------------------------------
+[ 2019-04-01T16:24:29+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common.php:49]
+---------------------------------------------------------------
+[ 2019-04-01T16:25:20+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [0]类型错误: Too few arguments to function retentionTimes(), 0 passed in /opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php on line 334 and exactly 1 expected[/opt/web/zs/apps/rbac/application/common.php:47]
+---------------------------------------------------------------
+[ 2019-04-01T16:54:49+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=2&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:242]
+---------------------------------------------------------------
+[ 2019-04-01T16:55:01+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=2&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:242]
+---------------------------------------------------------------
+[ 2019-04-01T16:55:15+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=2&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:242]
+---------------------------------------------------------------
+[ 2019-04-01T17:20:53+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?page=4
+[ error ] [8]未定义变量: searchValue[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:282]
+---------------------------------------------------------------
+[ 2019-04-01T17:22:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=0&pact_type=0&room=0&ready_computer=0&searchKey=1&searchValue=222
+[ error ] [8]未定义数组索引: username[/opt/web/zs/apps/rbac/application/v1/service/User.php:84]
+---------------------------------------------------------------
+[ 2019-04-01T17:23:39+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=0&pact_type=0&room=0&ready_computer=0&searchKey=2&searchValue=13165625270
+[ error ] [8]未定义数组索引: mobile[/opt/web/zs/apps/rbac/application/v1/service/User.php:96]
+---------------------------------------------------------------
+[ 2019-04-01T18:00:32+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组索引: org_id[/opt/web/zs/apps/rbac/application/v1/service/User.php:148]
+---------------------------------------------------------------
+[ 2019-04-01T18:02:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:05:12+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:06:12+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:06:13+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:06:45+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:07:52+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:09:50+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:10:34+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:10:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:12:00+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:13:23+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:13:26+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]类的属性不存在:app\common\model\Users->user_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T18:21:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html?org_id=&status=0&pact_type=1&room=1&ready_computer=0&searchKey=1&searchValue=
+[ error ] [8]未定义数组索引: debug[/opt/web/zs/apps/rbac/application/v1/service/User.php:122]
+---------------------------------------------------------------
+[ 2019-04-01T18:31:53+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [8]未定义数组索引: debug[/opt/web/zs/apps/rbac/application/v1/service/User.php:216]
+---------------------------------------------------------------
+[ 2019-04-01T18:42:54+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [8]未定义变量: company[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:55]
+---------------------------------------------------------------
+[ 2019-04-01T19:38:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [64]A function with return type must return a value[/opt/web/zs/apps/rbac/application/v1/service/User.php:323]
+---------------------------------------------------------------
+[ 2019-04-01T19:39:39+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [0]致命错误: Call to undefined method app\v1\service\User::alias()[/opt/web/zs/apps/rbac/application/v1/service/User.php:328]
+---------------------------------------------------------------
+[ 2019-04-01T19:40:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [0]致命错误: Call to undefined method app\v1\service\User::alias()[/opt/web/zs/apps/rbac/application/v1/service/User.php:328]
+---------------------------------------------------------------
+[ 2019-04-01T19:40:56+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [0]语法解析错误: syntax error, unexpected '='[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:56]
+---------------------------------------------------------------
+[ 2019-04-01T19:43:22+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [0]致命错误: Cannot use object of type think\db\Query as array[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:41]
+---------------------------------------------------------------
+[ 2019-04-01T19:45:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [8]未定义数组下标: 0[/opt/web/zs/thinkphp/library/think/db/Builder.php:323]
+---------------------------------------------------------------
+[ 2019-04-01T19:47:07+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [0]类的属性不存在:app\common\model\Users->company_id[/opt/web/zs/thinkphp/library/think/Model.php:626]
+---------------------------------------------------------------
+[ 2019-04-01T20:36:48+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2629&dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/runtime/temp/a2fa905b3b92544cb437c32b82e21560.php:35]
+---------------------------------------------------------------
+[ 2019-04-01T21:06:04+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [0]方法参数错误:id[/opt/web/zs/thinkphp/library/think/App.php:431]
+---------------------------------------------------------------
+[ 2019-04-01T21:06:56+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [0]方法参数错误:id[/opt/web/zs/thinkphp/library/think/App.php:431]
+---------------------------------------------------------------
+[ 2019-04-01T21:08:43+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:203]
+---------------------------------------------------------------
+[ 2019-04-01T21:09:49+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:203]
+---------------------------------------------------------------
+[ 2019-04-01T21:09:58+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:203]
+---------------------------------------------------------------
+[ 2019-04-01T21:11:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:203]
+---------------------------------------------------------------
+[ 2019-04-01T21:37:16+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/offer.html
+[ error ] [0]语法解析错误: syntax error, unexpected '=>' (T_DOUBLE_ARROW), expecting ',' or ')'[/opt/web/zs/apps/rbac/runtime/temp/6cf49b66f999b17b1e049914c1c8e021.php:302]
+---------------------------------------------------------------
+[ 2019-04-01T21:37:55+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?addType=add&dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:212]
+---------------------------------------------------------------
+[ 2019-04-01T21:38:14+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?addType=add&dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:212]
+---------------------------------------------------------------
+[ 2019-04-01T21:38:17+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?addType=add&dialog=1
+[ error ] [8]未定义数组索引: id[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:212]
+---------------------------------------------------------------
+[ 2019-04-01T22:02:17+08:00 ] 192.168.8.42 POST local.rule.com/v1/users/index/edit.html?addType=add
+[ error ] [2]array_key_exists(): The first argument should be either a string or an integer[/opt/web/zs/thinkphp/library/think/Model.php:373]
+---------------------------------------------------------------
+[ 2019-04-01T22:22:50+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/edit.html?id=2631&dialog=1
+[ error ] [0]类型错误: Return value of app\v1\service\User::getUser() must be of the type array, object returned[/opt/web/zs/apps/rbac/application/v1/service/User.php:433]

@@ -1,0 +1,112 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Position.php
+ * @Date: 2019/3/29
+ * @Time: 15:47
+ * @Description
+ */
+
+namespace app\v1\controller\auth;
+
+use app\common\controller\PublicController as Controller;
+use app\common\model\UsersJob;
+use think\Request;
+
+class Position extends Controller
+{
+    /**
+     * @var null 岗位服务层
+     */
+    private $positionService = null;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->positionService = new \app\v1\service\Position();
+    }
+
+    /**
+     * @desc 岗位管理
+     * @author 杨能文
+     * @date 2019/3/30 13:01
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function index():string
+    {
+        $positionService = $this->positionService;
+
+        $this->assign('userposition', $positionService->userposition());
+        $this->assign('data', $positionService->position());
+        return $this->view->fetch();
+    }
+
+    /**
+     * @desc 添加岗位
+     * @author 杨能文
+     * @date 2019/4/1 9:42
+     * @access public
+     * @return mixed
+     * @throws \Exception
+     */
+    public function add()
+    {
+        $positionService = $this->positionService;
+        // 提交请求
+        if ($this->request->isPost()) {
+            if ($positionService->add($this->request->post())) {
+                $this->success(__("添加岗位成功"));
+            }
+            $this->error($positionService->errorsMessages);
+        }
+
+        $data = $positionService->position();
+        $this->assign('positionArr', $data);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @desc 编辑岗位
+     * @author 杨能文
+     * @date 2019/3/30 12:57
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function edit()
+    {
+        $positionService = $this->positionService;
+        if (Request::instance()->isAjax()) {
+            $data = input('param.');
+            $result = $positionService->edit($data);
+            return json($result);
+        } else {
+            $id = input('param.id');
+            $data = $positionService->position();
+            $info = $positionService->positioninfo($id);
+            $this->assign('info', $info);
+            $this->assign('positionArr', $data);
+            return $this->view->fetch();
+        }
+    }
+
+    /**
+     * @desc 编辑管理
+     * @author 杨能文
+     * @date 2019/3/30 13:01
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function copy():string
+    {
+        if (Request::instance()->isAjax()) {
+            return json(['success' => false, 'msg' => '待完善']);
+        } else {
+            return $this->view->fetch();
+        }
+    }
+}

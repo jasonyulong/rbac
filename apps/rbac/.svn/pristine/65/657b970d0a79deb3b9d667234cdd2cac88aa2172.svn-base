@@ -1,0 +1,16 @@
+.page-header{padding-bottom: 10px;padding-top: 3px}
+.table-bordered>thead>tr>th{
+  border-bottom-width: 1px;
+}
+.h3-auth{font-size: 10px}
+.dropdown-menu{overflow: auto;max-height:680px;}
+.td-padding-left-30{padding-left:20px!important;}
+.td-padding-left-40{padding-left:30px!important;}
+.td-padding-left-50{padding-left:40px!important;}
+.td-padding-left-60{padding-left:50px!important;}
+.td-padding-left-70{padding-left:60px!important;}
+.btn-padding{padding: 3px 10px}
+#bottom-br{width: 110%;margin-left: -5%;margin-top: 200px}
+.batch-bottom{margin-bottom: 10px}
+.a-show{text-decoration:none!important;cursor:pointer!important;;color: blue!important;}
+.tag-content{padding: 20px}

@@ -1,0 +1,230 @@
+<?php
+/**
+ * 菜单应用服务
+ * User: wcd
+ * Date: 2019/4/1
+ * Time: 9:38
+ */
+namespace app\v1\service;
+
+use app\common\model\Menus;
+use plugin\Tree;
+use app\common\model\MenusDetail;
+class Menu extends Base
+{
+    private $_menusModel = null;
+    private $_pageSize = 100;
+
+    /**
+     * Menu constructor.
+     */
+    public function __construct()
+    {
+        $this->_menusModel = new Menus();
+    }
+
+    /**
+     * 菜单列表分页展示
+     * @param $params
+     * @return array
+     */
+    public function index($params)
+    {
+        $where = [];
+        if (isset($params['searchKey'])) {
+            $keyWords = trim($params['searchKey']);
+        }
+        if (isset($params['module_id']) && !empty($params['module_id'])) {
+            $where['module_id'] = $params['module_id'];
+        }
+        if (isset($params['status']) && $params['status'] !== '') {
+            $where['status'] = $params['status'];
+        }
+        if (!empty($keyWords)) {
+            $where['title|url'] = ['like', '%' . $keyWords . '%'];
+        }
+        unset($params['s']);
+
+        $ruleList = collection($this->_menusModel->where($where)->order('weigh', 'desc')->select())->toArray();
+        $rulelist = $this->getMenuTree($ruleList);
+        return ['menus' => $rulelist, 'pages' => ''];
+    }
+
+    /**
+     * 获取树状菜单
+     * @param $dataList
+     * @param string $field
+     * @return array
+     */
+    public function getMenuTree($dataList, $field = 'title')
+    {
+        Tree::instance()->init($dataList);
+        $treeList = Tree::instance()->getTreeList(Tree::instance()->getTreeArray(0), $field);
+        return $treeList;
+    }
+
+    /**
+     * 查询每个系统的菜单总数
+     * @author wcd
+     * @time 2019-4-8 13:21:01
+     * @return array
+     */
+    public function getAllsystemMenus()
+    {
+        $sysTotal = $this->_menusModel->field("module_id,count('id') AS total")->group('module_id')->select()->toArray();
+        if (!$sysTotal) return [];
+        $result = [];
+        foreach ($sysTotal as $value) {
+            $result[$value['module_id']] = $value['total'];
+        }
+        return $result;
+    }
+
+    /**
+     * 保存一条菜单数据
+     * @author wcd
+     * @time 2019-4-1 18:28:47
+     * @param $params
+     * @return mixed
+     */
+    public function saveMenu($params)
+    {
+        $icon = isset($params['icon']) ? $this->setIcon(trim($params['icon'])) : '';
+        $save = [
+            'module_id' => isset($params['module']) ? $params['module'] : 0,
+            'type'      => isset($params['type']) ? $params['type'] : 0,
+            'pid'       => isset($params['parentMenu']) ? $params['parentMenu'] : 0,
+            'title'     => isset($params['title']) ? $params['title'] : '',
+            'url'       => isset($params['url']) ? trim(trim($params['url']), '/') : '',
+            'icon'      => $icon,
+            'remark'    => isset($params['remark']) ? trim($params['remark']) : '',
+            'weigh'     => isset($params['weight']) ? (int)trim($params['weight']) : 0,
+            'status'    => isset($params['status']) ? $params['status'] : 0,
+        ];
+
+        if (isset($params['menu_id']) && $params['menu_id']) {
+            $menuid = (int)trim($params['menu_id']);
+            if ($save['pid'] > 0) {
+                $haschild = $this->_menusModel->getAllColums(['pid' => $menuid], 'id');
+                if ($haschild) {
+                    if (in_array($save['pid'], $haschild)) {
+                        $this->setErrors(0, '所选父类已是该菜单子类，不能选。');
+                        return false;
+                    }
+                    $hasGrandchild = $this->_menusModel->getAllColums(['pid' => ['in', $haschild]], 'id');
+                    if (in_array($save['pid'], $hasGrandchild)) {
+                        $this->setErrors(0, '所选父类已是该菜单孙子类，不能选。');
+                        return false;
+                    }
+                }
+            }
+            $save['updatetime'] = time();
+            $where = [
+                'id' => $menuid
+            ];
+            $resid = $this->_menusModel->update($save, $where);
+        } else {
+            $save['createtime'] = time();
+            $resid = $this->_menusModel->save($save);
+        }
+        if (!$resid) {
+            $this->setErrors(0, '保存失败。');
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 图标处理 fa fa******。
+     * @param $getIcon
+     * @return string
+     */
+    private function setIcon($getIcon)
+    {
+        $subNum = substr_count($getIcon, 'fa ');
+        if ($subNum == 0) {
+            $getIcon = 'fa ' . $getIcon;
+        } elseif ($subNum > 2) {
+            $getIcon = trim(substr($getIcon, 2, strlen($getIcon) - 2));
+        }
+        return $getIcon;
+    }
+
+    /**
+     * 编辑菜单
+     * @author wcd
+     * @param $where
+     * @param $params
+     * @return $this
+     */
+    public function editMenus($where, $params)
+    {
+        return $this->_menusModel->where($where)->update($params);
+    }
+
+    /**
+     * 前端页面获取一条菜单
+     * @author wcd
+     * @param array $where
+     * @param string $field
+     * @return array
+     */
+    public function getOneMenu($where = [], $field = '*')
+    {
+        if (empty($where)) {
+            return [
+                'module_id'  => '',
+                'type'       => '',
+                'pid'        => '',
+                'title'      => '',
+                'url'        => '',
+                'icon'       => '',
+                'remark'     => '',
+                'weigh'      => '',
+                'status'     => '',
+                'updatetime' => ''
+            ];
+        };
+        return $this->_menusModel->where($where)->field($field)->find()->toArray();
+    }
+
+    /**
+     * 根据菜单id删除菜单
+     * @author wcd
+     * @param $id
+     * @return array
+     */
+    public function delMenuByid($id)
+    {
+        if (empty($id)) {
+            $this->setErrors(0, '请选择菜单。');
+            return false;
+        }
+        $map = [
+            'pid'    => $id,
+            'status' => 1
+        ];
+        $hasChild = $this->_menusModel->selectMore($map);
+        if (!empty($hasChild)) {
+            $this->setErrors(0, '该菜单下还存在正在使用的子菜单。');
+            return false;
+        }
+        $menuDetail = new MenusDetail();
+        $this->_menusModel->startTrans();
+        $resid = $this->_menusModel->delByWhere(['id' => $id]);
+        if (!$resid) {
+            $this->_menusModel->rollback();
+            $this->setErrors(0, '删除失败。');
+            return false;
+        }
+        $resid = $menuDetail->where(['menu_id' => $id])->delete();
+        if($resid === false){
+            $this->_menusModel->rollback();
+            $this->setErrors(0, '删除菜单详情失败。');
+            return false;
+        }
+        $this->_menusModel->update(['pid'=> 0], ['pid' => $id]);
+        $this->_menusModel->commit();
+        return true;
+    }
+}

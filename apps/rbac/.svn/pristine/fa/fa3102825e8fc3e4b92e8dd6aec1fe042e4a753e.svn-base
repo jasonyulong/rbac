@@ -1,0 +1,207 @@
+define(['jquery', 'bootstrap-select', 'template', 'datatables.net', 'datatables-bootstrap'], function ($, undefined, template, undefined, undefined) {
+    var hepler = {
+        open: function (dom, title, width, height) {
+            var width = width || '830px';
+            var height = height || '500px';
+            $(dom).click(function () {
+                var url = $(this).attr('data-url') || '';
+                var titles = title || '编辑';
+                Fast.api.open(url, titles, {area: [width, height]});
+            });
+        },
+        delmenus: function (dom, title) {
+            //删除的confirm
+            var title = title || '确定？';
+            $(dom).click(function () {
+                var url = $(this).attr('data-url');
+                var data = $(this).attr('data-param');
+                layer.confirm('确定要删除?', {btn: ['确定', '取消']}, function (index) {
+                    layer.load(1);
+                    $.ajax({
+                        url: url,
+                        type: "post",
+                        dataType: "json",
+                        data: data,
+                        success: function (data) {
+                            layer.closeAll('loading');
+                            if (data.code == 1) {
+                                layer.msg(data.msg, {icon: 1, time: 5000});
+                                location.reload();
+                            }
+                            else {
+                                layer.alert(data.msg, {icon: 3});
+                            }
+                        },
+                        error: function (error) {
+                            layer.closeAll('loading');
+                            layer.alert('请求或返回数据异常', {icon: 5});
+                        }
+                    });
+
+                });
+            });
+        },
+        cancel: function (dom) {
+            //取消按钮
+            $(dom).click(function () {
+                parent.layer.closeAll();
+            });
+        },
+        //表单提交
+
+        formSubmit: function (dom, object, isdetail) {
+            $(dom).click(function () {
+                var title = $("#title").val();
+                var inputUrl = $("#url").val();
+                var checkUrl = true;
+                if ($.trim(title) == '') {
+                    layer.tips('请输入标题', '#title', {tips: [2, '#FA8072'], time: 1000});
+                    return false;
+                }
+                if (isdetail) {
+                    var condition = $("#condition").val(); // 节点因子
+                    var conditionType = $("#detaileType").val(); //页面或者节点
+                    if (conditionType == 1) {
+                        checkUrl = false;
+                        if ($.trim(condition) == '') {
+                            layer.tips('请输入节点因子', '#condition', {tips: [2, '#FA8072'], time: 1000});
+                            return false;
+                        }
+                    }
+                }
+                if (checkUrl) {
+                    if ($.trim(inputUrl) == '') {
+                        layer.tips('请输入请求地址', '#url', {tips: [3, '#FA8072'], time: 1000});
+                        return false;
+                    }
+                }
+                var url = $(this).attr('data-url');
+                var data = object.serializeArray();
+                layer.load(2);
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (data) {
+                        layer.closeAll('loading');
+                        if (data.code == 1) {
+                            layer.msg(data.msg, {icon: 1, time: 5000});
+                            parent.location.reload();
+                        }
+                        else {
+                            layer.msg(data.msg, {icon: 3});
+                        }
+                    },
+                    error: function (error) {
+                        layer.closeAll('loading');
+                        layer.alert('请求或返回数据异常', {icon: 5});
+                    }
+                });
+            })
+        }
+    };
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            $(".selectpicker").selectpicker({
+                selectAllText: '全选',
+                deselectAllText: '取消'
+                // 是否允许搜索
+                //liveSearch: false,
+            });
+            $.validator.setTheme('bootstrap', {
+                validClass: 'has-success',
+                invalidClass: 'has-error',
+                bindClassTo: '.form-group',
+                formClass: 'n-default n-bootstrap',
+                msgClass: 'n-right'
+            });
+
+            // 高度
+            var head = "#scroll_table_head";
+            var scrollY = $(head).length > 0 ? window.screen.height - $(head).offset().top - 180 : window.screen.height - 250;
+            $('.dataTables_scrollBody').css('height', '100%');
+
+            var page_len = Config.app.pagesize || 25;
+            var maxpage = parseInt((window.screen.height - 200) / 50);
+            if (maxpage > page_len) {
+                page_len = maxpage;
+            }
+            // 表格分页
+            $(document).ready(function () {
+                $('.dataTables').DataTable({
+                    searching: true,
+                    order: false,
+                    info: false,
+                    ordering: false,
+                    sorting: false,
+                    aLengthMenu: [10, 20, 25, 50, 100],
+                    scrollX: true,
+                    scrollY: scrollY,
+                    sScrollY: scrollY - 100,
+                    autoWidth: false,
+                    pagingType: "full_numbers",
+                    pageLength: page_len,
+                    language: {
+                        sSearch: "搜索：",
+                        lengthMenu: "每页 _MENU_ 条记录",
+                        emptyTable: '未找到相关数据',
+                        paginate: {
+                            previous: '上一页',
+                            next: '下一页',
+                            first: '首页',
+                            last: '末页',
+                        },
+                    }
+                });
+            });
+            //默认选择菜单第一项
+            $(".dialog-form input[type='text']").eq(0).focus();
+        },
+        index: function () {
+            // 页面dom节点
+            var doms = {
+                add: ".addmenus",
+                edit: ".editmenus",
+                del: ".delmenus",
+                menudetail: ".menudetail",
+                addmenudetail: ".addmenudetail",
+                editdetail: ".editdetail",
+                saveMenuDetail: ".saveMenuDetail",
+                saveMenus: ".saveMenus",
+                deldetail: ".deldetail"
+            };
+            hepler.open(doms.add, '添加', '950px', '550px');
+            hepler.open(doms.edit, '编辑', '950px', '550px');
+            hepler.open(doms.menudetail, '查看节点因子', '1050px', '750px');
+            hepler.delmenus(doms.del, '删除');
+            hepler.delmenus(doms.deldetail, '删除');
+            hepler.cancel('#giveUpBtn');
+            hepler.open(doms.addmenudetail, '添加节点');
+            hepler.open(doms.editdetail);
+            hepler.formSubmit(doms.saveMenuDetail, $('.ajax-form'), true);
+            hepler.formSubmit(doms.saveMenus, $('.ajax-form'), false);
+            $(".btn-search-icon").click(function () {
+                window.open("http://adminlte.la998.com/pages/UI/icons.html");
+                return null;
+            });
+
+            $("#detaileType").change(function () {
+                var type = $(this).val();
+                var inputurl = $("#url");
+                var condition = $("#condition");
+                if (type == 0) {
+                    condition.val('');
+                    inputurl.attr('readonly', false);
+                    condition.attr('readonly', true)
+                } else if (type == 1) {
+                    inputurl.val('');
+                    inputurl.attr('readonly', true);
+                    condition.attr('readonly', false);
+                }
+            })
+        }
+    };
+    return Controller;
+});

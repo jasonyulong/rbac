@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs nav-curstom">
+    {foreach $allowSystemViews as $key => $val}
+    <li role="presentation" class="marg-left {if($request->action() == $key)}active{/if}"><a href="{:urlbuld('/v1/menus/index/', $key)}">{$val} ( {$menusTotals[$val] ?? 0} )</a></li>
+    {/foreach}
+</ul>

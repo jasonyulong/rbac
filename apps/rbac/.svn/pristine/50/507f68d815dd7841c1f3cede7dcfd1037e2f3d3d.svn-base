@@ -1,0 +1,129 @@
+<?php
+
+namespace app\common\model;
+
+use think\Model;
+
+class Users extends Model
+{
+    // 连接句柄
+    //public $connection = 'database';
+
+    // 开启自动写入时间戳字段
+    protected $autoWriteTimestamp = 'int';
+    //protected $updateTime = false;
+
+    // 定义时间戳字段名
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
+
+    /**
+     * 重置用户密码
+     * @param $uid 用户ID
+     * @param $newPassword 新密码
+     * @return $this
+     */
+    public function resetPassword($uid, $newPassword)
+    {
+        $passwd = $this->encryptPassword($newPassword);
+        $ret = $this->where(['id' => $uid])->update(['password' => $passwd]);
+
+        return $ret;
+    }
+
+    /**
+     * 密码加密
+     * @param $password 密码
+     * @param string $salt 密码盐
+     * @param string $encrypt 加密方式
+     * @return mixed
+     */
+    public function encryptPassword($password, $salt = '', $encrypt = 'md5')
+    {
+        return $encrypt(APP_SECRETKEY . $encrypt($password) . $salt);
+    }
+
+    /**
+     * @desc   查询一条数据库
+     * @author mina
+     * @param  array $where 查询条件
+     * @param  string $field 查询字段
+     * @return array
+     */
+    public function getOne($where, $field = "*")
+    {
+        return $this->where($where)->field($field)->find();
+    }
+
+    /**
+     * @desc   更新数据
+     * @author mina
+     * @param  array $where 修改条件
+     * @return array $saveData
+     */
+    public function updateRow($where, $saveData)
+    {
+        return $this->where($where)->update($saveData);
+    }
+
+    /**
+     * 为用户生成密码盐
+     * @return string
+     */
+    public function createSalt()
+    {
+        return \plugin\Random::alnum();
+    }
+
+    /**
+     * @desc   根据条件查询数据
+     * @author mina
+     * @param $where
+     * @return int|string
+     * @throws \think\Exception
+     */
+    public function getCount($where)
+    {
+        $query = $this->alias('a');
+        if (isset($where['join'])) {
+            $query = $query->join($where['join']);
+            unset($where['join']);
+        }
+        $count = $query->where($where)->count();
+
+        return $count;
+    }
+
+    /**
+     * @desc   查询多条数据
+     * @author mina
+     * @param  array $where 连表查询
+     * @param  string $field 查询字段
+     * @param  string $page 分页
+     * @return array
+     */
+    public function getAll($where, $field = "*", $page = '', $pageSize = '')
+    {
+        $query = $this->alias('a');
+        if (isset($where['join'])) {
+            $query = $query->join($where['join']);
+            unset($where['join']);
+        }
+        $query = $query->where($where);
+        if ($page != '') {
+            $query = $query->page($page, $pageSize);
+        }
+        $list = $query->field($field)->select();
+
+        return $list;
+    }
+
+    /**
+     * 关联授权系统表
+     * @return \think\model\relation\HasMany
+     */
+    public function allows()
+    {
+        return $this->hasMany('UsersAllow', 'user_id', 'id');
+    }
+}

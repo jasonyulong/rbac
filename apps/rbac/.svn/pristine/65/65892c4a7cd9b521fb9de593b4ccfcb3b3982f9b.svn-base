@@ -1,0 +1,162 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Tag.php
+ * @Date: 2019/4/2
+ * @Time: 19:27
+ * @Description 权限标签
+ */
+
+namespace app\v1\controller\auth;
+
+use app\common\controller\AuthController as Controller;
+use think\Request;
+
+class Tag extends Controller
+{
+    /**
+     * @var null 权限标签服务层
+     */
+    private $tagService = null;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->tagService = new \app\v1\service\Tag();
+    }
+
+    /**
+     * @desc 权限标签列表
+     * @author 杨能文
+     * @2019/4/2 19:28
+     * @access public
+     * @return string
+     */
+    public function index():string
+    {
+        $tagService = $this->tagService;
+        $params = input('param.');
+        $data = $tagService->taglist($params);
+        $this->assign('page',$data['page']);
+        $this->assign('list',$data['list']);
+        $this->assign('userTag',$tagService->usertag());
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 添加权限标签
+     * @author 杨能文
+     * @date 2019/4/2 19:46
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function add()
+    {
+        $tagService = $this->tagService;
+        // 提交请求
+        if ($this->request->isPost()) {
+            if($tagService->add($this->request->post())) {
+                $this->success(__("添加标签成功"));
+            }
+            $this->error($tagService->errorsMessages);
+        }
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 编辑权限标签
+     * @author 杨能文
+     * @date 2019/4/2 19:48
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function edit(){
+        $tagService = $this->tagService;
+        if (Request::instance()->isPost()) {
+            if($tagService->edit($this->request->post())) {
+                $this->success(__("编辑标签成功"));
+            }
+            $this->error($tagService->errorsMessages);
+        }
+        $id = input('param.id');
+        $this->assign('info',$tagService->info($id));
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 复制标签
+     * @author 杨能文
+     * @date 2019/4/3 10:57
+     * @access public
+     * @return array
+     */
+    public function copy(){
+        $tagService = $this->tagService;
+        if (Request::instance()->isPost()) {
+            if($tagService->copy($this->request->post())) {
+                $this->success(__("复制标签成功"));
+            }
+            $this->error($tagService->errorsMessages);
+        }
+        $id = input('param.id');
+        $this->assign('info',$tagService->info($id));
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 查看用户
+     * @author 杨能文
+     * @date 2019/4/3 10:11
+     * @access public
+     * @return string
+     */
+    public function cat():string
+    {
+        $tagService = $this->tagService;
+        $params = input('param.');
+        $params['username'] = isset($params['username']) ? trim($params['username']) : '';
+        $data = $tagService->cat($params);
+        $this->assign('page',$data['page']);
+        $this->assign('list',$data['list']);
+        $this->assign('params',$params);
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 批量删除权限标签
+     * @author 杨能文
+     * @date 2019/4/2 11:40
+     * @access public
+     */
+    public function delete()
+    {
+        if(Request::instance()->isPost()){
+            $tagService = $this->tagService;
+            if ($tagService->delete($this->request->post())) {
+                $this->success(__("批量删除标签成功"));
+            }
+            $this->error($tagService->errorsMessages);
+        }
+    }
+
+    /**
+     * @desc 移除用户
+     * @author 杨能文
+     * @date 2019/4/2 17:24
+     * @access public
+     */
+    public function move(){
+        if(Request::instance()->isPost()){
+            $tagService = $this->tagService;
+            $params = input('param.');
+            if ($tagService->move($params)) {
+                $this->success(__("移除用户成功"));
+            }
+            $this->error($tagService->errorsMessages);
+        }
+    }
+
+}

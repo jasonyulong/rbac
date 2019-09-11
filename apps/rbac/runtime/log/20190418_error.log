@@ -1,0 +1,15 @@
+---------------------------------------------------------------
+[ 2019-04-18T11:33:20+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3938&addType=edit
+[ error ] [8]未定义变量: addUser[/opt/web/zs/apps/rbac/application/v1/service/User.php:354]
+---------------------------------------------------------------
+[ 2019-04-18T11:34:52+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/edit.html?id=3938&addType=edit
+[ error ] [8]未定义变量: password[/opt/web/zs/apps/rbac/application/v1/service/User.php:354]
+---------------------------------------------------------------
+[ 2019-04-18T16:16:50+08:00 ] 192.168.8.80 GET local.rule.com/v1/auth/access/tagindex.html?id=32
+[ error ] [0]语法解析错误: syntax error, unexpected '$job_user_map' (T_VARIABLE), expecting function (T_FUNCTION) or const (T_CONST)[/opt/web/zs/apps/rbac/application/common/library/JobLib.php:78]
+---------------------------------------------------------------
+[ 2019-04-18T16:47:36+08:00 ] 192.168.8.80 GET local.rule.com/v1/menus/index/index.html
+[ error ] [0]语法解析错误: syntax error, unexpected ';', expecting :: (T_PAAMAYIM_NEKUDOTAYIM)[/opt/web/zs/apps/rbac/runtime/temp/e2c50e1a985e2972d46d4f3e6090aa5f.php:178]
+---------------------------------------------------------------
+[ 2019-04-18T16:49:31+08:00 ] 192.168.8.80 GET local.rule.com/v1/menus/index/index.html
+[ error ] [0]语法解析错误: syntax error, unexpected '' (T_ENCAPSED_AND_WHITESPACE), expecting '-' or identifier (T_STRING) or variable (T_VARIABLE) or number (T_NUM_STRING)[/opt/web/zs/apps/rbac/runtime/temp/e2c50e1a985e2972d46d4f3e6090aa5f.php:178]

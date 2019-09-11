@@ -1,0 +1,17 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="row page-header content-header">
+    <h3>菜单列表</h3>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+    </ol>
+</div>
+<div class="content">
+    {include file="menus/index/search" /}
+    <div class="panel-body">
+        <div class="table-responsive">
+            {include file="menus/index/_indextable" /}
+        </div>
+    </div>
+</div>
+{/block}

@@ -1,0 +1,497 @@
+<?php
+/**
+ * 岗位 数据服务器层
+ * @copyright Copyright (c) 2018
+ * @license   
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-10
+ */
+namespace app\api\service;
+
+use think\Config;
+use app\common\model\Menus;
+use app\common\model\Users;
+use app\common\model\UsersJob;
+use app\common\model\MenusDetail;
+use app\common\model\UsersJobAccess;
+use app\common\model\UsersLabelAccess;
+use app\common\model\UsersJobAccessAlso;
+use app\common\model\UsersLabelAccessAlso;
+
+/**
+ * @desc 岗位 数据服务器层
+ * Class Job
+ * @package app\api\service
+ */
+class Job extends Base
+{
+	/**
+	 * @desc  岗位权限类型 0菜单 1节点
+	 * @var   array 
+	 */
+	private $_menuType = [0, 1];
+
+	/**
+	 * @desc   静态实例化
+	 * @author mina
+	 * @param  void
+	 * @return object
+	 */
+	public static function getInstance()
+	{
+		if(!self::$instance instanceof Job)
+        {
+            self::$instance = new Job();
+        }
+        return self::$instance;
+	}
+
+	/**
+	 * @desc   构造函数
+	 * @author mina
+	 * @param  
+	 * @return
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	/**
+	 * @desc   获取下级岗位列表
+	 * @author mina
+	 * @param  void
+	 * @return array
+	 */
+	public function list($param) : array
+	{
+		if(empty($this->user['job_id']))
+		{
+			return $this->_back(0, 'TOKEN ERROR');
+		}
+		$userJob = UsersJob::get($this->user['job_id']);
+		if(empty($userJob))
+		{
+			return $this->_back(0, '用户岗位不存在。');
+		}
+		$where = [
+			'tid' => $userJob['tid'],
+			'lid' => ['egt', $userJob['lid']],
+			'rid' => ['elt', $userJob['rid']],
+			'status' => 1,
+		];
+		$sonJob = UsersJob::all($where, '', true);
+		if(empty($sonJob))
+		{
+			return $this->_back(1);
+		}
+		$data = [];
+		foreach ($sonJob as $key => $value)
+		{
+			$data[] = [
+				'id'    => $value['id'],
+				'title' => $value['title'],
+				'pid' => $value['pid'],
+				'rank' => $value['rank'],
+			];
+		}
+		return $this->_back(1, '', $data);
+	}
+
+	/**
+	 * @desc   查询岗位权限
+	 * @author mina
+	 * @param  array $param 岗位权限
+	 * @return array
+	 */
+	public function jobPower($param) : array
+	{
+		$check = $this->_checkJobPower($param);
+		if($check['status'] != 1)
+		{
+			return $check;
+		}
+		$where = [
+			'stand'  => ['neq', 1],
+			'job_id' => ['in', [$this->user['job_id'], $param['jobId']]], 
+		];
+		$list = UsersJobAccess::all($where)->toArray();
+		if(empty($list))
+		{
+			return $this->_back(1);
+		}
+		$menuId = array_unique(array_filter(array_column($list, 'menu_id')));
+		if(empty($menuId))
+		{
+			return $this->_back(1);
+		}
+		$detailId = array_unique(array_filter(array_column($list, 'menu_detail_id')));
+		$menuModel = new Menus();
+		$menus_where = [
+			'id' => ['in', $menuId],
+			'type' => ['neq', 1],
+			'status' => 1,
+			'module_id' => $param['module_id'],
+		];
+		$detail_where = [
+			'id' => ['in', $detailId],
+			'status' => 1,
+			'is_special' => 0,
+			'module_id' => $param['module_id'],
+		];
+
+		$menuList = $menuModel->getAllColums($menus_where, 'id,pid,title,module_id, type');
+		$detailList = MenusDetail::all($detail_where, '', true);
+		if(!empty($detailList))
+		{
+			foreach ($detailList as $key => $value)
+			{
+				if(isset($menuList[$value['menu_id']]))
+				{
+					$menuList[$value['menu_id']]['item'][] = [
+						'id'    => $value['id'],
+						'title' => $value['title'],
+						'pid'   => $value['menu_id'],
+						'type'  => $value['type'],
+						'is_item' => 1,
+					];
+				}
+			}
+		}
+		// 根据系统分类权限
+		/*$module_menus = [];
+		foreach ($menuList as $key => $value)
+		{
+			$module_menus[$value['module_id']][$value['id']] = $value;
+		}*/
+		$data = [];
+		$tree = new \plugin\Tree();
+		/*foreach ($module_menus as $key => $value)
+		{
+			$data[$key] = $tree->getTreeCate($value);
+		}*/
+		$data = $tree->getTreeCate($menuList);
+		return $this->_back(1, '', $data);
+	}
+
+	/**
+	 * @desc   修改岗位权限
+	 * @author mina
+	 * @param  array $param 参数
+	 * @return array
+	 */
+	public function updatePower($param) : array
+	{
+		$doCheck = $this->_checkUpatePower($param);
+		if($doCheck['status'] != 1)
+		{
+			return $doCheck;
+		}
+		$parent  = UsersJob::get($this->user['job_id']);
+		$where = [
+			'tid' => $parent['tid'],
+			'lid' => ['egt', $parent['lid']],
+			'rid' => ['elt', $parent['rid']],
+			'id'  => $param['jobId'],
+		];
+		$isExists = UsersJob::get($where);
+		if(empty($isExists))
+		{
+			return $this->_back(0, '岗位不属于你的下级岗位，没有权限操作。');
+		}
+		$nowMenuId   = array_unique(array_column($param['power'], 'menu_id'));
+		$nowDetailId = array_unique(array_column($param['power'], 'menu_detail_id'));
+		$detail_menu = array_column($param['power'], 'menu_id', 'menu_detail_id');
+		$oldMenuId   = [];
+		$oldDetailId = [];
+		// 查询当前的菜单ID
+		$where = [
+			'job_id' => $param['jobId'],
+		];
+		$menuList = UsersJobAccess::all($where)->toArray();
+		if(!empty($menuList))
+		{
+			$oldMenuId = array_unique(array_column($menuList, 'menu_id'));
+			$oldDetailId = array_unique(array_column($menuList, 'menu_detail_id'));
+		}
+		$addMenu = array_diff($nowMenuId, $oldMenuId);
+		$delMenu = array_diff($oldMenuId, $nowMenuId);
+		$addDetail = array_diff($nowDetailId, $oldDetailId);
+		$delDetail = array_diff($oldDetailId, $nowDetailId);
+		if(empty($addMenu) && empty($delMenu) && empty($addDetail) && empty($delDetail))
+		{
+			return $this->_back(1);
+		}
+		if(!empty($addMenu))
+		{
+			foreach ($addMenu as $key => $value)
+			{
+				$menu_save = [
+					'job_id' => $param['jobId'],
+					'type'   => 0,
+					'stand'  => 0,
+					'menu_id' => $value,
+					'menu_detail_id' => 0,
+				];
+				UsersJobAccess::create($menu_save);
+			}
+		}
+		if(!empty($delMenu))
+		{
+			$del_where = [
+				'job_id' => $param['jobId'],
+				'menu_id' => ['in', $delMenu],
+				'menu_detail_id' => 0,
+			];
+			$model = new UsersJobAccess();
+			$model->delete($del_where);
+		}
+		if(!empty($addDetail))
+		{
+			foreach ($addDetail as $key => $value)
+			{
+				$menu_save = [
+					'job_id' => $param['jobId'],
+					'type'   => 1,
+					'stand'  => 0,
+					'menu_id' => $detail_menu[$value],
+					'menu_detail_id' => $value,
+				];
+				UsersJobAccess::create($menu_save);
+			}
+		}
+		if(!empty($delDetail))
+		{
+			foreach ($delDetail as $key => $value)
+			{
+				$del_detail_where = [
+					'job_id' => $param['jobId'],
+					'menu_detail_id' => ['in', $delDetail],
+				];
+				$model = new UsersJobAccess();
+				$model->delete($del_detail_where);
+			}
+		}
+		return $this->_back(1);
+	}
+
+	/**
+	 * @desc   根据用户查询岗位权限
+	 * @author mina
+	 * @param  int|array $user 用户ID 或者 用户信息
+	 * @param  int $module_id 系统ID
+	 * @return array
+	 */
+	public function getPower($user, $module_id = 0) : array
+    {
+    	$return = [
+    		'power' => [],
+    		'menus' => [],
+    		'also'  => [],
+    	];
+    	if(!is_array($user) && !is_object($user))
+    	{
+    		$user = $this->userModel->getOne(['id' => $user]);
+    	}
+        // 查询岗位权限
+        $jobModel = new UsersJobAccess();
+        $where = ['job_id' => $user['job_id']];
+        $power = $jobModel->getAll($where)->toArray();
+        // 查询权限标签
+        $label_menu_id = [];
+        $label_detail_id = [];
+        if($user['rules_id'])
+        {
+            $labelList = UsersLabelAccess::all(['label_id' => ['in', $user['rules_id']]]);
+            if($labelList)
+            {
+                $label_menu_id = array_filter(array_unique(array_column($power, 'menu_id')));
+                $label_detail_id = array_filter(array_unique(array_column($power, 'menu_detail_id')));
+            }
+        }
+        if (empty($power) && empty($label_menu_id))
+        {
+            return $return;
+        }
+        $menuId = array_filter(array_unique(array_column($power, 'menu_id')));
+        $menuDetailId = array_filter(array_unique(array_column($power, 'menu_detail_id')));
+        // 合并岗位权限、权限标签
+        $menuId = array_merge($menuId, $label_menu_id);
+        $menuDetailId = array_merge($menuDetailId, $label_detail_id);
+        // 查询主菜单信息
+        $menuModel = new Menus();
+        $menus_where  = [
+        	'id' => ['in', $menuId],
+        ];
+        $detail_menu_where = [
+        	'id' => ['in', $menuDetailId]
+        ];
+        if($module_id)
+        {
+        	$menus_where['module_id'] = $module_id;
+        	$detail_menu_where['module_id'] = $module_id;
+        }
+        $menuList = $menuModel->selectMore($menus_where);
+        $menuCondition = [];
+        foreach ($menuList as $key => $value)
+        {
+        	if($value['url']) $menuCondition[$value['module_id']][] = $value['url'];
+        }
+        // 查询菜单因子
+        $menusDetailModel = new MenusDetail();
+        $detail = $menusDetailModel->getDetail($detail_menu_where);
+        if(!empty($detail))
+        {
+            foreach ($detail as $key => $value)
+            {
+                if(isset($menuList[$value['menu_id']]))
+                {
+                    $menuList[$value['menu_id']]['item'][] = [
+                        'id'    => $value['id'],
+                        'title' => $value['title'],
+                        'pid'   => $value['menu_id'],
+                        'is_item' => 1,
+                    ];
+                }
+                if($value['url']) $menuCondition[$value['module_id']][] = $value['url'];
+                if($value['condition']) $menuCondition[$value['module_id']][] = $value['condition'];
+            }
+        }
+        // 权限按照系统分类 array(系统ID => array(权限))
+        $module_menus = [];
+        foreach ($menuList as $key => $value)
+        {
+            $module_menus[$value['module_id']][$value['id']] = $value;
+        }
+        // 查询权限、标签类目
+        $also = [];
+  		// 权限类目
+  		$also_job_where = [
+  			'job_id' => $user['job_id'],
+  		];
+  		if($module_id) $also_job_where['module_id'] = $module_id;
+  		$jobAlso = UsersJobAccessAlso::all($also_job_where);
+  		if(!empty($jobAlso))
+  		{
+  			foreach ($jobAlso as $key => $value)
+  			{
+  				if(isset($also[$value['module_id']][$value['keys']]))
+  				{
+  					$also[$value['module_id']][$value['keys']] = array_merge($also[$value['module_id']][$value['keys']],$value['values']);
+  				}
+  				else
+  				{
+  					$also[$value['module_id']][$value['keys']] = $value['values'];
+  				}
+  			}
+  		}
+  		// 标签类目
+  		if($user['rules_id'])
+  		{
+  			$also_label_where = [
+  				'label_id' => ['in', $user['rules_id']],
+	  		];
+	  		if($module_id) $also_label_where['module_id'] = $module_id;
+	  		$labelAlso = UsersLabelAccessAlso::all($also_label_where);
+	  		if(!empty($labelAlso))
+	  		{
+	  			foreach ($labelAlso as $key => $value)
+	  			{
+	  				if(isset($also[$value['module_id']][$value['keys']]))
+	  				{
+	  					$also[$value['module_id']][$value['keys']] = array_merge($also[$value['module_id']][$value['keys']],$value['values']);
+	  				}
+	  				else
+	  				{
+	  					$also[$value['module_id']][$value['keys']] = $value['values'];
+	  				}
+	  			}
+	  		}
+  		}
+        // 系统权限按照树形结构分类
+        $treeArr = [];
+        $tree = new \plugin\Tree();
+        foreach ($module_menus as $key => $value)
+        {
+            $treeArr[$key] = $tree->getTreeCate($value);
+        }
+        $return['menus'] = $treeArr;
+        $return['power'] = $menuCondition;
+        $return['also']  = $also;
+
+        return $return;
+    }
+
+	/**
+	 * @desc   检查修改岗位权限入参是否合法
+	 * @author mina
+	 * @param  array $param 入参
+	 * @return array
+	 */
+	private function _checkUpatePower($param) : array
+	{
+		if(empty($param['jobId']))
+		{
+			return $this->_back(0, '岗位ID不能为空。');
+		}
+		if(!isset($param['power']) || count($param['power']) == 0)
+		{
+			return $this->_back(0, '岗位权限不能为空。');
+		}
+		$error = '';
+		foreach ($param['power'] as $key => $value)
+		{
+			if(!isset($value['type']) || $value['type'] == '')
+			{
+				$error .= "[{$key}]菜单类型不能为空。";
+				continue;
+			}
+			if(!in_array($value['type'], $this->_menuType))
+			{
+				$error .= "[{$key}]菜单类型错误。";
+			}
+			if(empty($value['menu_id']))
+			{
+				$error .= "[{$key}]菜单ID不能为空。";
+				continue;
+			}
+			if($value['type'] == 1 && empty($value['menu_detail_id']))
+			{
+				$error .= "[{$key}]菜单节点ID不能为空。";
+			}
+		}
+		if($error != '')
+		{
+			return $this->_back(0, $error);
+		}
+		return $this->_back(1);
+	}
+
+	/**
+	 * @desc   检查获取权限的入参
+	 * @author mina
+	 * @param  array $param 入参
+	 * @return array
+	 */
+	private function _checkJobPower($param)
+	{
+		if(empty($this->user['job_id']))
+		{
+			return $this->_back(0, 'TOKEN ERROR');
+		}
+		if(empty($param['jobId']))
+		{
+			return $this->_back(0, '岗位ID不能为空。');
+		}
+		if(!isset($param['module_id']) || $param['module_id'] == '')
+		{
+			return $this->_back(0, '系统ID不能为空。');
+		}
+		if(!array_key_exists($param['module_id'], Config::get('site.allowSystem')))
+		{
+			return $this->_back(0, '系统ID错误。');
+		}
+		return $this->_back();
+	}
+}

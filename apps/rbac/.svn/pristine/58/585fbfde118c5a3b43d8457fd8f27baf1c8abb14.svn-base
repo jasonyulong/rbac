@@ -1,0 +1,95 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="dialog-content">
+    <form action="{:url('/v1/group/department/add')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label for="user_id" class="col-sm-3 control-label"><span class="red-color">*</span>姓名：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control"  id="user_id" name="user_id"  data-msg-required="请选择"
+                                data-rule="required;user_id;"
+                                data-msg-required="必选项">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="attr_id" class="col-sm-3 control-label"><span class="red-color">*</span>角色：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control"  id="attr_id" name="attr_id"  data-msg-required="请选择"
+                                data-rule="required;attr_id;"
+                                data-msg-required="必选项">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                <label for="org_id" class="col-sm-3 control-label"><span class="red-color">*</span>所属部门|小组：</label>
+                <div class="col-sm-9">
+                    <select class="form-control"  id="org_id" name="org_id"  data-msg-required="请选择"
+                            data-rule="required;org_id;"
+                            data-msg-required="必选项">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rules_id" class="col-sm-3 control-label"><span class="red-color">*</span>权限标签：</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="rules_id" name="rules_id"  data-msg-required="请选择"
+                                data-rule="required;rules_id;"
+                                data-msg-required="必选项">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-3 control-label"><span class="red-color">*</span>账号属性：</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" id="platform">
+                            <option value="">平台</option>
+                            <option value="">ebay</option>
+                            <option value="">wish</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-5">
+                        <select class="selectpicker show-tick form-control" id="platform_account_id" name="platform_account_id"
+                                data-actions-box="true" data-live-search="true" multiple="multiple" title="账号">
+                            <option value="">ebay</option>
+                            <option value="">wish</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <a class="btn btn-danger one-delete" href="javascript:;">一键删除<i class="glyphicon glyphicon-remove"></i></a>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status" class="col-sm-3 control-label"><span class="red-color">*</span>状态：</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" id="status" name="status"  data-msg-required="请选择"
+                                data-rule="required;status;"
+                                data-msg-required="必选项">
+                            <option value="">请选择</option>
+                            <option value="1">启用</option>
+                            <option value="0">禁用</option>
+                        </select>
+                    </div>
+                    <!--<div class="col-sm-2">
+                        <a class="btn btn-info org-edit" href="javascript:;">修改</a>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+        <div class="td-align dialog-footer">
+            <a class="btn btn-warning" href="javascript:parent.layer.closeAll();"> <i class="fa fa-close"></i> 取消</a>
+            <button class="btn btn-primary" type="Submit"> <i class="fa fa-save"></i> 确定提交</button>
+        </div>
+    </form>
+</div>
+{/block}

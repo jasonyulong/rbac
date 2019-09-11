@@ -1,0 +1,32 @@
+define(['jquery', 'bootstrap', 'bootstrap-select', 'template'], function ($, undefined, undefined, template) {
+    var Controller = {
+        // 初始化方法, 默认运行
+        _initialize: function () {
+            // bootstrap select
+            $(".selectpicker").selectpicker({
+                selectAllText: '全选',
+                deselectAllText: '取消',
+                // 是否允许搜索
+                liveSearch: true,
+            });
+        },
+        index: function () {
+            // 全局自定义配置
+            console.log(Config);
+            // 全局自定义对象
+            console.log(Fast);
+            // 自定义模板使用
+            var data = {
+                title: "hello world"
+            };
+            var html = template("test", data);
+            console.log(html);
+
+            // 自定义弹窗
+            $("#add").click(function () {
+                Fast.api.open('https://www.baidu.com/', '测试', {area: ['500px', '500px']});
+            });
+        }
+    }
+    return Controller;
+});

@@ -1,0 +1,36 @@
+<form class="form-inline">
+    <div class="panel panel-default panel-btn">
+        <div class="panel-heading">
+            <div class="form-group">
+                <label>状态：</label>
+                <select class="form-control" name="status">
+                    <option value="">请选择</option>
+                    <option value="1" {if condition="$params['status'] eq 1"}selected="selected"{/if}>启用</option>
+                    <option value="0" {if condition="$params['status'] eq '0'"}selected="selected"{/if}>禁用</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>是否绑定账号：</label>
+                <select class="form-control" name="binding">
+                    <option value="">请选择</option>
+                    <option value="1" {if condition="$params['binding'] eq 1"}selected="selected"{/if}>是</option>
+                    <option value="0" {if condition="$params['binding'] eq '0'"}selected="selected"{/if}>否</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="text"  class="form-control" name="user_name" value="{$params.user_name}"  placeholder="多姓名搜索(空格逗号隔开)">
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-info" type="Submit"><i class="glyphicon glyphicon-search" aria-hidden="true"></i>搜索</button>
+                {if $params['org_id']}
+                <a class="btn btn-success add" data-id="{$params.org_id}" data-url="{:url('/v1/group/organization/add')}" href="javaScript:;"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i>新增</a>
+                {/if}
+                <!--<a class="btn btn-danger" onclick="" href="javaScript:;"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>查看日志</a>-->
+            </div>
+        </div>
+    </div>
+    <br>
+</form>

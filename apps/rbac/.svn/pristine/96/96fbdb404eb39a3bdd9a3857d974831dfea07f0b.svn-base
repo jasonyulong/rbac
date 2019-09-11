@@ -1,0 +1,143 @@
+require.config({
+    urlArgs: "v=" + requirejs.s.contexts._.config.config.site.version,
+    packages: [{
+        name: 'moment',
+        location: '../libs/moment',
+        main: 'moment'
+    }],
+    //在打包压缩时将会把include中的模块合并到主文件中
+    include: ['css', 'layer', 'toastr', 'fast'],
+    paths: {
+        'lang': "empty:",
+        'form': 'require-form',
+        'table': 'require-table',
+        'upload': 'require-upload',
+        'validator': 'require-validator',
+        'drag': 'jquery.drag.min',
+        'drop': 'jquery.drop.min',
+        'echarts': 'echarts.min',
+        'echarts-theme': 'echarts-theme',
+        'adminlte': 'adminlte',
+        'bootstrap-table-commonsearch': 'bootstrap-table-commonsearch',
+        'bootstrap-table-template': 'bootstrap-table-template',
+        //
+        // 以下的包从bower的libs目录加载
+        'jquery': '/vendor/jquery/jquery.min',
+        'jquery-form': '/vendor/jquery/jquery.form.min',
+        'bootstrap': '/vendor/bootstrap/js/bootstrap.min',
+        'bootstrap-select': '../../vendor/bootstrap-select/js/bootstrap-select.min',
+        //'raphael': '../../vendor/raphael/raphael.min',
+        //'morris': '../../vendor/morrisjs/morris.min',
+        'template': '/vendor/art-template/lib/template-web',
+        'form-validator': '/vendor/form-validator/dist/jquery.validator.min',
+        'laydate': '/vendor/laydate/laydate',
+        'datatables.net': '/vendor/datatables/js/jquery.dataTables.min',
+        'datatables-bootstrap': '/vendor/datatables/js/dataTables.bootstrap4.min',
+    },
+    // shim依赖配置
+    shim: {
+        'addons': ['base'],
+        'bootstrap': ['jquery', 'base'],
+        'bootstrap-table': {
+            deps: [
+                'bootstrap',
+                // 'css!../libs/bootstrap-table/dist/bootstrap-table.min.css'
+            ],
+            exports: '$.fn.bootstrapTable'
+        },
+        'bootstrap-table-lang': {
+            deps: ['bootstrap-table'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+        'bootstrap-table-export': {
+            deps: ['bootstrap-table', 'tableexport'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+        'bootstrap-table-mobile': {
+            deps: ['bootstrap-table'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+        'bootstrap-table-advancedsearch': {
+            deps: ['bootstrap-table'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+        'bootstrap-table-commonsearch': {
+            deps: ['bootstrap-table'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+        'bootstrap-table-template': {
+            deps: ['bootstrap-table', 'template'],
+            exports: '$.fn.bootstrapTable.defaults'
+        },
+    },
+    baseUrl: '/dist/js/', //资源基础路径
+    map: {
+        '*': {
+            'css': '../libs/require-css/css.min'
+        }
+    },
+    waitSeconds: 30,
+    charset: 'utf-8' // 文件编码
+});
+
+require(['jquery', 'bootstrap'], function ($, undefined) {
+    //初始配置
+    var Config = requirejs.s.contexts._.config.config;
+    //将Config渲染到全局
+    window.Config = Config;
+    // 配置语言包的路径
+    var paths = {};
+    paths['lang'] = Config.moduleurl + '/ajax/lang?callback=define&controllername=' + Config.controllername;
+    ;
+    // 避免目录冲突
+    paths['module/'] = Config.moduleurl + '/';
+    require.config({paths: paths});
+
+    // 返回头部
+    var toTop = function () {
+        $('body').append('<button id="btn_top" class="btn-top" title="回到顶部"><span class="glyphicon glyphicon-chevron-up"></span></button>');
+        var btnTop = "#btn_top";
+        $(window).scroll(function () {
+            if ($(window).scrollTop() >= 50) {
+                $(btnTop).fadeIn();
+            } else {
+                $(btnTop).fadeOut();
+            }
+        });
+        $(btnTop).click(function () {
+            $('html,body').animate({scrollTop: 0}, 500);
+        });
+        //在初始化和窗口改变大小时，重置main的高度
+        var window_height = $(window).height();
+        var header_height = $('#header').height();
+        $('#main').height(window_height - header_height - 5);
+        $(window).resize(function () {
+            window_height = $(window).height();
+            var header_height = $('#header').height();
+            $('#main').height(window_height - header_height - 5);
+        });
+    }
+
+
+    // 初始化
+    $(function () {
+        // 返回top
+        toTop();
+
+        // 加载模块
+        require(['fast'], function (Fast) {
+            //加载相应模块
+            if (Config.jsname) {
+                require([Config.jsname], function (Controller) {
+                    // 初始化方法
+                    Controller['_initialize'] != undefined && Controller['_initialize']();
+                    // 路由方法
+                    Controller[Config.actionname] != undefined && Controller[Config.actionname]();
+                }, function (e) {
+                    console.error(e);
+                    // 这里可捕获模块加载的错误
+                });
+            }
+        });
+    });
+});

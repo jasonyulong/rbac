@@ -1,0 +1,18 @@
+---------------------------------------------------------------
+[ 2019-03-29T08:17:57+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]Undefined property: app\v1\controller\users\Index::$userModel[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:54]
+---------------------------------------------------------------
+[ 2019-03-29T08:18:26+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: users[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:55]
+---------------------------------------------------------------
+[ 2019-03-29T08:44:26+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: ps[/opt/web/zs/apps/rbac/application/v1/service/User.php:36]
+---------------------------------------------------------------
+[ 2019-03-29T08:45:19+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: page[/opt/web/zs/apps/rbac/application/v1/service/User.php:38]
+---------------------------------------------------------------
+[ 2019-03-29T08:46:17+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: searchKey[/opt/web/zs/apps/rbac/application/v1/service/User.php:43]
+---------------------------------------------------------------
+[ 2019-03-29T08:46:35+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: where[/opt/web/zs/apps/rbac/application/v1/service/User.php:49]

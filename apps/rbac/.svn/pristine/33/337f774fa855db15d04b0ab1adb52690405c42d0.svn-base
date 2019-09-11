@@ -1,0 +1,59 @@
+{extend name="$config.layout" /}
+{block name='css'}
+<link rel="stylesheet" href="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.css">
+{/block}
+{block name='content'}
+<div class="content">
+    <div class="row">
+        <div class="col-md-2 left-job">
+            {if $Request.action == 'index'}
+            {include file="auth/access/left" /}
+            {elseif $Request.action == 'tagindex'}
+            {include file="auth/access/tag_left" /}
+            {/if}
+        </div>
+        <div class="col-md-9 menu-content">
+            {include file="auth/access/navtabs" /}
+            {include file="auth/access/table" /}
+        </div>
+        <div class="scroll-to col-md-1">
+            <ul>
+                {foreach $scroll_data as $value}
+                <li>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle></svg>
+                    <a class="scroll-link" href="#anchor-{$value['id']}">{$value['title']}</a>
+                </li>
+                {/foreach}
+                {if $params['module_id'] == 2}
+                <li>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"></circle></svg>
+                    <a class="scroll-link" href="#anchor-oversee">可见管理</a>
+                </li>
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div>
+{/block}
+{block name='js'}
+<script src="__CDN__/vendor/bootstrap-treeview/bootstrap-treeview.min.js" ></script>
+<script>
+{if $Request.action == 'index'}
+$(function() {
+    var data = '{$job_tree}';
+    data = JSON.parse(data);
+    $('#tree').treeview({
+        color: "#555",
+        selectedColor: "#337ab7",
+        selectedBackColor: '#F5F5F5',
+        expandIcon: 'glyphicon glyphicon-chevron-right',
+        collapseIcon: 'glyphicon glyphicon-chevron-down',
+        nodeIcon: 'glyphicon glyphicon-user',
+        enableLinks: true,
+        showTags: true,
+        data: data
+    });
+});
+{/if}
+</script>
+{/block}

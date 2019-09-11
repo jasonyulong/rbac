@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+    {block name="css"}<!-- 自定义css -->{/block}
+</head>
+<body class="skin-blue fixed {$adaptive}">
+    <div id="wrapper">
+        {include file="common/header" /}
+        <!-- Full Width Column -->
+        <div id="page-wrapper">
+            {include file="common/map" /}
+            {block name='content'}{/block}
+        </div>
+    </div>
+    {include file="common/template" /}
+    <!-- 加载JS脚本 -->
+    <!-- jQuery 3 -->
+    {include file="common/script" /}
+    {block name='js'}<!-- 自定义js -->{/block}
+    {block name='template'}<!-- 自定义js模板 -->{/block}
+    {include file="common/require" /}
+</body>
+</html>

@@ -1,0 +1,12 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        权限标签
+    </div>
+</div>
+<div class="navbar-default" role="navigation">
+    <ul class="list-group">
+        {foreach $all_labels as $value}
+        <li class="list-group-item {if $params['id'] == $value['id']}item-selected{/if}"><a href="{:url('tagindex', ['id' => $value['id'], 'module_id' => $params['module_id']])}" class="list-group-item-link">{$value['name']}({$value['user_num']})</a></li>
+        {/foreach}
+    </ul>
+</div>

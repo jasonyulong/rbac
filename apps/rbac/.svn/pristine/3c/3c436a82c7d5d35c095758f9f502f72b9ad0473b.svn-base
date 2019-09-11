@@ -1,0 +1,72 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label for="job_id" class="col-sm-3 control-label"><span class="red-color">*</span>岗位：</label>
+            <div class="col-sm-5">
+                <input type="hidden" name="saveType" value="all"/>
+
+                <select class="selectpicker show-tick" title="请选择" id="job_id" name="job_id"
+                         data-live-search="true">
+                    {foreach($userJobInfo as $k=>$v)}
+                    <option value="{$v['id']}" {if condition="in_array($v['id'],$userInfo['job_id'])"}selected{/if}>{$v['title']}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <a href="javascript:void(0)" class="btn btn-info addobj"
+                   data-url="{:url('/v1/auth/position/add.html?dialog=1')}">新增岗位</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="rules_id" class="col-sm-3 control-label">权限标签：</label>
+            <div class="col-sm-5">
+                <select multiple="multiple" class="selectpicker show-tick" title="请选择(可多选)" id="rules_id" name="rules_id[]"
+                        data-actions-box="true" data-live-search="true">
+                    {foreach($usersLabel as $kk=>$vv)}
+                    <option value="{$kk}" {if condition="in_array($kk,$userInfo['rules_id'])"}selected{/if}>{$vv}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <a href="javascript:void(0)" class="btn btn-info addobj" data-url="{:url('/v1/auth/tag/add&dialog=1')}">新增权限标签</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="all" class="col-sm-3 control-label">允许登录的系统：</label>
+            <div class="col-sm-9">
+                <div class="checkbox">
+                    <label>
+                        <input class="data-check_box_total allow" type="checkbox" id="all"> 全部
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-9">
+                <div class="checkbox child">
+                    {foreach($allowSystem as $k2=>$v2)}
+                    <label>
+                        <input type="checkbox" class="data-check_box" name="allow[]" value="{$v2}" {if condition="in_array($v2,$userInfo['allow'])"}checked{/if}>{$v2}
+                    </label>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+        {if condition="(!empty($userInfo['status_value'])) AND ($userInfo['status_value'] == 2)"}
+        <div class="form-group">
+            <label for="status" class="col-sm-3 control-label">是否转入在职：</label>
+            <div class="col-sm-5">
+                <select class="selectpicker show-tick" title="" id="status" name="status">
+                    <option value="1" {if condition="$userInfo['status'] eq 1"}selected{/if}>在职</option>
+                    <option value="{$userInfo['status']}" {if condition="$userInfo['status'] eq 2"}selected{/if}>待入职</option>
+                </select>
+            </div>
+        </div>
+        {/if}
+    </div>
+</div>
+<div class="td-align dialog-footer">
+    <button class="btn btn-warning" id="cancel"> <i class="fa fa-close"></i> 取消</button>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定提交</button>
+</div>

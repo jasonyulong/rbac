@@ -1,0 +1,42 @@
+<?php
+
+return array (
+  'name' => 'RBAC',
+  'version' => '1.0.1',
+  'timezone' => 'Asia/Shanghai',
+  'forbiddenip' => '*
+10.0.2.2
+192.168.1.1
+127.0.0.1',
+  'userJobType' => 
+  array (
+    1 => '业务',
+    2 => 'IT',
+    3 => '采购',
+    4 => '仓储',
+    5 => '客服',
+    6 => '财务',
+    7 => '物流',
+    8 => '产品',
+    9 => '人事/行政',
+    10 => '账号组',
+  ),
+  'allowSystem' => 
+  array (
+    1 => '权限系统(RBAC)',
+    2 => 'ERP',
+    3 => '订单系统(OMS)',
+    4 => '报表系统(COUNT)',
+    5 => '调零系统(APP)',
+    6 => '刊登系统(KD)',
+  ),
+  'mail_type' => '1',
+  'mail_smtp_host' => 'smtp.qq.com',
+  'mail_smtp_port' => '465',
+  'mail_smtp_user' => '10000',
+  'mail_smtp_pass' => 'password',
+  'mail_verify_type' => '2',
+  'mail_from' => '10000@qq.com',
+  'locktime' => '30',
+  'logintime' => '300',
+);

@@ -1,0 +1,6 @@
+/*!
+ * Start Bootstrap - Admin v3.3.7+1 (https://github.com/KevinsDeveloper/bootstrap4-admin)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+define(["jquery","bootstrap","form-validator"],function(o,a,r){var e={countdown:60,submit:"#submit",loginForm:"#loginForm",locksform:"#locks-form",loginboxmsg:".login-tips",alert:".alert",admin:!1},t={index:function(){var a=function(){o(e.submit).attr("disable",!0).html("Loding..."),o(e.submit).removeClass("bg-purple").addClass("bg-default")},r=function(){o(e.submit).attr("disable",!1).html("Sign In"),o(e.submit).removeClass("bg-default").addClass("bg-purple")};o(e.loginForm).on("valid.form",function(){var e=o(this).attr("action"),t=layer.load();o(this);a(),o.ajax({url:e,type:"post",dataType:"json",data:o(this).serialize(),success:function(o){return layer.close(t),r(),1!=o.code?layer.alert(o.msg):o.url?void(location.href=o.url):void layer.alert(o.msg,{closeBtn:0},function(o){parent.layer.close(parent.layer.getFrameIndex(window.name)),parent.layer.close(o),parent.window.location.reload(),window.location.reload()})},error:function(o){return layer.close(t),r(),layer.alert("请求或返回数据异常")}})})}};return t});

@@ -1,0 +1,48 @@
+<form class="form-inline">
+    <div class="form-group col-sm-3">
+        <label>岗位：</label>
+        <select class="form-control">
+            <option value="">请选择</option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-3">
+        <label>状态：</label>
+        <select class="form-control">
+            <option value="">请选择</option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-3">
+        <label>账号：</label>
+        <select class="form-control">
+            <option value="">是否绑定</option>
+            <option value="1">是</option>
+            <option value="2">否</option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-3">
+        <label>角色：</label>
+        <select class="form-control">
+            <option value="">请选择</option>
+        </select>
+    </div>
+
+
+
+    <div class="form-group col-sm-3">
+        <br>
+        <input type="text" id="search" class="form-control" id="exampleInputEmail1" placeholder="多姓名搜索(空格逗号隔开)">
+    </div>
+
+    <div class="form-group col-sm-3">
+        <br>
+        <button class="btn btn-info" type="Submit"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>搜索</button>
+        <a class="btn btn-success add" data-url="{:url('/v1/group/organization/add')}" href="javaScript:;"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增</a>
+        <a class="btn btn-danger" onclick="" href="javaScript:;"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>查看日志</a>
+    </div>
+
+    <div class="row"></div>
+    <br>
+</form>

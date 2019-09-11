@@ -1,0 +1,116 @@
+<?php
+/**
+ * 菜单应用服务
+ * User: wcd
+ * Date: 2019/4/1
+ * Time: 9:38
+ */
+namespace app\v1\service;
+use app\common\model\Menus;
+class Menu
+{
+    private $_menusModel = null;
+    private $_pageSize = 50;
+    public function __construct()
+    {
+        $this->_menusModel = new Menus();
+    }
+
+    /**
+     * 菜单列表分页展示
+     * @param $params
+     * @return array
+     */
+    public function index($params)
+    {
+        $where = [];
+        if(isset($params['searchKey'])){
+            $keyWords = trim($params['searchKey']);
+        }
+        if(isset($params['module_id']) && !empty($params['module_id'])){
+            $where['module_id'] = $params['module_id'];
+        }
+        if(isset($params['status']) && $params['status'] !== ''){
+            $where['status'] = $params['status'];
+        }
+        if(!empty($keyWords)){
+            $where['title|url'] = ['like', '%'.$keyWords.'%'];
+        }
+        unset($params['s']);
+        return $this->_menusModel->getPages($where, $this->_pageSize, $params);
+    }
+
+    /**
+     * 查询每个系统的菜单总数
+     * @author wcd
+     * @param $system
+     * @return array
+     */
+    public function getAllsystemMenus($system)
+    {
+        $menusNum = [];
+        foreach($system as $moduleid => $modname){
+            $menusNum[$modname] = $this->_menusModel->where(['module_id' => $moduleid])->count();
+        }
+       return $menusNum;
+    }
+    /**
+     * 保存一条菜单数据
+     * @author wcd
+     * @time 2019-4-1 18:28:47
+     * @param $params
+     * @return mixed
+     */
+    public function saveMenu($params)
+    {
+        $save = [
+            'module_id' => isset($params['module']) ? $params['module'] : 0,
+            'type'       => isset($params['type']) ? $params['type'] : 0,
+            'pid'        => isset($params['parentMenu']) ? $params['parentMenu'] : 0,
+            'title'      => isset($params['title']) ? $params['title'] : '',
+            'url'        => isset($params['url']) ? trim($params['url']) : '',
+            'icon'       => isset($params['icon']) ? trim($params['icon']) : '',
+            'remark'     => isset($params['remark']) ? trim($params['remark']) : '',
+            'weigh'      => isset($params['weight']) ? (int)trim($params['weight']) : 0,
+            'status'     => isset($params['status']) ? $params['status'] : 0,
+        ];
+        if(isset($params['menu_id']) && $params['menu_id']){
+            $save['updatetime'] = time();
+            $where = [
+                'id'  => (int)$params['menu_id']
+            ];
+            $resid = $this->_menusModel->update($save, $where);
+        }else{
+            $save['createtime'] = time();
+            $resid = $this->_menusModel->save($save);
+        }
+        return $resid;
+    }
+    public function editMenus($where, $params)
+    {
+        return $this->_menusModel->where($where)->update($params);
+    }
+    public function getOneMenu($where = [], $field = '', $returnNull = '')
+    {
+        if(empty($where) || !$returnNull){
+            return [
+                'module_id' => '',
+                'type'       => '',
+                'pid'        => '',
+                'title'      => '',
+                'url'        => '',
+                'icon'       => '',
+                'remark'     => '',
+                'weigh'      => '',
+                'status'     => '',
+                'updatetime' => ''
+            ];
+        };
+        return $this->_menusModel->where($where)->field($field)->find()->toArray();
+    }
+
+    public function delMenus()
+    {
+
+    }
+}

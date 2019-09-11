@@ -1,0 +1,42 @@
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="data-check_box_total" type="checkbox"/>
+        </th>
+        <th class="td-align">ID</th>
+        <th class="td-align">姓名</th>
+        <th class="td-align">邮箱/手机号</th>
+        <th class="td-align">部门/角色</th>
+        <th class="td-align">创建人</th>
+        <th class="td-align">时间信息</th>
+        <th class="td-align">状态</th>
+        <th class="td-align">备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach $userslist as $key=>$val}
+    <tr>
+        <td class="td-align td-padding">
+            <input class="data-check_box" type="checkbox"/>
+        </td>
+        <td class="td-align td-padding" style="width: 100px;">{$val['id'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['username'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['email'] ?? ''}<br>{$val['mobile'] ?? ''}</td>
+        <td class="td-align td-padding">{$val['org_id'] ?? ''}<br>{$userJobInfo[$val['job_type']] ?? ''}</td>
+        <td class="td-align td-padding">{$val['createuser'] ?? ''}</td>
+        <td class="td-align td-paddingtd-padding td-width-20">
+            <div class="div-wid">
+                <div>创建时间:{$val['createtime'] ?? ''}</div>
+                <div>预计入职时间：{$val['preentrytime']}</div>
+                <div>手续时间：{$val['proceduretime']}</div>
+                <div>滞留时间：{$val['retention_time']}</div>
+            </div>
+        </td>
+        <td class="td-align td-padding">{$userStatus[$statusNum[$val['status']]]}</td>
+        <td class="td-align td-padding td-width-10">{$val['remarks']}</td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table>
+<div class="pages">{$pages ?? ''}</div>

@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs nav-curstom">
+    {foreach $allowSystem as $key => $val}
+    <li role="presentation" class="marg-left {if($module_id == $key)}active{/if}"><a href="{:url('/v1/menus/index/index', array('module_id'=>$key))}">{$val} <span class="badge badge-primary">{$menusTotals[$key] ?? 0}</span></a></li>
+    {/foreach}
+</ul>

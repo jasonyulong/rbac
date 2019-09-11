@@ -1,0 +1,129 @@
+<?php
+
+namespace app\common\model;
+
+use think\Model;
+
+class Users extends Model
+{
+    // 连接句柄
+    //public $connection = 'database';
+
+    // 开启自动写入时间戳字段
+    protected $autoWriteTimestamp = 'int';
+    protected $updateTime = false;
+
+    // 定义时间戳字段名
+//    protected $createTime = 'createtime';
+//    protected $updateTime = 'updatetime';
+
+    /**
+     * @desc   join users 表
+     * @author mina
+     * @param  void
+     * @return array
+     */
+    public function organization()
+    {
+        return $this->hasOne('Organization', 'id', 'org_id')->field('title');
+    }
+
+    /**
+     * 重置用户密码
+     * @param $uid 用户ID
+     * @param $newPassword 新密码
+     * @return $this
+     */
+    public function resetPassword($uid, $newPassword)
+    {
+        $passwd = $this->encryptPassword($newPassword);
+        $ret = $this->where(['id' => $uid])->update(['password' => $passwd]);
+        return $ret;
+    }
+
+    /**
+     * 密码加密
+     * @param $password 密码
+     * @param string $salt 密码盐
+     * @param string $encrypt 加密方式
+     * @return mixed
+     */
+    public function encryptPassword($password, $salt = '', $encrypt = 'md5')
+    {
+        return $encrypt(APP_SECRETKEY . $encrypt($password) . $salt);
+    }
+
+    /**
+     * @desc   查询一条数据库
+     * @author mina
+     * @param  array $where 查询条件
+     * @param  string $field 查询字段
+     * @return array
+     */
+    public function getOne($where, $field = "*")
+    {
+        return $this->where($where)->field($field)->find();
+    }
+
+    /**
+     * @desc   更新数据
+     * @author mina
+     * @param  array $where 修改条件
+     * @return array $saveData
+     */
+    public function updateRow($where, $saveData)
+    {
+        return $this->where($where)->update($saveData);
+    }
+
+    /**
+     * 为用户生成密码盐
+     * @return string
+     */
+    public function createSalt()
+    {
+        return \plugin\Random::alnum();
+    }
+
+    /**
+     * @desc   连表查询组织架构下的成员
+     * @author mina
+     * @param  array $where 连表查询
+     * @param  string $field 查询字段
+     * @param  string $limit limt数量
+     * @return array
+     */
+    public function getAll($where, $field = "*", $limit = '')
+    {
+        $query = $this->where($where);
+        if(isset($where['hasWhere']) && $where['hasWhere'])
+        {
+            $query = $this->hasWhere('organization', $where['hasWhere']);
+        }
+        if($limit != '')
+        {
+            $query = $query->limit($limit);
+        }
+        $list = $query->select();
+        return $list;
+    }
+
+    /**
+     * @desc   连表查询组织架构下的成员
+     * @author mina
+     * @param  array $where 连表查询
+     * @param  string $field 查询字段
+     * @param  string $limit limt数量
+     * @return array
+     */
+    public function getCount($where)
+    {
+        $query = $this->where($where);
+        if(isset($where['hasWhere']) && $where['hasWhere'])
+        {
+            $query = $this->hasWhere('organization', $where['hasWhere']);
+        }
+        $list = $query->count();
+        return $list;
+    }
+}

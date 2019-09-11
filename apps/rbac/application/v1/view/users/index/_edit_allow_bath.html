@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-md-12">
+        <input type="hidden" name="saveType" value="allow"/>
+        <div class="form-group">
+            <label for="all" class="col-sm-3 control-label"><span class="red-color">*</span>允许登录的系统：</label>
+            <div class="col-sm-9">
+                <div class="checkbox">
+                    <label>
+                        <input class="data-check_box_total allow" type="checkbox" id="all"> 全部
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-9">
+                <div class="checkbox child">
+                    {foreach($allowSystem as $k2=>$v2)}
+                    <label><input type="checkbox" class="data-check_box" name="allow[]" value="{$v2}">{$v2}</label>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="td-align dialog-footer">
+    <button class="btn btn-warning" id="cancel"> <i class="fa fa-close"></i> 取消</button>
+    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定提交</button>
+</div>

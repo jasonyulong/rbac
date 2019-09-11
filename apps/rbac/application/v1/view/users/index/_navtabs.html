@@ -1,0 +1,8 @@
+<ul class="nav nav-tabs nav-curstom">
+    {foreach $userStatus as $key => $val}
+    {if can(urlbuld('/v1/users/index/', $key))}
+    <li role="presentation" class="marg-left {if($request->action() == $key)}active{/if}"><a
+            href="{:urlbuld('/v1/users/index/', $key,['searchKey'=>$search_key,'searchValue'=>$search_value])}">{$val} <span class="badge badge-primary">{$statusTotals[$key] ?? 0}</span></a></li>
+    {/if}
+    {/foreach}
+</ul>

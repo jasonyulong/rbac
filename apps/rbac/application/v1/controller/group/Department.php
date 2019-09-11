@@ -1,0 +1,189 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Department.php
+ * @Date: 2019/4/3
+ * @Time: 17:30
+ * @Description
+ */
+
+namespace app\v1\controller\group;
+
+use app\common\controller\AuthController as Controller;
+use think\Request;
+
+/**
+ * 部门管理
+ * Class Department
+ * @package app\v1\controller\group
+ */
+class Department extends Controller
+{
+
+    /**
+     * @var null 部门服务层
+     */
+    private $departmentService = null;
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->departmentService = new \app\v1\service\Department();
+    }
+
+    /**
+     * @desc 部门管理列表
+     * @author 杨能文
+     * @date 2019/4/3 17:31
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function index():string
+    {
+        $departmentService = $this->departmentService;
+        $this->assign('list', $departmentService->organization(1));
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 添加部门
+     * @author 杨能文
+     * @date 2019/4/3 18:34
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function add()
+    {
+        $departmentService = $this->departmentService;
+        if (Request::instance()->isPost()) {
+            if ($departmentService->add($this->request->post())) {
+                $this->success(__('新增部门成功'));
+            }
+            $this->error($departmentService->errorsMessages);
+        }
+        $this->assign('organization', $departmentService->organization(2));
+        $this->assign('saleUser', $departmentService->alluser());
+        $depUser = $departmentService->getuserdep();
+        $depUser1 = $departmentService->getforbiddep();
+        if($depUser1)$depUser = array_merge($depUser,$depUser1);
+        $this->assign('depUser', $depUser);
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 编辑部门
+     * @author 杨能文
+     * @date 2019/4/8 14:34
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function edit()
+    {
+        $departmentService = $this->departmentService;
+        if (Request::instance()->isPost()) {
+            if ($departmentService->edit($this->request->post())) {
+                $this->success(__('编辑部门成功'));
+            }
+            $this->error($departmentService->errorsMessages);
+        }
+        $id = input('param.id');
+        $this->assign('info', $departmentService->info($id));
+        $this->assign('saleUser', $departmentService->alluser());
+
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 禁用部门
+     * @author 杨能文
+     * @date 2019/4/3 18:34
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function forbid()
+    {
+        $departmentService = $this->departmentService;
+        if (Request::instance()->isPost()) {
+            if ($departmentService->forbid($this->request->post())) {
+                $this->success(__('禁用部门成功'));
+            }
+            $this->error($departmentService->errorsMessages);
+        }
+    }
+
+    /**
+     * @desc 启用部门
+     * @author 杨能文
+     * @date 2019/4/3 18:34
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function start()
+    {
+        $departmentService = $this->departmentService;
+        if (Request::instance()->isPost()) {
+            if ($departmentService->start($this->request->post())) {
+                $this->success(__('启用部门成功'));
+            }
+            $this->error($departmentService->errorsMessages);
+        }
+    }
+
+    /**
+     * @desc 复制部门
+     * @author 杨能文
+     * @date  2019/4/3 18:34
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function copy()
+    {
+        $departmentService = $this->departmentService;
+        if (Request::instance()->isPost()) {
+            if ($departmentService->copy($this->request->post())) {
+                $this->success(__('复制部门成功'));
+            }
+            $this->error($departmentService->errorsMessages);
+        }
+        $id = input('param.id');
+        $this->assign('info', $departmentService->info($id));
+        $this->assign('organization', $departmentService->organization(2));
+        $this->assign('saleUser', $departmentService->alluser());
+        $depUser = $departmentService->getuserdep();
+        $depUser1 = $departmentService->getforbiddep();
+        if($depUser1)$depUser = array_merge($depUser,$depUser1);
+        $this->assign('depUser',$depUser);
+        return parent::fetchAuto();
+    }
+
+    /**
+     * @desc 查看用户
+     * @author 杨能文
+     * @date 2019/4/8 10:05
+     * @access public
+     * @return string
+     * @throws \Exception
+     */
+    public function cat()
+    {
+        $departmentService = $this->departmentService;
+        $params = input('param.');
+        $params['user_name'] = isset($params['user_name']) ? trim($params['user_name']) : '';
+        $params['status'] = $params['status'] ?? '';
+        $data = $departmentService->cat($params);
+        $this->assign('page', $data['page']);
+        $this->assign('list', $data['list']);
+        $this->assign('orgArr', $data['orgArr']);
+        $this->assign('params', $params);
+        $this->assign('organization', $departmentService->organization(2));
+        return parent::fetchAuto();
+    }
+}

@@ -1,0 +1,51 @@
+---------------------------------------------------------------
+[ 2019-08-07T10:42:47+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [0]No route to host[/opt/web/zs/thinkphp/library/think/cache/driver/Redis.php:53]
+---------------------------------------------------------------
+[ 2019-08-07T10:46:01+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [2002]SQLSTATE[HY000] [2002] No route to host[/opt/web/zs/thinkphp/library/think/db/Connection.php:295]
+---------------------------------------------------------------
+[ 2019-08-07T10:46:10+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [2002]SQLSTATE[HY000] [2002] No route to host[/opt/web/zs/thinkphp/library/think/db/Connection.php:295]
+---------------------------------------------------------------
+[ 2019-08-07T10:50:59+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [0]致命错误: Call to a member function setRequestUri() on null[/opt/web/zs/apps/rbac/application/common/controller/AuthController.php:144]
+---------------------------------------------------------------
+[ 2019-08-07T10:51:21+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [0]致命错误: Call to a member function getUserInfo() on null[/opt/web/zs/apps/rbac/application/common/controller/AuthController.php:231]
+---------------------------------------------------------------
+[ 2019-08-07T10:52:21+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [0]致命错误: Call to a member function getUser() on null[/opt/web/zs/apps/rbac/application/common/controller/AuthController.php:234]
+---------------------------------------------------------------
+[ 2019-08-07T10:52:43+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]Trying to get property of non-object[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:56]
+---------------------------------------------------------------
+[ 2019-08-07T10:53:24+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: users[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:53]
+---------------------------------------------------------------
+[ 2019-08-07T10:54:27+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: users[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:53]
+---------------------------------------------------------------
+[ 2019-08-07T10:57:44+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: users[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:92]
+---------------------------------------------------------------
+[ 2019-08-07T10:58:27+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: userNotice[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:152]
+---------------------------------------------------------------
+[ 2019-08-07T10:59:02+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: userNotice[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:152]
+---------------------------------------------------------------
+[ 2019-08-07T10:59:17+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [8]未定义变量: userNotice[/opt/web/zs/apps/rbac/runtime/temp/aeb78c14acf573320ac15852bdd23580.php:155]
+---------------------------------------------------------------
+[ 2019-08-07T10:59:44+08:00 ] 172.26.2.190 GET local.rule.com/v1/index/profile.html
+[ error ] [8]Trying to get property of non-object[/opt/web/zs/apps/rbac/application/v1/controller/Index.php:84]
+---------------------------------------------------------------
+[ 2019-08-07T11:08:11+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [2002]SQLSTATE[HY000] [2002] No route to host[/opt/web/zs/thinkphp/library/think/db/Connection.php:295]
+---------------------------------------------------------------
+[ 2019-08-07T11:29:16+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [2002]SQLSTATE[HY000] [2002] No route to host[/opt/web/zs/thinkphp/library/think/db/Connection.php:295]
+---------------------------------------------------------------
+[ 2019-08-07T11:36:09+08:00 ] 172.26.2.190 GET local.rule.com/
+[ error ] [2002]SQLSTATE[HY000] [2002] No route to host[/opt/web/zs/thinkphp/library/think/db/Connection.php:295]

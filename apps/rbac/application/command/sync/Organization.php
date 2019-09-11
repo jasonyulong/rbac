@@ -1,0 +1,173 @@
+<?php
+// +----------------------------------------------------------------------
+// | 组织架构相关数据同步
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\command\sync;
+
+
+use think\console\Input;
+use think\console\Output;
+use think\Config;
+
+class Organization
+{
+    /**
+     * 输入对象
+     * @var Input
+     */
+    private $input;
+
+    /**
+     * 输出对象
+     * @var Output
+     */
+    private $output;
+
+    /**
+     * 构造函数
+     * Orders constructor.
+     * @param Input $input 输入对象
+     * @param Output $output 输出对象
+     */
+    public function __construct(Input $input, Output $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    /**
+     * 同步数据
+     */
+    public function run()
+    {
+        $erpOrgModel = new \app\common\model\erp\Organization();
+        $erpAccountModel = new \app\common\model\erp\EbayAccount();
+
+        $organizationModel = new \app\common\model\Organization();
+        $organizationUserModel = new \app\common\model\OrganizationUser();
+        $organizationUserAccountModel = new \app\common\model\OrganizationUserAccount();
+        $organizationService = new \app\v1\service\Organization();
+
+        $erpOrgs = $erpOrgModel->all();
+        if (empty($erpOrgs)) return $this->output->writeln("Organization none data");
+
+        $ebayAccounts = $erpAccountModel->where([])->column('id,ebay_account');
+        $ebayAccountIds = array_flip($ebayAccounts);
+
+        $organizationIds = $organizationModel->column('id');
+        $tids = [];
+
+        foreach ($erpOrgs as $org) {
+            $orgData = [
+                'id' => $org->id,
+                'pid' => $org->parent_id,
+                'tid' => $org->tid,
+                'lid' => $org->lid,
+                'rid' => $org->rid,
+                'title' => $org->name,
+                'rank' => $org->level,
+                'manage' => $org->manage,
+                'manage_uid' => $org->manage_uid,
+                'status' => $org->org_status,
+            ];
+            $orgUserData = $orgUserAccount = $orgUserId = [];
+            // 组织架构成员
+            if ($org->orgusers) {
+                foreach ($org->orgusers as $orguser) {
+                    $orgUserData[] = [
+                        'org_id' => $orguser->organize_id,
+                        'user_id' => $orguser->user_id,
+                        'user_name' => $orguser->user_name,
+                        'binding' => $org->tid == 19 ? 1 : 0,
+                        'status' => $orguser->status,
+                    ];
+                    $orgUserId[$orguser->user_id] = $orguser->user_name;
+                }
+            }
+            // 成员帐号
+            if (!empty($org->orgproperty)) {
+                foreach ($org->orgproperty as $property) {
+                    $accounts = explode(',', $property->value);
+                    if (!empty($accounts)) {
+                        foreach ($accounts as $account) {
+                            $orgUserAccount[] = [
+                                'org_id' => $property->organize_id,
+                                'user_id' => $property->user_id,
+                                'user_name' => $orgUserId[$property->user_id] ?? '',
+                                'platform' => $property->groups,
+                                'platform_account' => $account,
+                                'platform_account_id' => $ebayAccountIds[$account] ?? 0,
+                                'status' => 1,
+                            ];
+                        }
+                    }
+                }
+            }
+            // ebay成员帐号
+            if (!empty($org->orgebay)) {
+                foreach ($org->orgebay as $orgebay) {
+                    $orgUserAccount[] = [
+                        'org_id' => $orgebay->organize_id,
+                        'user_id' => $orgebay->user_id,
+                        'user_name' => $orgUserId[$orgebay->user_id] ?? '',
+                        'platform' => 'ebay',
+                        'platform_account' => $orgebay->account,
+                        'platform_account_id' => $ebayAccountIds[$account] ?? 0,
+                        'store_id' => $orgebay->store_id,
+                        'locations' => $orgebay->locations,
+                        'sales_label' => $orgebay->sales_label,
+                        'status' => 1,
+                    ];
+                }
+            }
+
+            try {
+                // 开始保存数据
+                $organizationModel->startTrans();
+                if (in_array($org->id, $organizationIds)) {
+                    unset($orgData['id']);
+                    $organizationModel->update($orgData, ['id' => $org->id]);
+                } else {
+                    $organizationModel->create($orgData);
+                }
+                // 成员数据
+                $organizationUserModel->where(['org_id' => $org->id])->delete();
+                if (!empty($orgUserData)) {
+                    foreach ($orgUserData as $item) {
+                        $organizationUserModel->create($item);
+                    }
+                }
+                //$organizationUserModel->insertAll($orgUserData);
+
+                // 帐号数据
+                $organizationUserAccountModel->where(['org_id' => $org->id])->delete();
+                if (!empty($orgUserAccount)) {
+                    foreach ($orgUserAccount as $item) {
+                        $organizationUserAccountModel->create($item);
+                    }
+                }
+                //$organizationUserAccountModel->insertAll($orgUserAccount);
+                $this->output->writeln($org->id . "success");
+
+                $organizationModel->commit();
+                if ($org->level == 1) $tids[] = $org->id;
+
+            } catch (\Exception $e) {
+                $this->output->writeln($org->id . $e->getMessage());
+            }
+        }
+        // 更新成员数
+        if (!empty($tids)) {
+            foreach ($tids as $id) {
+                $organizationService->updateunder($id);
+            }
+        }
+
+        $this->output->writeln("success");
+    }
+}

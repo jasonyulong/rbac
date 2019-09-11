@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+</head>
+
+<body class="hold-transition lockscreen">
+<div class="lockscreen-wrapper">
+    <div class="lockscreen-logo">
+        超时锁屏
+    </div>
+    <!-- User name -->
+    <div class="lockscreen-name">{$admin.username|default=''}</div>
+
+    <!-- START LOCK SCREEN ITEM -->
+    <div class="lockscreen-item">
+        <!-- lockscreen image -->
+        <div class="lockscreen-image">
+            <img src="{$admin.avatar|default='/dist/img/avatar.png'}" alt="User Image">
+        </div>
+        <!-- /.lockscreen-image -->
+        <!-- lockscreen credentials (contains the form) -->
+        <form class="lockscreen-credentials" method="POST" id="locks-form"
+              action="{:url($config.url.locks, ['url' => $url])}">
+            <div class="input-group">
+                <input type="hidden" name="username" value="{$users.username}">
+                <input type="password" class="form-control" id="pd-form-password" placeholder="{:__('Password')}"
+                       name="password" autocomplete="off" value="" data-msg-required="请填写正确的密码"
+                       data-rule="required;" autofocus/>
+                <div class="input-group-btn">
+                    <button type="submit" class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
+                </div>
+                <span class="msg-box n-right" for="pd-form-password"></span>
+            </div>
+        </form>
+    </div>
+    <!-- /.lockscreen-item -->
+    <div class="help-block text-center">
+        Enter your password to retrieve your session
+    </div>
+    <div class="text-center">
+        <a href="{:url($config.url.login, ['url' => $url])}" class="text-primary">Or sign in as a different user</a>
+    </div>
+    <div class="lockscreen-footer text-center small">
+        Copyright &copy; 2018-2025 <b>Jeoshi</b><br>
+        All rights reserved
+    </div>
+</div>
+<!-- 加载JS脚本 -->
+<!-- jQuery 3 -->
+<script src="__CDN__/vendor/jquery/jquery.min.js"></script>
+<!-- require -->
+<script src="__CDN__/dist/js/require.js" data-main="__CDN__/dist/js/require-main.js"></script>
+<script language="javascript">
+    //防止页面后退
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+</script>
+</body>
+</html>

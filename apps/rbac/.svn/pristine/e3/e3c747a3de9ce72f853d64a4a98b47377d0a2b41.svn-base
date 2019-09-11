@@ -1,0 +1,177 @@
+<?php
+// +----------------------------------------------------------------------
+// | 免登陆控制器基类
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\controller;
+
+use app\common\library\auth\Access;
+use think\Config;
+use think\Controller;
+use think\Hook;
+use think\Lang;
+use think\Session;
+
+/**
+ * 前台控制器基类, 免登陆, 免权限校验
+ * Class PublicController
+ * @package app\common\controller
+ */
+class PublicController extends Controller
+{
+    /**
+     * 布局模板
+     * @var string
+     */
+    protected $layout = '';
+
+    /**
+     * 无需登录的方法,同时也就不需要鉴权了
+     * @var array
+     */
+    protected $noNeedLogin = [];
+
+    /**
+     * 无需鉴权的方法,但需要登录
+     * @var array
+     */
+    protected $noNeedRight = [];
+
+    /**
+     * 权限Auth
+     * @var Auth
+     */
+    protected $auth = null;
+
+    /**
+     * @var int 每页显示记录数
+     */
+    protected $pageSize = 1;
+
+    /**
+     * @var string 是否显示左侧菜单
+     */
+    protected $adaptive = 'adaptive';
+
+    /**
+     * @throws \think\exception\DbException
+     */
+    public function _initialize()
+    {
+        // 移除HTML标签
+        $this->request->filter('strip_tags');
+        $modulename = $this->request->module();
+        $controllername = strtolower($this->request->controller());
+        $actionname = strtolower($this->request->action());
+
+        // 定义是否Dialog请求
+        !defined('IS_DIALOG') && define('IS_DIALOG', input("dialog") ? true : false);
+
+        // 定义是否AJAX请求
+        !defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
+
+        // 如果有使用模板布局
+        if ($this->layout) {
+            $this->view->engine->layout('layout/' . $this->layout);
+        }
+        // 权限处理
+        $this->auth = \app\common\library\auth\Token::instance();
+        // IP白名单
+        if (!$this->auth->forbiddenip()) {
+            $this->error(__('禁止访问!!!'), null, null, 0);
+        }
+        // token
+        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
+        // 设置当前请求的URI
+        $path = $modulename . '/' . str_replace('.', '/', $controllername) . '/' . $actionname;
+        $jscontroller = explode(".", $controllername)[0] ?? $controllername;
+        $jsaction = explode(".", $controllername)[1] ?? $actionname;
+
+        $this->auth->setRequestUri($path);
+        // 如果有传递token才验证是否登录状态
+        if ($token) {
+            $this->auth->setToken($token);
+        }
+        // 语言检测
+        $lang = strip_tags(Lang::detect());
+        // 站点设置
+        $site = Config::get("site");
+        // 配置信息
+        $config = [
+            'site'           => array_intersect_key($site, array_flip(['name', 'indexurl', 'cdnurl', 'version', 'timezone', 'languages'])),
+            'modulename'     => $modulename,
+            'controllername' => $controllername,
+            'actionname'     => $jsaction,
+            'jsname'         => $modulename . '/' . $jscontroller,
+            'layout'         => IS_DIALOG ? 'layout/dialog' : 'layout/default',
+            'moduleurl'      => rtrim(url("/{$modulename}", '', false), '/'),
+            'language'       => $lang,
+            'app'            => Config::get('app'),
+            'url'            => Config::get('url'),
+            'referer'        => Session::get("referer")
+        ];
+        $config = array_merge($config, Config::get("view_replace_str"));
+        // 配置信息后
+        Hook::listen("config_init", $config);
+        // 加载当前控制器语言包
+        $this->loadlang($controllername);
+        // 渲染菜单
+        $module_id = 1;
+        $access = new Access();
+        list($menulist, $navlist) = $access->getSidebar($module_id, [], $path);
+        $this->view->assign('menulist', $menulist);
+        $this->view->assign('navlist', $navlist);
+
+        $this->assign('site', $site);
+        $this->assign('config', $config);
+        $this->assign('request', $this->request);
+        $this->assign('adaptive', $this->adaptive);
+    }
+
+    /**
+     * 加载语言文件
+     * @param string $name
+     */
+    protected function loadlang($name)
+    {
+        Lang::load(APP_PATH . $this->request->module() . '/lang/' . Lang::detect() . '/' . str_replace('.', '/', $name) . '.php');
+    }
+
+    /**
+     * 渲染配置信息
+     * @param mixed $name 键名或数组
+     * @param mixed $value 值
+     */
+    protected function assignconfig($name, $value = '')
+    {
+        $this->view->config = array_merge($this->view->config ? $this->view->config : [], is_array($name) ? $name : [$name => $value]);
+    }
+
+    /**
+     * 自动加载模版
+     * @param null $template
+     * @param array $data
+     * @return string
+     * @throws \ReflectionException
+     */
+    protected function fetchAuto($template = null, $data = [])
+    {
+        $_this = new \ReflectionClass($this);
+        $classTitle = grepDocComment($_this->getDocComment());
+        $mechodTitle = grepDocComment($_this->getMethod(request()->action())->getDocComment());
+        $mechodTitle = trim(trim($mechodTitle, '@desc'), '@name');
+
+        if (empty($classTitle)) {
+            $classTitle = Config::get('site.name');
+        }
+
+        $this->view->assign('rule_title', $classTitle);
+        $this->view->assign('method_title', $mechodTitle);
+        $this->view->assign('title', __(($classTitle ?? Config::get('site.name')) . "-" . $mechodTitle));
+        return $this->view->fetch($template, $data);
+    }
+}

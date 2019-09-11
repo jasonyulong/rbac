@@ -1,0 +1,556 @@
+<?php
+/**
+ * @Copyright (C), ZhuoShi.
+ * @Author: 杨能文
+ * @Name: Organization.php
+ * @Date: 2019/4/9
+ * @Time: 14:22
+ * @Description
+ */
+
+
+namespace app\v1\service;
+
+
+use app\common\model\OrganizationUser;
+use app\common\model\Users;
+use app\common\model\UsersLabel;
+use app\common\model\OrganizationUserAccount;
+use plugin\Tree;
+use think\Config;
+
+class Organization extends Base
+{
+    /**
+     * @var null 组织架构成员模型
+     */
+    private $organizationUser = null;
+
+    /**
+     * @var null 权限模型
+     */
+    private $userLabel = null;
+
+    /**
+     * @var Users|null 用户模型
+     */
+    private $users = null;
+
+    /**
+     * @var null 组织架构模型
+     */
+    private $organization = null;
+
+    /**
+     * @var null 成员账号模型
+     */
+    private $organizationAccount = null;
+
+    /**
+     * @var null 部门服务层
+     */
+    private $departmentService = null;
+
+    /**
+     * Position constructor.
+     */
+    public function __construct()
+    {
+        $this->userLabel = new UsersLabel();
+        $this->users = new Users();
+        $this->organizationUser = new OrganizationUser();
+        $this->organization = new \app\common\model\Organization();
+        $this->departmentService = new Department();
+        $this->organizationAccount = new OrganizationUserAccount();
+    }
+
+    /**
+     * 获取组织架构列表
+     * @param int $select_id 选中ID
+     * @return string
+     */
+    public function orglists($select_id = 0)
+    {
+        $organization = collection(\app\common\model\Organization::where(['status' => 1])->order('weigh', 'desc')->select())->toArray();
+        if (empty($organization)) return '';
+
+        $topOrganization = [];
+        foreach ($organization as $index => &$item) {
+            $item['title'] = sprintf('%s [%s]', $item['title'], $item['manage']);
+            $item['icon'] = 'fa fa-chevron-right';
+            $item['url'] = url('/v1/group/organization/index', ['org_id' => $item['id']]);
+            if (!$item['pid']) {
+                $topOrganization[] = $item;
+            }
+        }
+
+        $tree = Tree::instance();
+        $tree->init($organization);
+
+        $selectParentIds = [];
+        if ($select_id) {
+            //$selectParentIds = $tree->getParentsIds($select_id, true);
+        }
+        $orgs = '';
+        // 部门菜单
+        foreach ($topOrganization as $index => $item) {
+            $childList = Tree::instance()->getTreeMenu($item['id'], '<li class="@class" pid="@pid"><a href="@url" addtabs="@id" url="@url"><i class="@icon"></i> <span>@title</span> <span class="fa arrow"></span></a> @childlist</li>', $select_id, '', 'ul', 'class="nav nav-second-level "');
+
+            $current = in_array($item['id'], $selectParentIds);
+            $childList = str_replace('" pid="' . $item['id'] . '"', ' treeview ' . ($current ? 'active' : '') . '" pid="' . $item['id'] . '"', $childList);
+
+            // 生成下拉
+            $navchildlistul = !empty($childList) ? '<ul class="nav nav-second-level">' . $childList . '</ul>' : '';
+
+            $nstr = '<li class="dropdown @current"><a href="@url" addtabs="@addtabs" url="@url"> <i class="@icon"></i> <span>@title</span> <span class="fa arrow"></span> <span class="pull-right-container"> </span></a> @navchildlistul</li>';
+            $orgs .= strtr($nstr, [
+                '@current' => ($current ? 'active' : ''),
+                '@url' => $item['url'],
+                '@addtabs' => $item['id'],
+                '@icon' => $item['icon'],
+                '@title' => $item['title'],
+                '@navchildlistul' => $navchildlistul,
+            ]);
+        }
+
+        return $orgs;
+    }
+
+    /**
+     * @desc
+     * @author 杨能文
+     * @date 2019/4/10 14:59
+     * @access public
+     * @param $params 参数数组
+     * @return array
+     */
+    public function list($params):array
+    {
+        //每页显示的数量
+        $page_size = !empty($params['ps']) ? $params['ps'] : 20;
+        //当前页
+        $current_page = (!empty($params['page']) && intval($params['page']) > 0) ? $params['page'] : 1;
+        //分页起始值
+        $start = $page_size * ($current_page - 1);
+
+        $organizationUser = $this->organizationUser;
+
+        $where = [];
+        if ($params['org_id']) $where['org_id'] = $params['org_id'];
+        if (is_numeric($params['status'])) $where['status'] = $params['status'];
+        if ($params['binding'] == '0') $where['binding'] = $params['binding'];
+        if ($params['binding'] == '1') $where['binding'] = ['gt', 0];
+        $user_name = preg_split('/[\s,，]+/', trim($params['user_name']));
+        if ($user_name[0]) {
+            if (count($user_name) > 1) {
+                $where['user_name'] = ['in', $user_name];
+            } else {
+                $where['user_name'] = ['like', "%{$user_name[0]}%"];
+            }
+        }
+
+        //分页url参数
+        $config = [
+            'query' => request()->param(),
+        ];
+
+        $userInfo = $organizationUser
+            ->where($where)
+            ->limit($start, $page_size)
+            ->paginate($page_size, false, $config);
+
+        $page = $userInfo->render();
+        $return_data = [
+            'list' => $userInfo->toArray(),
+            'page' => $page,
+        ];
+
+        if ($return_data['list']['data']) {
+            $orgArr = array_column($return_data['list']['data'], 'org_id');
+            $departmentService = $this->departmentService;
+            $where = ['id' => ['in', $orgArr]];
+            $department = $departmentService->getorganization($where);
+            foreach ($return_data['list']['data'] as &$val) {
+                $val['title'] = $department && isset($department[$val['org_id']]) ? $department[$val['org_id']] : '';
+            }
+        }
+
+        return $return_data;
+    }
+
+    /**
+     * 修改用户的组织架构
+     * @param $user_id 用户ID
+     * @param int $old_org_id 原部门ID
+     * @param $new_org_id 新部门ID
+     * @return bool
+     */
+    public function update($user_id, $old_org_id = 0, $new_org_id)
+    {
+        // 当原部门ID和当前部门ID一样时
+        if ($old_org_id == $new_org_id) {
+            $orgUserData = \app\common\model\OrganizationUser::get(['org_id' => $old_org_id, 'user_id' => $user_id]);
+            if (empty($orgUserData)) {
+                $this->add(['user_id' => $user_id, 'org_id' => $new_org_id]);
+                $this->updateunder($new_org_id);
+
+                return true;
+            } else {
+                return true;
+            }
+        }
+        $orgData = \app\common\model\Organization::get(['id' => $new_org_id]);
+        if (empty($orgData)) {
+            return false;
+        }
+        // 如果是新增用户, 没有原部门的时候, 直接插入到新部门
+        if ($old_org_id == 0 && $new_org_id > 0) {
+            $this->add(['user_id' => $user_id, 'org_id' => $new_org_id]);
+            $this->updateunder($new_org_id);
+
+            return true;
+        }
+        // 禁用原部门,加入到新部门
+        $oldOrgData = \app\common\model\OrganizationUser::get(['org_id' => $old_org_id, 'user_id' => $user_id]);
+        if (!empty($oldOrgData)) {
+            $this->forbid(['id' => $oldOrgData->id]);
+        }
+
+        $this->add(['user_id' => $user_id, 'org_id' => $new_org_id]);
+        $this->updateunder($new_org_id);
+
+        return true;
+    }
+
+    /**
+     * @desc 新增成员
+     * @author 杨能文
+     * @date 2019/4/10 14:27
+     * @access public
+     * @param $post 表格提交数据
+     * @return bool
+     */
+    public function add($post):bool
+    {
+        $auth = \app\common\library\auth\Token::instance();
+        $time = time();
+        $addData = [
+            'user_id' => (int)($post['user_id'] ?? 0),
+            'org_id' => (int)($post['org_id'] ?? 0),
+            'status' => 1,
+            'createtime' => $time,
+            'updatetime' => $time,
+            'createuser' => $auth->username,
+        ];
+
+        $res = $this->checkuser($addData['user_id'], $addData['org_id']);
+        if ($res) {
+            $this->setErrors(0, __('成员已存在当前部门、请勿重复添加'));
+
+            return false;
+        }
+
+        $service = $this->departmentService;
+        $organizationUser = $this->organizationUser;
+        $addData['user_name'] = $service->getuser($addData['user_id']);
+        try {
+            // 插入
+            $organizationUser->insert($addData, false, true);
+            $this->updateunder($addData['org_id']);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('新增成员失败'));
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 编辑成员
+     * @author 杨能文
+     * @date 2019/4/10 14:27
+     * @access public
+     * @param $post 表格提交数据
+     * @return bool
+     */
+    public function edit($post):bool
+    {
+        $saveData = [
+            //'user_id' => (int)($post['user_id'] ?? 0),
+            'org_id' => (int)($post['org_id'] ?? 0),
+            'updatetime' => time(),
+        ];
+        if (isset($post['status'])) $saveData['status'] = (int)$post['status'];
+
+        /*$res = $this->checkuser($saveData['user_id'], $saveData['org_id'], $post['id']);
+        if ($res) {
+            $this->setErrors(0, __('成员已存在当前部门'));
+            return false;
+        }*/
+
+        //$service = $this->departmentService;
+        //$saveData['user_name'] = $service->getuser($saveData['user_id']);
+        $organizationUser = $this->organizationUser;
+        try {
+            //更新
+            $organizationUser->update($saveData, ['id' => $post['id']]);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('编辑成员失败'));
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 禁用成员
+     * @author 杨能文
+     * @date 2019/4/11 14:59
+     * @access public
+     * @param $post
+     * @return bool
+     */
+    public function forbid($post):bool
+    {
+        if (isset($post['status'])) $saveData['status'] = (int)$post['status'];
+
+        $organizationUser = $this->organizationUser;
+
+        $userArr = $organizationUser->where(['id' => ['in', $post['id']], 'status' => 1])->field('org_id,user_id,user_name,id')->select();
+        $userArr = is_object($userArr) ? collection($userArr)->toArray() : [];
+        if (!$userArr) {
+            $this->setErrors(0, __('成员已禁用、请勿重复操作'));
+            return false;
+        }
+        $org_id  = $userArr[0]['org_id'];
+
+        $bindName = [];
+        $idArr = [];
+        foreach($userArr as $value){
+            $res = $this->checkaccount($value['org_id'],$value['user_id']);
+            if($res){
+                array_push($bindName,$value['user_name']);
+            }else{
+                array_push($idArr,$value['id']);
+            }
+        }
+
+        if(!$idArr){
+            $this->setErrors(0, __('成员【'.implode(',',$bindName)).'】已绑定账号,无法禁用');
+            return false;
+        }
+
+        try {
+            //更新
+            $res = $organizationUser->update(['status' => 0], ['id' => ['in', $idArr]]);
+            if ($res) $this->updateunder($org_id);
+
+            if($bindName && $idArr){
+                $this->setErrors(0, __('成员【'.implode(',',$bindName)).'】已绑定账号,无法禁用、禁用成功条数为'.count($idArr));
+                return false;
+            }else{
+                return true;
+            }
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('禁用成员失败'));
+
+            return false;
+        }
+    }
+
+
+    /**
+     * @desc 复制成员
+     * @author 杨能文
+     * @date 2019/4/10 14:27
+     * @access public
+     * @param $post 表格提交数据
+     * @return bool
+     */
+    public function copy($post):bool
+    {
+        $time = time();
+        $auth = \app\common\library\auth\Token::instance();
+        $addData = [
+            'user_id' => (int)($post['user_id'] ?? 0),
+            'org_id' => (int)($post['org_id'] ?? 0),
+            'status' => 1,
+            'createtime' => $time,
+            'updatetime' => $time,
+            'createuser' => $auth->username,
+        ];
+
+        $res = $this->checkuser($addData['user_id'], $addData['org_id']);
+        if ($res) {
+            $this->setErrors(0, __('成员已存在当前部门'));
+
+            return false;
+        }
+
+        $service = $this->departmentService;
+        $organizationUser = $this->organizationUser;
+        $addData['user_name'] = $service->getuser($addData['user_id']);
+        try {
+            // 插入
+            $organizationUser->insert($addData, false, true);
+            $this->updateunder($addData['org_id']);
+
+            return true;
+        } catch (\Exception $e) {
+            $this->setErrors(0, Config::get('app_debug') ? $e->getMessage() : __('复制成员失败'));
+
+            return false;
+        }
+    }
+
+    /**
+     * @desc 检查成员是否存在部门
+     * @author 杨能文
+     * @date 2019/4/10 14:45
+     * @access public
+     * @param int $user_id 用户id
+     * @param int $org_id 部门id
+     * @param int $id 成员id
+     * @return bool
+     */
+    public function checkuser($user_id, $org_id, $id = 0):bool
+    {
+        if (!$user_id || !$org_id) return false;
+        $model = $this->organizationUser;
+        $map = ['user_id' => $user_id, 'org_id' => $org_id, 'status' => 1];
+        if ($id > 0) $map['id'] = ['neq', $id];
+        $id = $model->where($map)->value('id');
+
+        return $id ? true : false;
+    }
+
+
+    /**
+     * @desc 获取成员信息
+     * @author 杨能文
+     * @date 2019/4/10 17:40
+     * @access public
+     * @param $id 成员id
+     * @return array
+     */
+    public function getinfo($id):array
+    {
+        if (!$id) return [];
+        $model = $this->organizationUser;
+        $data = $model->where(['id' => $id])->find()->toArray();
+
+        return $data;
+    }
+
+    /**
+     * @desc 更新相关部门下级用户数
+     * @author 杨能文
+     * @date 2019/4/11 9:58
+     * @access public
+     * @param $org_id
+     * @return bool
+     */
+    public function updateunder($org_id):bool
+    {
+        if (!$org_id) return false;
+        $organization = $this->organization;
+        $organizationUser = $this->organizationUser;
+
+        //获取所有相关部门信息
+        $tid = $organization->where(['id' => $org_id])->value('tid');
+        if (!$tid) return false;
+        $obj = $organization->where(['tid' => $tid])->field('id,pid,rank,title')->order('rank desc')->select();
+        $organizationArr = collection($obj)->toArray();
+        if (!$organizationArr) return false;
+
+        //分组统计用户数据
+        $obj = $organizationUser->field('org_id,count(id) as num')->where(['org_id' => ['in', array_column($organizationArr, 'id')], 'status' => 1])->group('org_id')->select();
+        $userArr = collection($obj)->toArray();
+
+        //键值数组
+        $keyArr = [];
+        foreach ($userArr as $val) {
+            $key = $val['org_id'];
+            $keyArr[$key] = $val['num'];
+        }
+
+        //将查询的下级用户数写入数组
+        foreach ($organizationArr as &$val) {
+            $key = $val['id'];
+            $val['num'] = isset($keyArr[$key]) ? $keyArr[$key] : 0;
+        }
+
+        //为父级部门统计下级用户数
+        $data = $this->parentunder($organizationArr, $organizationArr[0]['rank']);
+        foreach ($data as $val) {
+            $organization->update(['under' => $val['num']], ['id' => $val['id']]);
+        }
+
+        return true;
+    }
+
+    /**
+     * @desc 为父级部门统计下级用户数
+     * @author 杨能文
+     * @date 2019/4/11 14:19
+     * @access public
+     * @param $array
+     * @param $rank
+     * @return array
+     */
+    public function parentunder($array, $rank):array
+    {
+        static $list = [];
+        foreach ($array as $key => $value) {
+            if ($value['rank'] == $rank) {
+                $list[$value['id']] = [
+                    'id' => $value['id'], 'pid' => $value['pid'], 'rank' => $value['rank'], 'title' => $value['title'],
+                    'num' => isset($list[$value['id']]['num']) ? $list[$value['id']]['num'] : $value['num'],
+                ];
+                if ($value['pid']) $list[$value['pid']]['num'] = isset($list[$value['pid']]['num']) ? $list[$value['pid']]['num'] + $list[$value['id']]['num'] : $list[$value['id']]['num'];
+                unset($array[$key]);
+            }
+        }
+        if ($array) $this->parentunder($array, $rank - 1);
+
+        return $list;
+    }
+
+    /**
+     * @desc 根据部门与用户id获取绑定账号
+     * @author 杨能文
+     * @date 2019/4/17 10:40
+     * @access public
+     * @param $org_id 部门id
+     * @param $user_id 用户id
+     * @return array
+     */
+    public function useraccount($org_id, $user_id):array
+    {
+        if (!is_numeric($org_id) || !is_numeric($user_id)) return [];
+        $model = $this->organizationAccount;
+        $data = $model->where(['org_id' => $org_id, 'user_id' => $user_id, 'status'=>1])->select();
+        $data = is_object($data) ? collection($data)->toArray() : [];
+
+        return $data;
+    }
+
+    /**
+     * @desc 检测是否绑定账号
+     * @author 杨能文
+     * @date 2019/4/17 18:18
+     * @access public
+     * @param $org_id 部门id
+     * @param $user_id 用户id
+     * @return bool
+     */
+    public function checkaccount($org_id,$user_id):bool
+    {
+        if(!is_numeric($org_id) || !is_numeric($user_id))return false;
+        $model = $this->organizationAccount;
+        $id = $model->where(['org_id'=>$org_id, 'user_id'=>$user_id, 'status'=>1])->value('id');
+        return $id ? true : false;
+    }
+}

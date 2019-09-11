@@ -1,0 +1,36 @@
+---------------------------------------------------------------
+[ 2019-04-15T08:57:43+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html?org_id=&status=3&timetype=1&start_time=&end_time=&searchKey=1&searchValue=
+[ error ] [8]未定义数组索引: leave[/opt/web/zs/apps/rbac/application/v1/controller/users/Index.php:154]
+---------------------------------------------------------------
+[ 2019-04-15T09:33:33+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义变量: timetypes[/opt/web/zs/apps/rbac/runtime/temp/3e7770e7b474aafb4836ac663d9ed47f.php:142]
+---------------------------------------------------------------
+[ 2019-04-15T09:40:06+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T09:40:07+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T09:41:10+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T09:41:12+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T09:41:20+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T09:43:18+08:00 ] 192.168.8.80 POST local.rule.com/login.html
+[ error ] [8]A non well formed numeric value encountered[/opt/web/zs/apps/rbac/application/common/library/auth/Drive.php:201]
+---------------------------------------------------------------
+[ 2019-04-15T11:34:15+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/work.html?org_id=&job_id=&searchKey=1&searchValue=
+[ error ] [0]where express error:101[/opt/web/zs/thinkphp/library/think/db/Builder.php:347]
+---------------------------------------------------------------
+[ 2019-04-15T13:44:18+08:00 ] 192.168.8.80 GET local.rule.com/v1/users/index/edit.html?id=3915&dialog=1
+[ error ] [8]未定义数组索引: condition[/opt/web/zs/thinkphp/library/think/template/taglib/Cx.php:216]
+---------------------------------------------------------------
+[ 2019-04-15T14:41:12+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [8]未定义数组索引: org_id[/opt/web/zs/apps/rbac/application/v1/service/User.php:773]
+---------------------------------------------------------------
+[ 2019-04-15T14:50:19+08:00 ] 192.168.8.80 POST local.rule.com/v1/users/index/editrule.html
+[ error ] [0]致命错误: Call to undefined method app\v1\service\Organization::getLastSql()[/opt/web/zs/apps/rbac/application/v1/service/Organization.php:201]

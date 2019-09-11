@@ -1,0 +1,49 @@
+<?php
+// +----------------------------------------------------------------------
+// | Token授权中心
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\common\library\auth;
+
+use think\Config;
+
+class Token extends Drive
+{
+    /**
+     * 设置token
+     * @param $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * 白名单校验
+     */
+    public function forbiddenip()
+    {
+        return true;
+    }
+
+    /**
+     * 获取登录用户信息
+     * @return boolean
+     */
+    public function getUserInfo()
+    {
+        return [];
+    }
+
+    /**
+     * 获取登录用户对象
+     */
+    public function getUser()
+    {
+        return $this->users ?? null;
+    }
+}

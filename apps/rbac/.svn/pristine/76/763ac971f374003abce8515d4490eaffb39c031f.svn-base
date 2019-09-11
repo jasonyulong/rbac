@@ -1,0 +1,345 @@
+<?php
+/**
+ * 用户权限 数据服务器层
+ * @copyright Copyright (c) 2018
+ * @license   
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-08
+ */
+namespace app\api\service;
+
+use think\Config;
+use app\common\model\Organization;
+use app\common\model\OrganizationUser;
+use app\common\model\UsersJob;
+use app\common\model\OrganizationUserAccount;
+
+/**
+ * @desc 部门 数据服务器层
+ * Class Department
+ * @package app\api\service
+ */
+class Department extends Base
+{
+	/**
+	 * @desc   静态实例化
+	 * @author mina
+	 * @param  void
+	 * @return object
+	 */
+	public static function getInstance()
+	{
+		if(!self::$instance instanceof Department)
+        {
+            self::$instance = new Department();
+        }
+        return self::$instance;
+	}
+
+	/**
+	 * @desc   构造函数
+	 * @author mina
+	 * @param  
+	 * @return
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	/**
+	 * @desc   部门管理
+	 * @author mina
+	 * @param  array $param 请求参数
+	 * @return array
+	 */
+	public function list($param) : array
+	{
+		$check = $this->cktoken($param);
+		if($check['status'] != 1)
+		{
+			return $check;
+		}
+		// 根据用户token查询用户所属部门
+		$parent  = Organization::get(['id' => $this->user['org_id']]);
+		// 查询用户下属部门
+		$where = [
+			'tid' => $parent['tid'],
+			'lid' => ['egt', $parent['lid']],
+			'rid' => ['elt', $parent['rid']],
+		];
+		$model = new Organization();
+		$treeData = $model->getColumn($where, 'id,pid,title,manage');
+		if(empty($treeData))
+		{
+			return $this->_back(1);
+		}
+		$orgId = array_column($treeData, 'id');
+		$orgData = array_column($treeData, 'title', 'id');
+		$tree = new \plugin\Tree();
+		$treeArr = $tree->getTreeCate($treeData);
+		// 查询下属部门的所有用户
+		$user_where = [
+			'join' => [['organization_user b', 'a.id=b.user_id']],
+			'a.org_id' => ['in', $orgId],
+			'b.status' => 1,
+		];
+		$count = $this->userModel->getCount($user_where);
+		if($count == 0)
+		{
+			return $this->_back(1);
+		}
+		$page = 1;
+		if(isset($param['page']) && $page['page'] > 1)
+		{
+			$page = $param['page'];
+		}
+		$pageCount = ceil($count / $this->pageSize);
+		$field = "a.id,username,a.org_id,job_id,job_type";
+		$userList = $this->userModel->getAll($user_where, $field, $page, $this->pageSize)->toArray();
+		// 查询用户所在的岗位名称
+		$jobId = array_unique(array_column($userList, 'job_id'));
+		$jobList = UsersJob::all(['id' => ['in', $jobId]], '', true)->toArray();
+		$jobData = array_column($jobList, 'title', 'id');
+		$retData = [
+			'count' => $count,
+			'pageCount' => $pageCount,
+			'page'  => $page,
+			'userList' => $userList,
+			'orgData'  => $orgData,
+			'jobData'  => $jobData,
+		];
+		return $this->_back(1, '', $retData);
+	}
+
+	/**
+	 * @desc   禁用、启用成员
+	 * @author mina
+	 * @param  array $param 参数
+	 * @return array
+	 */
+	public function forbidden($param) : array
+	{
+		$check = $this->cktoken($param);
+		if($check['status'] != 1)
+		{
+			return $check;
+		}
+		$doCheck = $this->_checkForbidden($param);
+		if($doCheck['status'] != 1)
+		{
+			return $doCheck;
+		}
+		$where = [
+			'id' => $param['userId'],
+			'org_id' => $param['orgId']
+		];
+		$user = $this->userModel->getOne($where, 'id, org_id');
+		if(empty($user))
+		{
+			return $this->_back(0, '用户不存在。');
+		}
+		$parent  = Organization::get($this->user['org_id']);
+		$where = [
+			'tid' => $parent['tid'],
+			'lid' => ['egt', $parent['lid']],
+			'rid' => ['elt', $parent['rid']],
+			'id'  => $user['org_id'],
+		];
+		$isExists = Organization::get($where);
+		if(empty($isExists))
+		{
+			return $this->_back(0, '用户不属于你的部门，没有权限操作。');
+		}
+		$where = [
+			'user_id' => $param['userId'],
+			'org_id'  => $param['orgId'],
+		];
+		$orgUser = OrganizationUser::get($where);
+		if(empty($orgUser))
+		{
+			return $this->_back(0, '用户归属部门异常');
+		}
+		$status = Config::get('users.orgStatus');
+		if($orgUser['status'] == $param['status'])
+		{
+			return $this->_back(0, "用户已{$status[$param['status']]}");
+		}
+		OrganizationUser::update(['status' => $param['status']], $where);
+		return $this->_back(1);
+	}
+
+	/**
+	 * @desc   设置账号
+	 * @author mina
+	 * @param  array $param 参数
+	 * @return array
+	 */
+	public function setAccount($param) : array
+	{
+		$check = $this->cktoken($param);
+		if($check['status'] != 1)
+		{
+			return $check;
+		}
+		$doCheck = $this->_checkSetAccount($param);
+		if($doCheck['status'] != 1)
+		{
+			return $doCheck;
+		}
+		$user = $this->userModel->getOne(['id' => $param['userId']]);
+		if(empty($user))
+		{
+			return $this->_back(0, '用户不存在。');
+		}
+		$parent  = Organization::get($this->user['org_id']);
+		$where = [
+			'tid' => $parent['tid'],
+			'lid' => ['egt', $parent['lid']],
+			'rid' => ['elt', $parent['rid']],
+			'id'  => $user['org_id'],
+		];
+		$isExists = Organization::get($where);
+		if(empty($isExists))
+		{
+			return $this->_back(0, '用户不属于你的部门，没有权限操作。');
+		}
+		$where = [
+			'user_id' => $user['id'],
+			'org_id'  => $user['org_id'],
+		];
+		$exAccount = [];
+		$rows = OrganizationUserAccount::all($where);
+		if(!empty($rows))
+		{
+			foreach ($rows as $key => $value)
+			{
+				$k = "{$value['platform']}_{$value['platform_account']}";
+				$v = $value['status'];
+				$exAccount[$k] = $v;
+			}
+		}
+		$newAccount = [];
+		$fail    = [];
+		foreach ($param['account'] as $key => $value)
+		{
+			$saveData = [
+				'org_id' => $user['org_id'],
+				'user_id' => $user['id'],
+				'user_name' => $user['username'],
+				'platform'  => $value['platform'],
+				'platform_account' => $value['account'],
+				'platform_account_id' => $value['account_id'],
+				'store_id' => isset($value['store_id']) ? $value['store_id'] : '',
+				'locations' => isset($value['locations']) ? $value['locations'] : '',
+				'sales_label' => isset($value['sales_label']) ? $value['sales_label'] : '',
+				'status' => 1,
+			];
+			$k = "{$value['platform']}_{$value['account']}";
+			$newAccount[] = $k;
+			$refresh = '';
+			if(array_key_exists($k, $exAccount))
+			{
+				if($exAccount[$k] == 0)
+				{
+					$refresh = "update";
+					$saveData['status'] = 1;
+				}
+			}
+			else
+			{
+				$refresh = "add";
+			}
+			if($refresh == '') continue;
+			if($refresh == 'update')
+			{
+				$update_where = [
+					'user_id' => $user['id'],
+					'org_id'  => $user['org_id'],
+				];
+				$state = OrganizationUserAccount::update($saveData, $update_where);
+			}
+			else if($refresh == 'add')
+			{
+				$state = OrganizationUserAccount::create($saveData);
+			}
+			else
+			{
+				$state = false;
+			}
+			if(!$state || !$state->id)
+			{
+				$fail[] = $value['account'];
+			}
+		}
+		return $this->_back(1, '', $fail);
+	}
+
+	/**
+	 * @desc   检查设置账号入参是否合法
+	 * @author mina
+	 * @param  array $param 入参
+	 * @return array
+	 */
+	public function _checkSetAccount($param) : array
+	{
+		if(empty($param['userId']))
+		{
+			return $this->_back(0, '用户ID不能为空。');
+		}
+		if(count($param['account']) == 0)
+		{
+			return $this->_back(0, '账号信息不能为空。');
+		}
+		$error = '';
+		foreach ($param['account'] as $key => $value)
+		{
+			if(!isset($value['account']) || empty($value['account']))
+			{
+				$error .= "平台账号不能为空。";
+				continue;
+			}
+			if(!isset($value['platform']) || empty($value['platform']))
+			{
+				$error .= "{$value['account']} 平台名称不能为空。";
+			}
+			if(!isset($value['account_id']) || empty($value['account_id']))
+			{
+				$error .= "{$value['account']} 账号ID不能为空。";
+			}
+		}
+		if($error != '')
+		{
+			return $this->_back(0, $error);
+		}
+		return $this->_back(1);
+	}
+
+	/**
+	 * @desc   检查禁用、启用状态操作入参
+	 * @author mina
+	 * @param  array $param 参数
+	 * @return array
+	 */
+	private function _checkForbidden($param)
+	{
+		if(empty($param['userId']))
+		{
+			return $this->_back(0, '用户ID不能为空。');
+		}
+		if(empty($param['orgId']))
+		{
+			return $this->_back(0, '用户部门ID不能为空。');
+		}
+		if($param['status'] == '')
+		{
+			return $this->_back(0, '操作状态不能为空。');
+		}
+		if(!array_key_exists($param['status'], Config::get('users.orgStatus')))
+		{
+			return $this->_back(0, '状态错误。');
+		}
+		return $this->_back(1);
+	}
+}

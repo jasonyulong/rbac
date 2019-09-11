@@ -1,0 +1,101 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户管理控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller\users;
+
+use app\common\controller\PublicController as Controller;
+
+class Index extends Controller
+{
+    /**
+     * 查看
+     * @return string
+     */
+    public function index()
+    {
+        // $this->assignconfig(['jsname' => '']);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name:用户列表
+     * @author: jason
+     * @date: 2019-03-28 09:12:20
+     * @return string
+     * @throws \Exception
+     */
+    public function comer():string
+    {
+//        $userService = new UserService();
+        $params = array_merge(input('get.'),input('post.'));
+        $params['dropdownType'] = $params['dropdownType'] ?? 'user';
+        $params['offerStatus'] = $params['offerStatus'] ?? 1;
+        if (!isset($params['page'])) $params['page'] = 1; //当前页
+        if (!isset($params['ps'])) $params['ps'] = 100; //每页显示的记录数
+        $this->assign('params',$params);
+        $this->assignconfig('actionname','comer');
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name:编辑用户
+     * @author: jason
+     * @date: 2019-03-28 03:00:52
+     * @return string
+     * @throws \Exception
+     */
+    public function edituser():string
+    {
+        $params = array_merge(input('get.'),input('post.'));
+        $this->assignconfig('actionname','edituser');
+        return $this->view->fetch();
+    }
+
+    public function deluser()
+    {
+
+    }
+
+    /**
+     * 添加
+     * @return string
+     */
+    public function add()
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * 编辑
+     * @param $ids 编辑ID
+     * @return string
+     */
+    public function edit($ids = null)
+    {
+        if (!$ids) {
+            $this->error(__("Request Error"));
+        }
+
+        return $this->view->fetch();
+    }
+
+    /**
+     * 删除
+     * @return string
+     */
+    public function del()
+    {
+        $ids = $this->request->post('id');
+        if (!$ids || !$this->request->isPost()) {
+            $this->error(__("Request Error"));
+        }
+
+        return $this->view->fetch();
+    }
+}

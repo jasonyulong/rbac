@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="{$config.language}">
+<head>
+    <!-- 加载样式及META信息 -->
+    {include file="common/meta" /}
+</head>
+<body class="skin-blue adaptive">
+    <div>
+        {block name='content'}{/block}
+    </div>
+    <!-- 加载JS脚本 -->
+    {include file="common/template" /}
+    {include file="common/script" /}
+    {block name='js'}<!-- 自定义js -->{/block}
+    {block name='template'}<!-- 自定义js模板 -->{/block}
+    {include file="common/require" /}
+</body>
+</html>

@@ -1,0 +1,120 @@
+<div class="row quick-set">
+    <div class="col-xs-2 col-sm-2 col-md-2">
+        <h4>快速设置</h4>
+    </div>
+    <div class="col-xs-7 col-sm-7 col-md-7"></div>
+        
+    <div class="col-xs-3 col-sm-3 col-md-3">
+        <select name="" id="job_access" class="form-control selectpicker" data-actions-box="true" data-live-search="true" title="--岗位应用--" required="required">
+            {foreach $job_arr as $key => $value}
+            <option value='{$value['access']}'>{:str_repeat('----', $value['rank'] - 1)}{$value['title']}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+
+<form action="{if $Request.action == 'index'}{:url('save')}{elseif $Request.action == 'tagindex' /}{:url('savetag')}{/if}" id="default_form">
+
+    <input type="hidden" name="id" value="{$params['id'] ?? 0}">
+    <input type="hidden" name="module_id" value="{$params['module_id'] ?? 0}">
+    {foreach $menu_tree as $value}
+    <div class="panel panel-primary level1-rule">
+        <div class="panel-heading" id="anchor-{$value['id']}">
+            <label class="panel-title "><input type="checkbox" name="menu[]" class="level1-checkbox" value="{$value['id']}" {if $value['access'] == 1}checked{/if} id="cb_{$value['id']}" /> {$value['title']}</label>
+        </div> 
+        {foreach $value['children'] as $k => $v}
+        <div class="panel-body  level2-rule">
+            <div class="panel panel-info">
+                    <div class="panel-heading">
+                        &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox" name="menu[]" value="{$v['id']}" {if $v['access'] == 1}checked{/if} id="cb_{$v['id']}" /> {$v['title']}</label>
+                    </div>
+                    {foreach $v['children'] as $_k => $_v}
+                    <div class="panel-body level3-rule">
+                        <div>
+                            <label {if $_v['type'] == 1}class="error"{/if}><input type="checkbox" name="menu[]" class="level3-checkbox" value="{$_v['id']}" {if $_v['access'] == 1}checked{/if} id="cb_{$_v['id']}" /> {$_v['title']}</label>
+
+                            <span class="level4-rule">
+                            {foreach $_v['detail'] as $__k => $__v}
+                            <label  {if $_v['type'] == 1}class="error"{/if}><input type="checkbox" name="menu_detail[]" class="level4-checkbox" value="{$_v['id']}___{$__v['id']}" {if $__v['access'] == 1}checked{/if} id="cb_{$_v['id']}___{$__v['id']}" /> {$__v['title']}</label>
+                            {/foreach}
+                            </span>
+                        </div>
+                    </div>
+                    {/foreach}
+            </div>
+        </div>
+        {/foreach}
+    </div>
+    
+    {/foreach}
+
+    {if $params['module_id'] == 2}
+    <div class="panel panel-primary level1-rule" id="anchor-oversee-div">
+        <div class="panel-heading" id="anchor-oversee">
+            <label class="panel-title "><input type="checkbox" name="" class="level1-checkbox" value="" />
+                可见管理
+            </label>
+        </div>
+
+        <div class="panel-body  level2-rule">
+            <div class="panel panel-info">
+                    <div class="panel-heading">
+                        &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox"/>订单可见性</label>
+                    </div>
+                    <div class="panel-body level3-rule">
+                        <div class="level3-rule other-rule">
+                            {foreach $all_access_order_status as $value}
+                            <label class=""><input type="checkbox" name="order_status[]" class="level3-checkbox" value="{$value['id']}" id="" {if $value['access'] == 1}checked{/if} /> {$value['name']}</label>
+                            {/foreach}
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="panel-body  level2-rule">
+            <div class="panel panel-info">
+                    <div class="panel-heading">
+                        &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox"/>仓库</label>
+                    </div>
+                    <div class="panel-body level3-rule">
+                        <div class="level3-rule other-rule">
+                            {foreach $all_stores as $value}
+                            <label class=""><input type="checkbox" name="store_id[]" class="level3-checkbox" value="{$value['id']}" id="" {if $value['access'] == 1}checked{/if} /> {$value['store_name']}</label>
+                            {/foreach}
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="panel-body  level2-rule">
+            <div class="panel panel-info">
+                    <div class="panel-heading">
+                        &nbsp;&nbsp;<label class="panel-title "><input type="checkbox" class="level2-checkbox"/>全平台账号</label>
+                    </div>
+                    <div class="panel-body level3-rule">
+                        <div class="level3-rule other-rule">
+                            <ul class="platform-nav">
+                            {foreach $all_accounts as $key => $value}
+                                <li role="presentation" class="{if $key == 'wish'}active{/if}">
+                                    <input type="checkbox" data-platform="{$key}" class="platform-select">
+                                    <a href="javascript:void(0);" data-platform="{$key}" class="platform-tab">{$key} </a></li>
+                            {/foreach}
+                            </ul>
+
+                            {foreach $all_accounts as $key => $value}
+                            <div class="{$key}_account_div platform-div" {if $key != 'wish'}style="display:none;"{/if}>
+                                {foreach $value as $k => $v}
+                                <label  ><input type="checkbox" name="account[]" class="level3-checkbox" id="" value="{$k}" {if $account_access[$v] == 1}checked{/if} /> {$v}</label>
+                                {/foreach}
+                            </div>
+                            {/foreach}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <div class="save-div">
+        <button class="btn btn-success btn-lg" type="submit">确定保存</button>
+    </div>
+</form>

@@ -1,0 +1,20 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="row page-header content-header">
+    <h3 class="h3-auth">用户管理</h3>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+        <li>权限管理</li>
+        <li class="active">岗位列表</li>
+    </ol>
+</div>
+<div class="content">
+    {include file="auth/position/index_form" /}
+
+    <div class="panel-body">
+        <div class="table-responsive">
+            {include file="auth/position/index_table" /}
+        </div>
+    </div>
+</div>
+{/block}

@@ -1,0 +1,36 @@
+<div class="form-group margin-t">
+    <div class="btn-group">
+        <button type="button" class="btn btn-success dropdown-toggle"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="badge box_total">0</span>批量操作 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'editrule','data-url' => url('/v1/users/index/editrule',array('saveType'=>'job_id'))],
+                '<i class="glyphicon glyphicon-pencil"></i> 批量修改岗位')}
+            </li>
+
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'editrule','data-url' => url('/v1/users/index/editrule',array('saveType'=>'rules_id'))],
+                '<i class="glyphicon glyphicon-pencil"></i> 批量修改权限标签')}
+            </li>
+
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'editrule','data-url' => url('/v1/users/index/editrule',array('saveType'=>'allow'))],
+                '<i class="glyphicon glyphicon-pencil"></i> 允许登录系统')}
+            </li>
+
+            {if condition="($params['status'] != 2)"}
+            <li>
+                {:build_toolbar('a',
+                ['class' => 'savePending','data-url' => url('/v1/users/index/pending',array('statusValue'=>3))],
+                '<i class="glyphicon glyphicon-pencil"></i> 批量转离职')}
+            </li>
+
+            {/if}
+        </ul>
+    </div>
+</div>

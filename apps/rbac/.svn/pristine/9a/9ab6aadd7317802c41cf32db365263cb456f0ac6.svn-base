@@ -1,0 +1,57 @@
+<?php
+/**
+ * 用户权限 数据服务器层
+ * @copyright Copyright (c) 2018
+ * @license   
+ * @version   Beta 1.0
+ * @author    mina
+ * @date      2018-04-08
+ */
+namespace app\api\service;
+
+use think\Config;
+
+/**
+ * @desc 用户权限 数据服务器层
+ * Class Power
+ * @package app\api\service
+ */
+class Power extends Base
+{
+	/**
+	 * @desc   静态实例化
+	 * @author mina
+	 * @param  void
+	 * @return object
+	 */
+	public static function getInstance()
+	{
+		if(!self::$instance instanceof Power)
+        {
+            self::$instance = new Power();
+        }
+        return self::$instance;
+	}
+
+	/**
+	 * @desc   构造函数
+	 * @author mina
+	 * @param  
+	 * @return
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+	}
+
+	/**
+	 * @desc   获取下级岗位列表
+	 * @author mina
+	 * @param  void
+	 * @return array
+	 */
+	public function lowerJoblist()
+	{
+
+	}
+}

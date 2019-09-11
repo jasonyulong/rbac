@@ -1,0 +1,199 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户管理控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller\users;
+
+use app\common\controller\PublicController as Controller;
+use think\Config;
+
+class Index extends Controller
+{
+    /**
+     * @var array 用户状态
+     */
+    private $userStatus = [];
+    /**
+     * @var 状态字符串对应的数字
+     */
+    private $statusNum = [];
+    /**
+     * @var null 用户服务
+     */
+    private $userService = null;
+
+    /**
+     * 所有角色
+     */
+    private $userJob = [];
+    /*
+     * 所有部门
+     */
+    private $getOrg = [];
+
+    /**
+     * 协议类型
+     * @var array
+     */
+    private $pact_type = [];
+
+    /**
+     * 是否安排住宿
+     * @var array
+     */
+    private $room = [];
+
+    /**
+     * 是否自备电脑
+     * @var array
+     */
+    private $ready_computer = [];
+
+    public function _initialize()
+    {
+        parent::_initialize();
+
+        $this->userService = new \app\v1\service\User();
+
+        $this->userStatus = Config::get('users.status');
+        $this->statusNum = Config::get('users.statusNum');
+        $this->pact_type = Config::get('users.pact_type');
+        $this->room = Config::get('users.room');
+        $this->ready_computer = Config::get('users.ready_computer');
+        $this->userJob = $this->userService->getUserJob();
+        $this->getOrg = $this->userService->getOrg();
+        $this->assign('userStatus', $this->userStatus);
+        $this->assign('statusNum',$this->statusNum);
+        $this->assign('pact_type',$this->pact_type);
+        $this->assign('room',$this->room);
+        $this->assign('ready_computer',$this->ready_computer);
+
+        $this->assign('statusTotals', $this->userService->getStatusTotals($this->statusNum));
+        $this->assign('userJobInfo',$this->userJob);
+        $this->assign('orgInfo',$this->getOrg);
+    }
+
+    /**
+     * @name 全部
+     * @author  jason
+     * @date  2019-03-28 05:58:56
+     * @return string
+     * @throws \Exception
+     */
+    public function index() : string
+    {
+        $params = array_merge(input('get.'),input('post.'));
+        $data = $this->userService->index($params);
+        $this->assign('users', $data['user']);
+        $this->assign('pages', $data['page']);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 已发offer
+     * @return string
+     * @throws \Exception
+     */
+    public function offer() : string
+    {
+        $params = array_merge(input('get.'),input('post.'));
+        $data = $this->userService->getOffer($params);
+        $this->assign('userInfo',$data['user']);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 待入职
+     * @return string
+     * @throws \Exception
+     */
+    public function wait() : string
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * 在职
+     * @return string
+     * @throws \Exception
+     */
+    public function work() : string
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * 在职
+     * @return string
+     * @throws \Exception
+     */
+    public function leave() : string
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name    回收站
+     * @author  jason
+     * @date  2019-03-28 08:40:29
+     * @return string
+     * @throws \Exception
+     */
+    public function recycle() : string
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * 添加
+     * @return string
+     */
+    public function add() : string
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            return $this->result($this->userService->addUser($this->request->post()),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+
+        $company = Config::get('users.company');
+        $this->assign('company',$company);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name 编辑用户
+     * @author  jason
+     * @date  2019-03-28 05:58:24
+     * @param $id
+     * @return string
+     * @throws \Exception
+     */
+    public function edit($id):string
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            return $this->result($this->userService->editUser($id, $this->request->post()),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name:删除
+     * @author: jason
+     * @date: 2019-03-28 04:35:01
+     */
+    public function del()
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+
+        }
+        $this->error(__('Request Error'));
+    }
+}

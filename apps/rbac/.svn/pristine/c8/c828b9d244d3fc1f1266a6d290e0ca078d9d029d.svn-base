@@ -1,0 +1,44 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户相关操作服务
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\service;
+
+
+class Users extends Base
+{
+
+    /**
+     * 根据用户状态返回数量
+     * @param array $statusArr
+     * @return array
+     */
+    public function getStatusTotals($statusArr = [])
+    {
+        return [
+            'index'   => 100,
+            'offer'   => 10,
+            'wait'    => 11,
+            'work'    => 12,
+            'leave'   => 13,
+            'recycle' => 14,
+        ];
+    }
+
+    /**
+     * 编辑用户信息
+     * @param $user_id 用户ID
+     * @param array $saveData 保存的数据
+     * @return array
+     */
+    public function editUser($user_id, $saveData = []) : array
+    {
+        $this->setErrors(-1, '提交失败');
+        return [];
+    }
+}

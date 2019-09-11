@@ -1,0 +1,67 @@
+{extend name="$config.layout" /}
+{block name='content'}
+<div class="tag-content">
+    <form action="{:url('/v1/auth/position/add')}" class="form-horizontal dialog-form" data-validator-option="{theme:'bootstrap', timely:2, stopOnError:true}">
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="form-group">
+                    <label for="pid" class="col-sm-4 control-label">父级名称：</label>
+                    <div class="col-sm-8">
+                        <select class="form-control selectpicker show-tick" data-live-search="true" title="" id="pid" name="pid"  data-msg-required="请选择">
+                            <option value="0">请选择</option>
+                            {volist name="positionArr" id="vo"}
+                                <option value="{$vo.id}">{$vo.title}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pid" class="col-sm-4 control-label">绑定用户：</label>
+                    <div class="col-sm-8">
+                        <select class="form-control selectpicker show-tick" title="请选择" id="user_id" name="user_id[]"  data-live-search="true" multiple="multiple" data-actions-box="true">
+                            {volist name="user" id="vo"}
+                            <option value="{$key}"
+                            {if condition="in_array($key,$bindUserId)"}disabled="disabled"{/if}
+                            >{$vo}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="col-sm-4 control-label"><span class="red-color">*</span>岗位名称：</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control form-control-sm" id="title" name="title"
+                               data-rule="required;title;"
+                               data-msg-required="请填写用户名"
+                               data-tip="你可以用汉字、字母、数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="col-sm-4 control-label"><span class="red-color">*</span>权重：</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control form-control-sm" id="weigh" name="weigh" value="1"
+                               data-rule="required;weigh;"
+                               data-msg-required="请填写权重"
+                               data-tip="数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title" class="col-sm-4 control-label "><span class="red-color">自动获取所有帐号可见权限：</span></label>
+                    <div class="col-sm-8">
+                        {:build_radios('auto_account', ['0' => '否', '1' => '是'], 0)}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="td-align dialog-footer">
+            <button class="btn btn-warning" onclick="javascript:parent.layer.closeAll();"> <i class="fa fa-close"></i> 取消</button>
+            <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> 确定提交</button>
+        </div>
+    </form>
+</div>
+{/block}

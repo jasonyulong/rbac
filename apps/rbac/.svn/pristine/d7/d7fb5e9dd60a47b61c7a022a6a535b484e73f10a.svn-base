@@ -1,0 +1,42 @@
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+        <th class="td-align td-width-40px">
+            <input class="" type="checkbox"/>
+        </th>
+        <th class="td-align">菜单名称</th>
+        <th class="td-align">所属系统</th>
+        <th class="td-align">地址链接</th>
+        <th class="td-align">状态</th>
+        <th class="td-align">创建时间</th>
+        <th class="td-align">更新时间</th>
+        <th class="td-align">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach name='menus' item='vo'}
+        <tr>
+            <td class="td-align td-padding">
+                <input class="" type="checkbox"/>
+            </td>
+            <td class="td-align td-padding">{$vo.title}</td>
+            <td class="td-align td-padding">{$allowSystem[$vo.module_id]}</td>
+            <td class="td-align td-padding">{$vo.url}</td>
+            {if condition="$vo.status eq 1"}<td class="td-align td-padding">正常</td>
+                {else/}
+            <td class="td-align td-padding red-color">禁用</td>{/if}
+            <td class="td-align td-paddingtd-padding">{$vo.createtime|date="Y-m-d H:i:s",###}</td>
+            <td class="td-align td-padding">{notempty name="vo.updatetime"}{$vo.updatetime|date="Y-m-d H:i:s",###}{/notempty}</td>
+            <td class="td-align td-padding">
+                <button class="btn edit" data-url="{:url('/v1/menus/index/edit',array('id'=>1))}"><i class="fa fa-edit"></i>
+                </button>
+                &nbsp;&nbsp;&nbsp;
+                <button class="btn deluser" data-url="{:url('/v1/users/index/del',array('id'=>1))}"><i
+                        class="fa fa-remove"></i></button>
+            </td>
+        </tr>
+    {/foreach}
+
+    </tbody>
+</table>
+<div class="pages">{$pages ?? ''}</div>

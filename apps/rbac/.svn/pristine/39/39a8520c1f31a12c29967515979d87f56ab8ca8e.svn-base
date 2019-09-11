@@ -1,0 +1,377 @@
+<?php
+// +----------------------------------------------------------------------
+// | 用户管理控制器
+// +----------------------------------------------------------------------
+// | Copyright (c) 2019 http://www.jeoshi.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: kevin
+// +----------------------------------------------------------------------
+
+namespace app\v1\controller\users;
+
+use app\common\controller\PublicController as Controller;
+use think\Config;
+
+class Index extends Controller
+{
+    /**
+     * @var array 用户状态
+     */
+    private $userStatus = [];
+    /**
+     * @var 状态字符串对应的数字
+     */
+    private $statusNum = [];
+    /**
+     * @var null 用户服务
+     */
+    private $userService = null;
+
+    /**
+     * 所有角色
+     */
+    private $userJob = [];
+    /*
+     * 所有部门
+     */
+    private $getOrg = [];
+
+    /**
+     * 协议类型
+     * @var array
+     */
+    private $pact_type = [];
+
+    /**
+     * 是否安排住宿
+     * @var array
+     */
+    private $room = [];
+
+    /**
+     * 是否自备电脑
+     * @var array
+     */
+    private $ready_computer = [];
+    /**
+     * 搜索字段
+     * @var array
+     */
+    private $searchKey = [];
+
+    private $usersLabel = [];
+
+    public function _initialize()
+    {
+        parent::_initialize();
+        $this->userService = new \app\v1\service\User();
+
+        $this->userStatus = Config::get('users.status');
+        $this->statusNum = Config::get('users.statusNum');
+        $this->pact_type = Config::get('users.pact_type');
+        $this->room = Config::get('users.room');
+        $this->ready_computer = Config::get('users.ready_computer');
+        $this->searchKey = Config::get('users.searchKey');
+        $this->company = Config::get('users.company');
+        $this->userJob = Config::get('site.userJobType');
+        $this->allowSystem = Config::get('site.allowSystem');
+        $this->getUserObj = $this->userService->getUserObj();
+        $this->usersLabel = $this->userService->getUsersLabel();
+        $this->getOrg = $this->userService->getOrg();   //部门
+        $this->assign('usersLabel', $this->usersLabel);  //权限标签
+        $this->assign('getUserObj', $this->getUserObj);  //岗位
+        $this->assign('allowSystem', $this->allowSystem);    //允许登录系统
+        $this->assign('company', $this->company);
+        $this->assign('searchKey', $this->searchKey);
+        $this->assign('userStatus', $this->userStatus);
+        $this->assign('statusNum', $this->statusNum);
+        $this->assign('pact_type', $this->pact_type);
+        $this->assign('room', $this->room); //是否住宿
+        $this->assign('ready_computer', $this->ready_computer); //是否带电脑
+
+        $this->assign('statusTotals', $this->userService->getStatusTotals($this->statusNum));
+        $this->assign('userJobInfo', $this->userJob);
+        $this->assign('orgInfo', $this->getOrg);
+    }
+
+    /**
+     * @name 全部
+     * @author  jason
+     * @date  2019-03-28 05:58:56
+     * @return string
+     * @throws \Exception
+     */
+    public function index() : string
+    {
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['status'])) $params['status'] = 100;
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        //读取数据
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['preentrytime'] = !empty($val['preentrytime']) ? date('Y-m-d H:i:s', $val['preentrytime']) : '';
+                $data['user'][$key]['proceduretime'] = !empty($val['proceduretime']) ? date('Y-m-d H:i:s', $val['proceduretime']) : '';
+            }
+        }
+        //搜索状态
+        $statusArr = Config::get('users.searchStatus');
+        $this->assign('users', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('searchStatus', $statusArr);
+        $this->assign('params', $params);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 已发offer
+     * @return string
+     * @throws \Exception
+     */
+    public function offer() : string
+    {
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['status'])) $params['status'] = 0;
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['preentrytime'] = !empty($val['preentrytime']) ? date('Y-m-d H:i:s', $val['preentrytime']) : '';
+                $data['user'][$key]['proceduretime'] = !empty($val['proceduretime']) ? date('Y-m-d H:i:s', $val['proceduretime']) : '';
+            }
+        }
+        $this->assign('userInfo', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('params', $params);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 待入职
+     * @return string
+     * @throws \Exception
+     */
+    public function wait() : string
+    {
+        $allowSystem = $this->allowSystem;
+        $userJob = $this->userJob;
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        $params['status'] = 2;
+        //因为待入职页面，财务跟行政都有权限，那么就要根据角色来区分显示哪些数据  9=行政，6=财务
+        $job_type = 9;
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['maturitytime'] = !empty($val['maturitytime']) ? date('Y-m-d H:i:s', $val['maturitytime']) : '';
+                $data['user'][$key]['logintime'] = !empty($val['logintime']) ? date('Y-m-d H:i:s', $val['logintime']) : '';
+            }
+        }
+//        echo '<pre>';print_r($data['user']);exit;
+        $this->assign('userInfo', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('params', $params);
+        $this->assign('curJobType', $job_type);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 在职
+     * @return string
+     * @throws \Exception
+     */
+    public function work() : string
+    {
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        $params['status'] = 1;
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['preentrytime'] = !empty($val['preentrytime']) ? date('Y-m-d H:i:s', $val['preentrytime']) : '';
+                $data['user'][$key]['proceduretime'] = !empty($val['proceduretime']) ? date('Y-m-d H:i:s', $val['proceduretime']) : '';
+            }
+        }
+        $this->assign('userInfo', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('params', $params);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 离职
+     * @return string
+     * @throws \Exception
+     */
+    public function leave() : string
+    {
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['status'])) $params['status'] = 3;
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['preentrytime'] = !empty($val['preentrytime']) ? date('Y-m-d H:i:s', $val['preentrytime']) : '';
+                $data['user'][$key]['proceduretime'] = !empty($val['proceduretime']) ? date('Y-m-d H:i:s', $val['proceduretime']) : '';
+            }
+        }
+        $this->assign('userInfo', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('params', $params);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name    回收站
+     * @author  jason
+     * @date  2019-03-28 08:40:29
+     * @return string
+     * @throws \Exception
+     */
+    public function recycle() : string
+    {
+        $params = array_merge(input('get.'), input('post.'));
+        //有些字段需要默认
+        if (!isset($params['status'])) $params['status'] = 9;
+        if (!isset($params['org_id'])) $params['org_id'] = '';
+        if (!isset($params['pact_type'])) $params['pact_type'] = 0;
+        if (!isset($params['room'])) $params['room'] = 0;
+        if (!isset($params['ready_computer'])) $params['ready_computer'] = 0;
+        if (!isset($params['searchKey'])) $params['searchKey'] = 1;
+        if (!isset($params['searchValue'])) $params['searchValue'] = '';
+        $data = $this->userService->getInfo($params);
+        if (!empty($data)) {
+            foreach ($data['user'] as $key => $val) {
+                //授权时间转换一下
+                $data['user'][$key]['preentrytime'] = !empty($val['preentrytime']) ? date('Y-m-d H:i:s', $val['preentrytime']) : '';
+                $data['user'][$key]['proceduretime'] = !empty($val['proceduretime']) ? date('Y-m-d H:i:s', $val['proceduretime']) : '';
+            }
+        }
+        $this->assign('userInfo', $data['user']);
+        $this->assign('pages', $data['page']);
+        $this->assign('params', $params);
+        return $this->view->fetch();
+    }
+
+    /**
+     * 添加
+     * @return string
+     */
+    public function add() : string
+    {
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name 添加或编辑用户
+     * @author  jason
+     * @date  2019-03-28 05:58:24
+     * @param $id
+     * @return string
+     * @throws \Exception
+     */
+    public function edit():string
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            $par = $this->request->get();
+            $addType = $par['addType'];
+            $id = $par['id'] ?? '';
+            return $this->result($this->userService->editUser($id, $this->request->post(), $addType),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+        $par = $this->request->get();
+        $id = $par['id'];
+        $info = $this->userService->getUser($id);
+        $this->assign('userInfo', $info);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name    编辑用户 ，权限标签，权限的相关的数据
+     * @author  jason
+     * @date  2019-04-02 09:10:47
+     * @return string|void
+     * @throws \Exception
+     */
+    public function editrule()
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            return $this->result($this->userService->editrule($this->request->post()),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+        $par = $this->request->get();
+        $ids = $par['ids'];
+        $this->assign('ids', $ids);
+        return $this->view->fetch();
+    }
+
+    /**
+     * @name    批量 转待处理
+     * @author  jason
+     * @date  2019-04-01 10:39:06
+     */
+    public function pending($statusValue)
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            return $this->result($this->userService->pending($statusValue, $this->request->post()),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+    }
+
+    /**
+     * @name:删除
+     * @author: jason
+     * @date: 2019-03-28 04:35:01
+     */
+    public function del()
+    {
+        if ($this->request->isPost() && $this->request->isAjax()) {
+            $par = $this->request->get();
+            $pa = $this->request->post();
+            $status = $par['status'];
+            $ids = $pa['ids'];
+            return $this->result($this->userService->del($status, $ids),
+                $this->userService->returnCode,
+                $this->userService->returnMsg);
+        }
+        $this->error(__('Request Error'));
+    }
+}

@@ -1,0 +1,6 @@
+---------------------------------------------------------------
+[ 2019-03-28T22:00:33+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: all[/opt/web/zs/apps/rbac/application/v1/service/User.php:37]
+---------------------------------------------------------------
+[ 2019-03-28T22:01:46+08:00 ] 192.168.8.42 GET local.rule.com/v1/users/index/index.html
+[ error ] [8]未定义数组索引: all[/opt/web/zs/apps/rbac/application/v1/service/User.php:37]

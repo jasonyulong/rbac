@@ -1,0 +1,5 @@
+<ul class="nav nav-tabs nav-curstom">
+    {foreach $userStatus as $key => $val}
+    <li role="presentation" class="marg-left {if($request->action() == $key)}active{/if}"><a href="{:urlbuld('/v1/users/index/', $key)}">{$val} ( {$statusTotals[$key] ?? 0} )</a></li>
+    {/foreach}
+</ul>
